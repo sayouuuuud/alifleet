@@ -1,7 +1,6 @@
 'use client'
 
 import { useRef } from 'react'
-import Image from 'next/image'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -81,15 +80,15 @@ function ChapterProgress({ active }: { active: number }) {
 function SceneShell({
   index,
   image,
+  video,
   alt,
   children,
-  priority = false,
 }: {
   index: number
   image: string
+  video: string
   alt: string
   children: React.ReactNode
-  priority?: boolean
 }) {
   return (
     <article
@@ -98,7 +97,17 @@ function SceneShell({
       style={{ zIndex: index + 1 }}
     >
       <div data-scene-bg className="absolute inset-0 will-change-transform">
-        <Image src={image || "/placeholder.svg"} alt={alt} fill className="object-cover" sizes="100vw" priority={priority} />
+        <video
+          data-scene-video
+          src={video}
+          poster={image}
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          className="h-full w-full object-cover"
+          aria-label={alt}
+        />
       </div>
       <div
         aria-hidden="true"
@@ -134,7 +143,12 @@ function SceneKicker({ index, kicker }: { index: string; kicker: string }) {
 
 function ShowroomScene() {
   return (
-    <SceneShell index={0} image="/images/scene-personal-import.png" alt="Luxury SUV presented in a dark premium showroom" priority>
+    <SceneShell
+      index={0}
+      image="/images/scene-personal-import.png"
+      video="/videos/scene-showroom.mp4"
+      alt="Luxury SUV traveling at dusk"
+    >
       <div className="grid items-end gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-center">
         <div className="max-w-xl">
           <SceneKicker index="01" kicker="Personal Import" />
@@ -207,7 +221,12 @@ function ShowroomScene() {
 
 function PortScene() {
   return (
-    <SceneShell index={1} image="/images/scene-direct-import.png" alt="Shipping port at dusk with rows of trucks and container cranes">
+    <SceneShell
+      index={1}
+      image="/images/scene-direct-import.png"
+      video="/videos/scene-port.mp4"
+      alt="Loading port with cranes, containers and ships"
+    >
       <div className="max-w-xl">
         <SceneKicker index="02" kicker="Direct Import" />
         <h3 data-title className="mt-6 overflow-hidden text-balance text-4xl font-semibold tracking-tight text-white md:text-6xl">
@@ -273,7 +292,12 @@ function PortScene() {
 
 function PartsScene() {
   return (
-    <SceneShell index={2} image="/images/scene-spare-parts.png" alt="Open car hood revealing a detailed engine bay in a workshop">
+    <SceneShell
+      index={2}
+      image="/images/scene-spare-parts.png"
+      video="/videos/scene-engine.mp4"
+      alt="Mechanic working on a car engine under an open hood"
+    >
       {/* Scan sweep line */}
       <div
         data-scanline
@@ -358,6 +382,20 @@ export function Services() {
       const panels = gsap.utils.toArray<HTMLElement>('[data-scene]')
 
       panels.forEach((panel) => {
+        /* Play the background video only while its scene is on screen */
+        const video = panel.querySelector<HTMLVideoElement>('[data-scene-video]')
+        if (video) {
+          ScrollTrigger.create({
+            trigger: panel,
+            start: 'top bottom',
+            end: 'bottom top',
+            onEnter: () => video.play().catch(() => {}),
+            onEnterBack: () => video.play().catch(() => {}),
+            onLeave: () => video.pause(),
+            onLeaveBack: () => video.pause(),
+          })
+        }
+
         /* Parallax background zoom */
         const bg = panel.querySelector('[data-scene-bg]')
         if (bg) {
