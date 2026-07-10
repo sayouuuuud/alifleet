@@ -54,18 +54,34 @@ export function StatsStrip() {
   return (
     <section ref={sectionRef} className="pb-20 pt-8 md:pb-28 md:pt-12" id="why-us">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
-        <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4">
-          {stats.map((stat) => (
-            <div key={stat.label} data-stat-card className="flex flex-col gap-2">
-              <p className="text-5xl font-semibold tracking-tight text-foreground md:text-6xl">
-                <span data-stat-number data-target={stat.value}>
-                  0
-                </span>
-                <span className="text-accent">{stat.suffix}</span>
-              </p>
-              <p className="text-sm text-muted-foreground">{stat.label}</p>
-            </div>
-          ))}
+        <div className="relative overflow-hidden rounded-[2rem] border border-border bg-card p-8 md:p-12">
+          {/* Grid pattern background */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)',
+              backgroundSize: '44px 44px',
+              maskImage:
+                'radial-gradient(ellipse at center, black 40%, transparent 85%)',
+              WebkitMaskImage:
+                'radial-gradient(ellipse at center, black 40%, transparent 85%)',
+            }}
+          />
+          <div className="relative grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.label} data-stat-card className="flex flex-col gap-2">
+                <p className="text-5xl font-semibold tracking-tight text-foreground md:text-6xl">
+                  <span data-stat-number data-target={stat.value}>
+                    0
+                  </span>
+                  <span className="text-accent">{stat.suffix}</span>
+                </p>
+                <p className="text-sm text-muted-foreground">{stat.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
