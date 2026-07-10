@@ -11,18 +11,18 @@ import { Globe2, ShieldCheck, Truck, Plane, Ship } from 'lucide-react'
 gsap.registerPlugin(ScrollTrigger)
 
 const MARKERS: { location: [number, number]; size: number }[] = [
-  { location: [14.5995, 120.9842], size: 0.03 }, // Manila
-  { location: [19.076, 72.8777], size: 0.05 }, // Mumbai
-  { location: [23.8103, 90.4125], size: 0.03 }, // Dhaka
-  { location: [30.0444, 31.2357], size: 0.08 }, // Cairo
-  { location: [39.9042, 116.4074], size: 0.06 }, // Beijing
-  { location: [-23.5505, -46.6333], size: 0.05 }, // São Paulo
-  { location: [19.4326, -99.1332], size: 0.04 }, // Mexico City
-  { location: [40.7128, -74.006], size: 0.07 }, // New York
-  { location: [34.6937, 135.5022], size: 0.04 }, // Osaka
-  { location: [41.0082, 28.9784], size: 0.04 }, // Istanbul
-  { location: [51.5074, -0.1278], size: 0.06 }, // London
-  { location: [48.8566, 2.3522], size: 0.05 }, // Paris
+  { location: [14.5995, 120.9842], size: 0.05 }, // Manila
+  { location: [19.076, 72.8777], size: 0.07 }, // Mumbai
+  { location: [23.8103, 90.4125], size: 0.05 }, // Dhaka
+  { location: [30.0444, 31.2357], size: 0.1 }, // Cairo
+  { location: [39.9042, 116.4074], size: 0.08 }, // Beijing
+  { location: [-23.5505, -46.6333], size: 0.07 }, // São Paulo
+  { location: [19.4326, -99.1332], size: 0.06 }, // Mexico City
+  { location: [40.7128, -74.006], size: 0.09 }, // New York
+  { location: [34.6937, 135.5022], size: 0.06 }, // Osaka
+  { location: [41.0082, 28.9784], size: 0.06 }, // Istanbul
+  { location: [51.5074, -0.1278], size: 0.08 }, // London
+  { location: [48.8566, 2.3522], size: 0.07 }, // Paris
 ]
 
 // Importing Services data — each feature spins the globe to a representative market
@@ -356,7 +356,7 @@ export function GlobalReach() {
           <div className="order-1 flex items-center justify-center lg:order-2">
             <div
               data-globe-canvas
-              className="relative aspect-square w-[min(600px,90vw)] md:w-[520px] lg:w-[560px]"
+              className="relative aspect-square w-[min(680px,92vw)] md:w-[600px] lg:w-[680px]"
             >
               {/* Rotating orbit rings */}
               <svg
@@ -413,7 +413,7 @@ export function GlobalReach() {
               </div>
 
               {/* Globe canvas wrapper */}
-              <div ref={wrapperRef} className="absolute inset-[6%]" style={{ contain: 'layout paint size' }}>
+              <div ref={wrapperRef} className="absolute inset-[1%]" style={{ contain: 'layout paint size' }}>
                 <canvas
                   ref={canvasRef}
                   className="h-full w-full cursor-grab transition-opacity duration-1000"
@@ -424,7 +424,7 @@ export function GlobalReach() {
                   className="pointer-events-none absolute inset-0"
                   style={{
                     background:
-                      'radial-gradient(circle at center, transparent 0%, transparent 58%, oklch(0.985 0.002 240 / 0.55) 78%, var(--background) 96%)',
+                      'radial-gradient(circle at center, transparent 0%, transparent 70%, oklch(0.985 0.002 240 / 0.4) 86%, var(--background) 99%)',
                   }}
                   aria-hidden="true"
                 />
