@@ -9,9 +9,6 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  Gauge,
-  MousePointer2,
-  ShoppingCart,
   Truck,
 } from 'lucide-react'
 
@@ -50,7 +47,6 @@ const slides = [
   },
 ]
 
-const categories = ['Classic', 'Executive', 'Metro', 'Highway', 'Comfort', 'Luxury']
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
@@ -85,17 +81,7 @@ export function Hero() {
           { y: 60, opacity: 0, duration: 1.1, ease: 'power2.out' },
           '-=0.7'
         )
-        .from(
-          '[data-hero-badge]',
-          { scale: 0.8, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'back.out(1.7)' },
-          '-=0.5'
-        )
         .from('[data-hero-card]', { y: 40, opacity: 0, duration: 0.8 }, '-=0.6')
-        .from(
-          '[data-hero-chip]',
-          { y: 12, opacity: 0, duration: 0.4, stagger: 0.05 },
-          '-=0.5'
-        )
 
       // Gentle parallax on the hero image
       gsap.to('[data-hero-image]', {
@@ -195,74 +181,6 @@ export function Hero() {
                 priority
                 sizes="(max-width: 1024px) 100vw, 60vw"
               />
-
-              {/* Vertical brand tag — top left, flush with edge */}
-              <div
-                data-hero-badge
-                className="absolute left-4 top-0 hidden flex-col items-center gap-2 md:flex"
-              >
-                <span className="rounded-b-full bg-card px-2.5 pb-4 pt-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-card-foreground shadow-md [writing-mode:vertical-rl]">
-                  ALI FLEET
-                </span>
-                <a
-                  href="#fleet"
-                  aria-label="Explore the fleet"
-                  className="flex size-9 items-center justify-center rounded-full bg-foreground text-background shadow-md transition-transform hover:scale-110"
-                >
-                  <ArrowUpRight className="size-4" />
-                </a>
-              </div>
-
-              {/* Classic / Luxury glass pill */}
-              <div
-                data-hero-badge
-                className="absolute left-[22%] top-[27%] hidden items-center gap-2 rounded-full border border-white/50 bg-white/30 px-5 py-2.5 text-sm text-white shadow-lg backdrop-blur-md md:flex"
-              >
-                <MousePointer2 className="size-4" />
-                <span className="font-semibold">
-                  Classic<span className="font-normal opacity-90">/Luxury</span>
-                </span>
-              </div>
-
-              {/* Speed pill — solid white like the reference */}
-              <div
-                data-hero-badge
-                className="absolute left-[44%] top-[50%] hidden items-center gap-2 rounded-full bg-card px-5 py-2.5 text-sm text-card-foreground shadow-lg md:flex"
-              >
-                <Gauge className="size-4" />
-                <span className="font-semibold">
-                  250 km<span className="font-normal text-muted-foreground">/hour</span>
-                </span>
-              </div>
-
-              {/* Category chips — 2x3 grid bottom right */}
-              <div className="absolute bottom-6 right-6 hidden grid-cols-2 gap-2 md:grid">
-                {categories.map((category) => (
-                  <span
-                    data-hero-chip
-                    key={category}
-                    className="rounded-full border border-white/40 bg-white/25 px-6 py-2 text-center text-xs font-medium text-white shadow-sm backdrop-blur-md"
-                  >
-                    {category}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Contact us pill — notched into the top-right corner */}
-            <div
-              data-hero-badge
-              className="absolute right-0 top-0 rounded-tr-[2rem] rounded-bl-[1.75rem] bg-background pb-2.5 pl-2.5 md:pb-3 md:pl-3"
-            >
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-3 rounded-full bg-card py-1.5 pl-1.5 pr-5 text-xs font-bold uppercase tracking-wide text-card-foreground shadow-lg transition-transform hover:scale-105 md:py-2 md:pl-2 md:pr-6"
-              >
-                <span className="flex size-8 items-center justify-center rounded-full bg-foreground text-background md:size-9">
-                  <ShoppingCart className="size-4" />
-                </span>
-                Contact Us
-              </a>
             </div>
 
             {/* Thumbnail carousel card — floating over the image's left edge like the reference */}
