@@ -106,33 +106,8 @@
       radial-gradient(
         oklch(0.32 0.06 250 / 16%) 1px,
         transparent 1px
-      ),
-      radial-gradient(
-        55rem 55rem at 18% 4%,
-        oklch(0.68 0.17 235 / 62%),
-        transparent 60%
-      ),
-      radial-gradient(
-        50rem 50rem at 88% 14%,
-        oklch(0.42 0.13 250 / 55%),
-        transparent 58%
-      ),
-      radial-gradient(
-        58rem 58rem at 80% 88%,
-        oklch(0.68 0.17 235 / 52%),
-        transparent 62%
-      ),
-      radial-gradient(
-        46rem 46rem at 10% 80%,
-        oklch(0.42 0.13 250 / 48%),
-        transparent 60%
       );
-    background-size:
-      26px 26px,
-      100% 100%,
-      100% 100%,
-      100% 100%,
-      100% 100%;
+    background-size: 26px 26px;
     background-attachment: fixed;
   }
 }
