@@ -1,0 +1,138 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  color-scheme: light;
+  /* ALI FLEET brand — light & clean: white surfaces, navy + teal accents from logo */
+  --background: oklch(0.985 0.002 240);
+  --foreground: oklch(0.2 0.02 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.28 0.045 250);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.28 0.045 250);
+  --primary: oklch(0.32 0.06 250);
+  --primary-foreground: oklch(0.985 0.002 240);
+  --secondary: oklch(0.955 0.006 240);
+  --secondary-foreground: oklch(0.32 0.06 250);
+  --muted: oklch(0.955 0.006 240);
+  --muted-foreground: oklch(0.52 0.03 245);
+  --accent: oklch(0.68 0.13 235);
+  --accent-foreground: oklch(0.99 0.002 240);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.28 0.045 250 / 10%);
+  --input: oklch(0.28 0.045 250 / 14%);
+  --ring: oklch(0.68 0.13 235);
+  --chart-1: oklch(0.68 0.13 235);
+  --chart-2: oklch(0.32 0.06 250);
+  --chart-3: oklch(0.55 0.1 245);
+  --chart-4: oklch(0.82 0.06 230);
+  --chart-5: oklch(0.9 0.02 240);
+  --radius: 0.625rem;
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.28 0.045 250);
+  --sidebar-primary: oklch(0.32 0.06 250);
+  --sidebar-primary-foreground: oklch(0.985 0.002 240);
+  --sidebar-accent: oklch(0.955 0.006 240);
+  --sidebar-accent-foreground: oklch(0.32 0.06 250);
+  --sidebar-border: oklch(0.28 0.045 250 / 10%);
+  --sidebar-ring: oklch(0.68 0.13 235);
+}
+
+@theme inline {
+  --font-sans: 'Inter', 'Inter Fallback', sans-serif;
+  --font-serif: 'Instrument Serif', 'Instrument Serif Fallback', serif;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply bg-background scroll-smooth;
+  }
+  /* Ambient aurora glows + faint blueprint dot grid painted directly on the body
+     so they sit ABOVE the base background color. background-attachment: fixed
+     keeps them anchored to the viewport while content scrolls. Transparent
+     sections reveal the glows; solid bg-secondary sections cover them, which
+     creates the alternating surface rhythm. */
+  body {
+    @apply text-foreground font-sans antialiased;
+    background-color: var(--background);
+    background-image:
+      radial-gradient(
+        oklch(0.32 0.06 250 / 16%) 1px,
+        transparent 1px
+      ),
+      radial-gradient(
+        55rem 55rem at 18% 4%,
+        oklch(0.68 0.17 235 / 62%),
+        transparent 60%
+      ),
+      radial-gradient(
+        50rem 50rem at 88% 14%,
+        oklch(0.42 0.13 250 / 55%),
+        transparent 58%
+      ),
+      radial-gradient(
+        58rem 58rem at 80% 88%,
+        oklch(0.68 0.17 235 / 52%),
+        transparent 62%
+      ),
+      radial-gradient(
+        46rem 46rem at 10% 80%,
+        oklch(0.42 0.13 250 / 48%),
+        transparent 60%
+      );
+    background-size:
+      26px 26px,
+      100% 100%,
+      100% 100%,
+      100% 100%,
+      100% 100%;
+    background-attachment: fixed;
+  }
+}
