@@ -111,8 +111,8 @@ export function GlobalReach() {
       devicePixelRatio: 2,
       width: width * 2,
       height: width * 2,
-      phi: 0,
-      theta: 0.3,
+      phi: phiRef.current,
+      theta: thetaRef.current,
       dark: 0,
       diffuse: 0.9,
       mapSamples: 22000,
@@ -121,27 +121,35 @@ export function GlobalReach() {
       markerColor: [0.05, 0.35, 0.95],
       glowColor: [0.92, 0.95, 1],
       markers: MARKERS,
-      onRender: (state) => {
-        const focus = focusRef.current
-        if (focus) {
-          const [targetPhi, targetTheta] = focus
-          const spring = springOffset.get()
-          const currentTotal = phiRef.current + spring
-          const distA = (targetPhi - currentTotal) % (Math.PI * 2)
-          const distB = distA - Math.PI * 2 * Math.sign(distA)
-          const dist = Math.abs(distA) < Math.abs(distB) ? distA : distB
-          phiRef.current += dist * 0.08
-          thetaRef.current += (targetTheta * 0.9 - thetaRef.current) * 0.08
-        } else {
-          if (!draggingRef.current) phiRef.current += 0.005
-          thetaRef.current += (0.3 - thetaRef.current) * 0.05
-        }
-        state.phi = phiRef.current + springOffset.get()
-        state.theta = thetaRef.current
-        state.width = width * 2
-        state.height = width * 2
-      },
     })
+
+    // cobe v2 has no `onRender` callback and no internal loop — we drive the
+    // animation manually with requestAnimationFrame and globe.update().
+    let raf = 0
+    const tick = () => {
+      const focus = focusRef.current
+      if (focus) {
+        const [targetPhi, targetTheta] = focus
+        const spring = springOffset.get()
+        const currentTotal = phiRef.current + spring
+        const distA = (targetPhi - currentTotal) % (Math.PI * 2)
+        const distB = distA - Math.PI * 2 * Math.sign(distA)
+        const dist = Math.abs(distA) < Math.abs(distB) ? distA : distB
+        phiRef.current += dist * 0.08
+        thetaRef.current += (targetTheta * 0.9 - thetaRef.current) * 0.08
+      } else {
+        if (!draggingRef.current) phiRef.current += 0.005
+        thetaRef.current += (0.3 - thetaRef.current) * 0.05
+      }
+      globe.update({
+        phi: phiRef.current + springOffset.get(),
+        theta: thetaRef.current,
+        width: width * 2,
+        height: width * 2,
+      })
+      raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
 
     const timeout = setTimeout(() => setReady(true), 100)
 
@@ -180,6 +188,7 @@ export function GlobalReach() {
     window.addEventListener('touchend', onPointerUp)
 
     return () => {
+      cancelAnimationFrame(raf)
       globe.destroy()
       clearTimeout(timeout)
       window.removeEventListener('resize', onResize)
