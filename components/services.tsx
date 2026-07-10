@@ -381,21 +381,27 @@ export function Services() {
     () => {
       const panels = gsap.utils.toArray<HTMLElement>('[data-scene]')
 
-      panels.forEach((panel) => {
-        /* Play the background video only while its scene is on screen */
-        const video = panel.querySelector<HTMLVideoElement>('[data-scene-video]')
-        if (video) {
-          ScrollTrigger.create({
-            trigger: panel,
-            start: 'top bottom',
-            end: 'bottom+=100% top',
-            onEnter: () => video.play().catch(() => {}),
-            onEnterBack: () => video.play().catch(() => {}),
-            onLeave: () => video.pause(),
-            onLeaveBack: () => video.pause(),
-          })
-        }
+      /* Play each background video whenever its scene is actually visible.
+         Scenes are sticky and stay pinned during the dwell spacers, so
+         scroll-offset math would pause them while still on screen. An
+         IntersectionObserver tracks real visibility and keeps them playing. */
+      const videos = document.querySelectorAll<HTMLVideoElement>('[data-scene-video]')
+      const videoObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const video = entry.target as HTMLVideoElement
+            if (entry.isIntersecting) {
+              video.play().catch(() => {})
+            } else {
+              video.pause()
+            }
+          }
+        },
+        { threshold: 0.05 }
+      )
+      videos.forEach((video) => videoObserver.observe(video))
 
+      panels.forEach((panel) => {
         /* Parallax background zoom */
         const bg = panel.querySelector('[data-scene-bg]')
         if (bg) {
@@ -561,6 +567,8 @@ export function Services() {
           })
         }
       })
+
+      return () => videoObserver.disconnect()
     },
     { scope: sectionRef }
   )
