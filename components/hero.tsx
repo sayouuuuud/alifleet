@@ -74,7 +74,7 @@ export function Hero() {
   return (
     <section ref={sectionRef} className="pt-20 md:pt-24">
       <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
+        <div className="grid items-stretch gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
           {/* ---------- Left column ---------- */}
           <div className="flex h-full flex-col lg:pt-2">
             <h1 className="text-balance text-5xl font-semibold leading-[1.1] tracking-tight text-foreground md:text-6xl xl:text-[4.25rem]">
@@ -142,8 +142,8 @@ export function Hero() {
           </div>
 
           {/* ---------- Right column: showroom image ---------- */}
-          <div data-hero-image-wrap className="relative">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] md:aspect-[16/11.5]">
+          <div data-hero-image-wrap className="relative flex flex-col lg:h-full">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] md:aspect-[16/11.5] lg:aspect-auto lg:min-h-[36rem] lg:flex-1">
               <Image
                 data-hero-image
                 src="/images/hero-showroom.png"
