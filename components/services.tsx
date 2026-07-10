@@ -529,6 +529,17 @@ export function Services() {
 
   return (
     <section ref={sectionRef} id="parts" aria-label="Our services">
+      {/* Intro strip before the stacked scenes */}
+      <div className="bg-secondary px-6 py-16 text-center md:py-20">
+        <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Our Services</p>
+        <h2 className="mt-3 text-balance text-3xl font-semibold tracking-tight text-foreground md:text-4xl">
+          Three services. <em className="font-serif italic text-accent">One story.</em>
+        </h2>
+        <p className="mx-auto mt-4 max-w-md text-pretty text-sm leading-relaxed text-muted-foreground">
+          Keep scrolling — each chapter takes over the screen.
+        </p>
+      </div>
+
       {/* Stacked scroll-swap scenes */}
       <div className="relative">
         <ShowroomScene />
