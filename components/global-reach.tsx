@@ -10,21 +10,6 @@ import { Globe2, ShieldCheck, Truck, Plane, Ship } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const MARKERS: { location: [number, number]; size: number }[] = [
-  { location: [14.5995, 120.9842], size: 0.05 }, // Manila
-  { location: [19.076, 72.8777], size: 0.07 }, // Mumbai
-  { location: [23.8103, 90.4125], size: 0.05 }, // Dhaka
-  { location: [30.0444, 31.2357], size: 0.1 }, // Cairo
-  { location: [39.9042, 116.4074], size: 0.08 }, // Beijing
-  { location: [-23.5505, -46.6333], size: 0.07 }, // São Paulo
-  { location: [19.4326, -99.1332], size: 0.06 }, // Mexico City
-  { location: [40.7128, -74.006], size: 0.09 }, // New York
-  { location: [34.6937, 135.5022], size: 0.06 }, // Osaka
-  { location: [41.0082, 28.9784], size: 0.06 }, // Istanbul
-  { location: [51.5074, -0.1278], size: 0.08 }, // London
-  { location: [48.8566, 2.3522], size: 0.07 }, // Paris
-]
-
 // Importing Services data — each feature spins the globe to a representative market
 const IMPORT_FEATURES: {
   icon: typeof Globe2
@@ -120,7 +105,7 @@ export function GlobalReach() {
       baseColor: [0.32, 0.44, 0.62],
       markerColor: [0.05, 0.35, 0.95],
       glowColor: [0.92, 0.95, 1],
-      markers: MARKERS,
+      markers: [],
     })
 
     // cobe v2 has no `onRender` callback and no internal loop — we drive the
@@ -356,7 +341,7 @@ export function GlobalReach() {
           <div className="order-1 flex items-center justify-center lg:order-2">
             <div
               data-globe-canvas
-              className="relative aspect-square w-[min(680px,92vw)] md:w-[600px] lg:w-[680px]"
+              className="relative aspect-square w-[min(820px,96vw)] md:w-[720px] lg:w-[820px]"
             >
               {/* Rotating orbit rings */}
               <svg
