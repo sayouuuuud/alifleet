@@ -182,14 +182,14 @@ export function Hero() {
                 </span>
               </div>
 
-              {/* Speed glass pill */}
+              {/* Speed pill — solid white like the reference */}
               <div
                 data-hero-badge
-                className="absolute left-[44%] top-[50%] hidden items-center gap-2 rounded-full border border-white/50 bg-white/30 px-5 py-2.5 text-sm text-white shadow-lg backdrop-blur-md md:flex"
+                className="absolute left-[44%] top-[50%] hidden items-center gap-2 rounded-full bg-card px-5 py-2.5 text-sm text-card-foreground shadow-lg md:flex"
               >
                 <Gauge className="size-4" />
                 <span className="font-semibold">
-                  250 km<span className="font-normal opacity-90">/hour</span>
+                  250 km<span className="font-normal text-muted-foreground">/hour</span>
                 </span>
               </div>
 
@@ -223,12 +223,12 @@ export function Hero() {
               </a>
             </div>
 
-            {/* Thumbnail carousel card — notched into the bottom-left corner */}
+            {/* Thumbnail carousel card — floating over the image's left edge like the reference */}
             <div
               data-hero-card
-              className="relative -mt-14 w-fit max-w-full rounded-[1.75rem] bg-background p-2 md:absolute md:bottom-0 md:left-0 md:mt-0 md:rounded-bl-[2rem] md:rounded-tr-[1.75rem] md:pr-3 md:pt-3"
+              className="relative -mt-14 w-fit max-w-full md:absolute md:bottom-10 md:-left-16 md:mt-0 lg:-left-24"
             >
-              <div className="rounded-3xl bg-card p-3 shadow-xl">
+              <div className="rounded-3xl bg-card p-3 shadow-2xl">
                 <div className="flex gap-3">
                   {thumbnails.map((thumb) => (
                     <div
