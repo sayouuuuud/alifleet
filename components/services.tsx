@@ -388,7 +388,7 @@ export function Services() {
           ScrollTrigger.create({
             trigger: panel,
             start: 'top bottom',
-            end: 'bottom top',
+            end: 'bottom+=100% top',
             onEnter: () => video.play().catch(() => {}),
             onEnterBack: () => video.play().catch(() => {}),
             onLeave: () => video.pause(),
@@ -405,7 +405,7 @@ export function Services() {
             {
               scale: 1,
               ease: 'none',
-              scrollTrigger: { trigger: panel, start: 'top bottom', end: 'bottom top', scrub: true },
+              scrollTrigger: { trigger: panel, start: 'top bottom', end: 'bottom+=100% top', scrub: true },
             }
           )
         }
@@ -578,11 +578,15 @@ export function Services() {
         </p>
       </div>
 
-      {/* Stacked scroll-swap scenes */}
+      {/* Stacked scroll-swap scenes — spacers keep each scene pinned
+          for extra scroll distance before the next one covers it */}
       <div className="relative">
         <ShowroomScene />
+        <div aria-hidden="true" className="h-[80svh]" />
         <PortScene />
+        <div aria-hidden="true" className="h-[80svh]" />
         <PartsScene />
+        <div aria-hidden="true" className="h-[60svh]" />
       </div>
     </section>
   )
