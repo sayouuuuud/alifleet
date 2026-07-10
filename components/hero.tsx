@@ -142,7 +142,7 @@ export function Hero() {
           </div>
 
           {/* ---------- Right column: showroom image ---------- */}
-          <div data-hero-image-wrap className="relative flex flex-col lg:h-full">
+          <div data-hero-image-wrap className="relative flex flex-col lg:-mt-16 lg:h-[calc(100%+4rem)]">
             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] md:aspect-[16/11.5] lg:aspect-auto lg:min-h-[36rem] lg:flex-1">
               <Image
                 data-hero-image
