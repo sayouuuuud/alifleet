@@ -278,7 +278,7 @@ export function Hero() {
         </div>
 
         {/* Spacer so the overlapping card doesn't collide with next section */}
-        <div className="h-8 md:h-16" aria-hidden="true" />
+        <div className="h-6 md:h-8" aria-hidden="true" />
       </div>
     </section>
   )

@@ -52,7 +52,7 @@ export function StatsStrip() {
   )
 
   return (
-    <section ref={sectionRef} className="py-20 md:py-28" id="why-us">
+    <section ref={sectionRef} className="pb-20 pt-8 md:pb-28 md:pt-12" id="why-us">
       <div className="mx-auto max-w-6xl px-4 md:px-6">
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4">
           {stats.map((stat) => (
