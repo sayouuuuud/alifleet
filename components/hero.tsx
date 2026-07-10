@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -9,24 +9,61 @@ import {
   ArrowLeft,
   ArrowRight,
   ArrowUpRight,
-  Gauge,
-  MousePointer2,
-  ShoppingCart,
   Truck,
 } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const thumbnails = [
-  { src: '/images/fleet-truck.png', label: 'Trucks', alt: 'Premium white commercial truck' },
-  { src: '/images/fleet-van.png', label: 'Vans', alt: 'Luxury white cargo van' },
-  { src: '/images/fleet-suv.png', label: 'SUVs', alt: 'High-end white luxury SUV' },
+const slides = [
+  {
+    src: '/images/hero-showroom.png',
+    label: 'Flagship',
+    alt: 'Futuristic white luxury vehicle with open gullwing doors in a bright showroom',
+  },
+  {
+    src: '/images/truck-light.png',
+    label: 'Trucks',
+    alt: 'Modern heavy-duty commercial truck photographed in daylight',
+  },
+  {
+    src: '/images/van-light.png',
+    label: 'Vans',
+    alt: 'Luxury executive van in a bright modern showroom',
+  },
+  {
+    src: '/images/suv-light.png',
+    label: 'SUVs',
+    alt: 'Luxury SUV in a bright white studio',
+  },
+  {
+    src: '/images/hero-truck.png',
+    label: 'Highway',
+    alt: 'Long-haul highway hauler truck',
+  },
+  {
+    src: '/images/import-global.png',
+    label: 'Imports',
+    alt: 'Globally imported premium vehicles',
+  },
 ]
 
-const categories = ['Classic', 'Executive', 'Metro', 'Highway', 'Comfort', 'Luxury']
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
+  const [active, setActive] = useState(0)
+  const total = slides.length
+
+  const goTo = (index: number) => setActive((index + total) % total)
+  const prev = () => goTo(active - 1)
+  const next = () => goTo(active + 1)
+
+  // Carousel window: current slide first, then the two upcoming (cyclic)
+  const windowSlides = [0, 1, 2].map((offset) => {
+    const index = (active + offset) % total
+    return { ...slides[index], index }
+  })
+
+  const activeSlide = slides[active]
 
   useGSAP(
     () => {
@@ -44,17 +81,7 @@ export function Hero() {
           { y: 60, opacity: 0, duration: 1.1, ease: 'power2.out' },
           '-=0.7'
         )
-        .from(
-          '[data-hero-badge]',
-          { scale: 0.8, opacity: 0, duration: 0.6, stagger: 0.08, ease: 'back.out(1.7)' },
-          '-=0.5'
-        )
         .from('[data-hero-card]', { y: 40, opacity: 0, duration: 0.8 }, '-=0.6')
-        .from(
-          '[data-hero-chip]',
-          { y: 12, opacity: 0, duration: 0.4, stagger: 0.05 },
-          '-=0.5'
-        )
 
       // Gentle parallax on the hero image
       gsap.to('[data-hero-image]', {
@@ -145,82 +172,15 @@ export function Hero() {
           <div data-hero-image-wrap className="relative flex flex-col lg:-mt-16 lg:h-[calc(100%+4rem)]">
             <div className="relative aspect-[4/3] overflow-hidden rounded-[2rem] md:aspect-[16/11.5] lg:aspect-auto lg:min-h-[36rem] lg:flex-1">
               <Image
+                key={activeSlide.src}
                 data-hero-image
-                src="/images/hero-showroom.png"
-                alt="Futuristic white luxury vehicle with open gullwing doors in a bright showroom"
+                src={activeSlide.src || '/placeholder.svg'}
+                alt={activeSlide.alt}
                 fill
-                className="scale-105 object-cover"
+                className="scale-105 animate-in fade-in object-cover duration-500"
                 priority
                 sizes="(max-width: 1024px) 100vw, 60vw"
               />
-
-              {/* Vertical brand tag — top left, flush with edge */}
-              <div
-                data-hero-badge
-                className="absolute left-4 top-0 hidden flex-col items-center gap-2 md:flex"
-              >
-                <span className="rounded-b-full bg-card px-2.5 pb-4 pt-5 text-[10px] font-semibold uppercase tracking-[0.3em] text-card-foreground shadow-md [writing-mode:vertical-rl]">
-                  ALI FLEET
-                </span>
-                <a
-                  href="#fleet"
-                  aria-label="Explore the fleet"
-                  className="flex size-9 items-center justify-center rounded-full bg-foreground text-background shadow-md transition-transform hover:scale-110"
-                >
-                  <ArrowUpRight className="size-4" />
-                </a>
-              </div>
-
-              {/* Classic / Luxury glass pill */}
-              <div
-                data-hero-badge
-                className="absolute left-[22%] top-[27%] hidden items-center gap-2 rounded-full border border-white/50 bg-white/30 px-5 py-2.5 text-sm text-white shadow-lg backdrop-blur-md md:flex"
-              >
-                <MousePointer2 className="size-4" />
-                <span className="font-semibold">
-                  Classic<span className="font-normal opacity-90">/Luxury</span>
-                </span>
-              </div>
-
-              {/* Speed pill — solid white like the reference */}
-              <div
-                data-hero-badge
-                className="absolute left-[44%] top-[50%] hidden items-center gap-2 rounded-full bg-card px-5 py-2.5 text-sm text-card-foreground shadow-lg md:flex"
-              >
-                <Gauge className="size-4" />
-                <span className="font-semibold">
-                  250 km<span className="font-normal text-muted-foreground">/hour</span>
-                </span>
-              </div>
-
-              {/* Category chips — 2x3 grid bottom right */}
-              <div className="absolute bottom-6 right-6 hidden grid-cols-2 gap-2 md:grid">
-                {categories.map((category) => (
-                  <span
-                    data-hero-chip
-                    key={category}
-                    className="rounded-full border border-white/40 bg-white/25 px-6 py-2 text-center text-xs font-medium text-white shadow-sm backdrop-blur-md"
-                  >
-                    {category}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Contact us pill — notched into the top-right corner */}
-            <div
-              data-hero-badge
-              className="absolute right-0 top-0 rounded-tr-[2rem] rounded-bl-[1.75rem] bg-background pb-2.5 pl-2.5 md:pb-3 md:pl-3"
-            >
-              <a
-                href="#contact"
-                className="inline-flex items-center gap-3 rounded-full bg-card py-1.5 pl-1.5 pr-5 text-xs font-bold uppercase tracking-wide text-card-foreground shadow-lg transition-transform hover:scale-105 md:py-2 md:pl-2 md:pr-6"
-              >
-                <span className="flex size-8 items-center justify-center rounded-full bg-foreground text-background md:size-9">
-                  <ShoppingCart className="size-4" />
-                </span>
-                Contact Us
-              </a>
             </div>
 
             {/* Thumbnail carousel card — floating over the image's left edge like the reference */}
@@ -230,42 +190,58 @@ export function Hero() {
             >
               <div className="rounded-3xl bg-card p-3 shadow-2xl">
                 <div className="flex gap-3">
-                  {thumbnails.map((thumb) => (
-                    <div
-                      key={thumb.label}
-                      className="group relative h-24 w-24 overflow-hidden rounded-2xl md:h-24 md:w-28"
-                    >
-                      <Image
-                        src={thumb.src || "/placeholder.svg"}
-                        alt={thumb.alt}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        sizes="128px"
-                      />
-                      <span className="absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-full bg-foreground text-background">
-                        <ArrowUpRight className="size-3" />
-                      </span>
-                      <span className="absolute inset-x-1.5 bottom-1.5 rounded-full bg-card py-1.5 text-center text-xs font-semibold text-card-foreground shadow-sm">
-                        {thumb.label}
-                      </span>
-                    </div>
-                  ))}
+                  {windowSlides.map((thumb, position) => {
+                    const isActive = position === 0
+                    return (
+                      <button
+                        type="button"
+                        key={thumb.label}
+                        onClick={() => goTo(thumb.index)}
+                        aria-label={`View ${thumb.label}`}
+                        aria-current={isActive}
+                        className={`group relative h-24 w-24 overflow-hidden rounded-2xl outline-none transition md:h-24 md:w-28 ${
+                          isActive
+                            ? 'ring-2 ring-foreground ring-offset-2 ring-offset-card'
+                            : 'opacity-80 hover:opacity-100'
+                        } focus-visible:ring-2 focus-visible:ring-accent`}
+                      >
+                        <Image
+                          src={thumb.src || '/placeholder.svg'}
+                          alt={thumb.alt}
+                          fill
+                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          sizes="128px"
+                        />
+                        <span className="absolute right-1.5 top-1.5 flex size-6 items-center justify-center rounded-full bg-foreground text-background">
+                          <ArrowUpRight className="size-3" />
+                        </span>
+                        <span className="absolute inset-x-1.5 bottom-1.5 rounded-full bg-card py-1.5 text-center text-xs font-semibold text-card-foreground shadow-sm">
+                          {thumb.label}
+                        </span>
+                      </button>
+                    )
+                  })}
                 </div>
                 <div className="mt-3 flex items-center justify-between px-1 pb-1">
                   <p className="text-sm text-muted-foreground">
-                    <span className="text-xl font-semibold text-foreground">2</span>/10
+                    <span className="text-xl font-semibold text-foreground">
+                      {active + 1}
+                    </span>
+                    /{total}
                   </p>
                   <div className="flex items-center gap-4">
                     <button
                       type="button"
-                      aria-label="Previous vehicles"
+                      onClick={prev}
+                      aria-label="Previous vehicle"
                       className="text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <ArrowLeft className="size-5" />
                     </button>
                     <button
                       type="button"
-                      aria-label="Next vehicles"
+                      onClick={next}
+                      aria-label="Next vehicle"
                       className="text-foreground transition-transform hover:translate-x-0.5"
                     >
                       <ArrowRight className="size-5" />

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Image from 'next/image'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
@@ -53,22 +53,22 @@ export function FleetShowcase() {
         },
       })
 
-      gsap.utils.toArray<HTMLElement>('[data-fleet-card]').forEach((card, i) => {
-        gsap.from(card, {
-          y: 60,
-          opacity: 0,
-          duration: 0.9,
-          delay: i * 0.12,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 88%',
-          },
-        })
+      gsap.from('[data-fleet-panel]', {
+        y: 60,
+        opacity: 0,
+        duration: 0.9,
+        stagger: 0.12,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: '[data-fleet-panels]',
+          start: 'top 85%',
+        },
       })
     },
     { scope: sectionRef }
   )
+
+  const [active, setActive] = useState(0)
 
   return (
     <section ref={sectionRef} id="fleet" className="bg-secondary py-20 md:py-28">
@@ -89,36 +89,71 @@ export function FleetShowcase() {
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {vehicles.map((vehicle) => (
-            <article
-              key={vehicle.title}
-              data-fleet-card
-              className="group flex flex-col overflow-hidden rounded-2xl bg-card shadow-sm transition-shadow hover:shadow-md"
-            >
-              <div className="relative aspect-[4/3] overflow-hidden">
+        <div
+          data-fleet-panels
+          className="flex h-[520px] flex-col gap-3 md:h-[560px] md:flex-row"
+        >
+          {vehicles.map((vehicle, i) => {
+            const isActive = active === i
+            return (
+              <article
+                key={vehicle.title}
+                data-fleet-panel
+                onMouseEnter={() => setActive(i)}
+                onFocus={() => setActive(i)}
+                tabIndex={0}
+                className={`group relative cursor-pointer overflow-hidden rounded-2xl outline-none transition-[flex-grow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-accent ${
+                  isActive ? 'flex-[5]' : 'flex-[1]'
+                }`}
+              >
                 <Image
                   src={vehicle.image}
                   alt={vehicle.alt}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
-                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className={`object-cover transition-transform duration-700 ease-out ${
+                    isActive ? 'scale-100' : 'scale-110'
+                  }`}
+                  sizes="(max-width: 768px) 100vw, 60vw"
                 />
+                {/* Dark gradient for text legibility */}
+                <div
+                  className={`absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent transition-opacity duration-500 ${
+                    isActive ? 'opacity-100' : 'opacity-70'
+                  }`}
+                />
+
                 <span className="absolute left-4 top-4 rounded-full bg-card/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-sm">
                   {vehicle.tag}
                 </span>
-              </div>
-              <div className="flex flex-1 flex-col gap-2.5 p-6">
-                <h3 className="flex items-center justify-between text-lg font-semibold text-foreground">
+
+                {/* Collapsed label — vertical title shown when the panel is idle */}
+                <span
+                  className={`pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 whitespace-nowrap text-lg font-semibold uppercase tracking-wide text-white transition-opacity duration-300 [writing-mode:vertical-rl] md:block ${
+                    isActive ? 'opacity-0' : 'opacity-100'
+                  }`}
+                >
                   {vehicle.title}
-                  <ArrowUpRight className="size-5 text-accent transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {vehicle.description}
-                </p>
-              </div>
-            </article>
-          ))}
+                </span>
+
+                {/* Expanded content */}
+                <div
+                  className={`absolute inset-0 flex flex-col justify-end p-6 transition-all duration-500 md:p-8 ${
+                    isActive
+                      ? 'translate-y-0 opacity-100 delay-150'
+                      : 'pointer-events-none translate-y-4 opacity-0 md:opacity-0'
+                  }`}
+                >
+                  <h3 className="flex items-center gap-2 text-2xl font-semibold text-white md:text-3xl">
+                    {vehicle.title}
+                    <ArrowUpRight className="size-6 text-accent" />
+                  </h3>
+                  <p className="mt-2 max-w-md text-pretty text-sm leading-relaxed text-white/85 md:text-base">
+                    {vehicle.description}
+                  </p>
+                </div>
+              </article>
+            )
+          })}
         </div>
       </div>
     </section>

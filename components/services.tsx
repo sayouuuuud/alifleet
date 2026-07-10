@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Check } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -25,10 +26,10 @@ const showroomStats = [
 ]
 
 const routeStops = [
-  { code: 'FTY', label: 'Factory' },
-  { code: 'PRT', label: 'Port of Origin' },
-  { code: 'CAI', label: 'Customs' },
-  { code: 'FLT', label: 'Your Fleet' },
+  { code: 'FTY', label: 'Factory', place: 'Stuttgart, DE', status: 'done', meta: 'Departed · Jan 12' },
+  { code: 'PRT', label: 'Port of Origin', place: 'Hamburg, DE', status: 'done', meta: 'Loaded · Jan 18' },
+  { code: 'CAI', label: 'Customs', place: 'Alexandria, EG', status: 'current', meta: 'Clearing now' },
+  { code: 'FLT', label: 'Your Fleet', place: 'Cairo, EG', status: 'pending', meta: 'ETA · Feb 03' },
 ]
 
 const partCallouts = [
@@ -239,47 +240,85 @@ function PortScene() {
         </p>
       </div>
 
-      {/* Route tracker */}
-      <div data-reveal className="mt-12 max-w-3xl">
-        <div className="rounded-xl border border-white/15 bg-black/40 p-6 backdrop-blur-md">
-          <p className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
-            <span>Shipment Tracking</span>
-            <span data-tracking-code className="text-accent">ALIFLT-2026-0071</span>
-          </p>
-          <div className="relative mt-6">
-            {/* Route line */}
-            <div className="absolute left-0 right-0 top-[7px] h-px bg-white/15" aria-hidden="true" />
-            <div
-              data-route-line
-              className="absolute left-0 top-[7px] h-px origin-left bg-accent"
-              style={{ width: '100%' }}
-              aria-hidden="true"
-            />
-            <ol className="relative flex justify-between">
-              {routeStops.map((stop, i) => (
-                <li key={stop.code} data-route-stop className="flex flex-col items-center gap-2 text-center">
-                  <span
-                    className={`h-[15px] w-[15px] rounded-full border-2 ${
-                      i === routeStops.length - 1
-                        ? 'border-accent bg-accent'
-                        : 'border-accent bg-black'
-                    }`}
-                  />
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-accent">
-                    {stop.code}
-                  </span>
-                  <span className="text-xs text-white/70">{stop.label}</span>
-                </li>
-              ))}
-            </ol>
-            {/* Stamp */}
-            <div
-              data-stamp
-              className="absolute -top-3 right-[18%] hidden -rotate-12 rounded border-2 border-accent px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-accent md:block"
-            >
-              Customs Cleared
+      {/* Shipment tracking card */}
+      <div data-reveal className="mt-12 max-w-md">
+        <div className="overflow-hidden rounded-2xl border border-white/15 bg-black/50 backdrop-blur-md">
+          {/* Header */}
+          <div className="flex items-center justify-between border-b border-white/10 px-6 py-4">
+            <div className="flex items-center gap-2.5">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-accent" />
+              </span>
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/60">
+                Shipment Tracking
+              </span>
             </div>
+            <span data-tracking-code className="font-mono text-[11px] tracking-wider text-accent">
+              ALIFLT-2026-0071
+            </span>
           </div>
+
+          {/* Vertical timeline */}
+          <ol className="relative px-6 py-5">
+            {routeStops.map((stop, i) => {
+              const isLast = i === routeStops.length - 1
+              const isDone = stop.status === 'done'
+              const isCurrent = stop.status === 'current'
+              return (
+                <li
+                  key={stop.code}
+                  data-route-stop
+                  className="relative flex gap-4 pb-6 last:pb-0"
+                >
+                  {/* Connector line between stops */}
+                  {!isLast && (
+                    <span
+                      aria-hidden="true"
+                      className={`absolute left-[10px] top-6 h-full w-px ${
+                        isDone ? 'bg-accent/60' : 'bg-white/15'
+                      }`}
+                    />
+                  )}
+                  {/* Node */}
+                  <span
+                    className={`relative z-10 mt-0.5 flex h-[21px] w-[21px] shrink-0 items-center justify-center rounded-full border-2 ${
+                      isDone
+                        ? 'border-accent bg-accent'
+                        : isCurrent
+                          ? 'border-accent bg-black'
+                          : 'border-white/25 bg-black'
+                    }`}
+                  >
+                    {isDone ? (
+                      <Check className="h-3 w-3 text-black" strokeWidth={3} />
+                    ) : isCurrent ? (
+                      <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                    ) : null}
+                  </span>
+                  {/* Text */}
+                  <div className="flex flex-1 items-start justify-between gap-3">
+                    <div>
+                      <p className="flex items-center gap-2 text-sm font-medium text-white">
+                        {stop.label}
+                        <span className="font-mono text-[9px] uppercase tracking-widest text-accent">
+                          {stop.code}
+                        </span>
+                      </p>
+                      <p className="mt-0.5 text-xs text-white/50">{stop.place}</p>
+                    </div>
+                    <span
+                      className={`whitespace-nowrap font-mono text-[10px] uppercase tracking-wider ${
+                        isCurrent ? 'text-accent' : 'text-white/45'
+                      }`}
+                    >
+                      {stop.meta}
+                    </span>
+                  </div>
+                </li>
+              )
+            })}
+          </ol>
         </div>
       </div>
     </SceneShell>
@@ -381,21 +420,27 @@ export function Services() {
     () => {
       const panels = gsap.utils.toArray<HTMLElement>('[data-scene]')
 
-      panels.forEach((panel) => {
-        /* Play the background video only while its scene is on screen */
-        const video = panel.querySelector<HTMLVideoElement>('[data-scene-video]')
-        if (video) {
-          ScrollTrigger.create({
-            trigger: panel,
-            start: 'top bottom',
-            end: 'bottom top',
-            onEnter: () => video.play().catch(() => {}),
-            onEnterBack: () => video.play().catch(() => {}),
-            onLeave: () => video.pause(),
-            onLeaveBack: () => video.pause(),
-          })
-        }
+      /* Play each background video whenever its scene is actually visible.
+         Scenes are sticky and stay pinned during the dwell spacers, so
+         scroll-offset math would pause them while still on screen. An
+         IntersectionObserver tracks real visibility and keeps them playing. */
+      const videos = document.querySelectorAll<HTMLVideoElement>('[data-scene-video]')
+      const videoObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            const video = entry.target as HTMLVideoElement
+            if (entry.isIntersecting) {
+              video.play().catch(() => {})
+            } else {
+              video.pause()
+            }
+          }
+        },
+        { threshold: 0.05 }
+      )
+      videos.forEach((video) => videoObserver.observe(video))
 
+      panels.forEach((panel) => {
         /* Parallax background zoom */
         const bg = panel.querySelector('[data-scene-bg]')
         if (bg) {
@@ -405,7 +450,7 @@ export function Services() {
             {
               scale: 1,
               ease: 'none',
-              scrollTrigger: { trigger: panel, start: 'top bottom', end: 'bottom top', scrub: true },
+              scrollTrigger: { trigger: panel, start: 'top bottom', end: 'bottom+=100% top', scrub: true },
             }
           )
         }
@@ -478,35 +523,17 @@ export function Services() {
           })
         }
 
-        /* Scene 02: route line draws, stops pop, stamp slams in */
-        const routeLine = panel.querySelector('[data-route-line]')
-        if (routeLine) {
-          gsap.from(routeLine, {
-            scaleX: 0,
-            duration: 1.6,
-            ease: 'power2.inOut',
-            scrollTrigger: enter,
-          })
-          gsap.from(panel.querySelectorAll('[data-route-stop]'), {
-            scale: 0.4,
+        /* Scene 02: timeline stops slide in and stack top to bottom */
+        const routeStopEls = panel.querySelectorAll('[data-route-stop]')
+        if (routeStopEls.length) {
+          gsap.from(routeStopEls, {
+            x: -24,
             opacity: 0,
-            stagger: 0.35,
-            duration: 0.5,
-            ease: 'back.out(2)',
+            stagger: 0.18,
+            duration: 0.55,
+            ease: 'power3.out',
             scrollTrigger: enter,
           })
-          const stamp = panel.querySelector('[data-stamp]')
-          if (stamp) {
-            gsap.from(stamp, {
-              scale: 2.4,
-              opacity: 0,
-              rotate: 8,
-              duration: 0.45,
-              delay: 1.5,
-              ease: 'power4.in',
-              scrollTrigger: enter,
-            })
-          }
         }
 
         /* Scene 03: scan sweep, callout connector lines, stock bars */
@@ -561,6 +588,8 @@ export function Services() {
           })
         }
       })
+
+      return () => videoObserver.disconnect()
     },
     { scope: sectionRef }
   )
@@ -578,11 +607,15 @@ export function Services() {
         </p>
       </div>
 
-      {/* Stacked scroll-swap scenes */}
+      {/* Stacked scroll-swap scenes — spacers keep each scene pinned
+          for extra scroll distance before the next one covers it */}
       <div className="relative">
         <ShowroomScene />
+        <div aria-hidden="true" className="h-[80svh]" />
         <PortScene />
+        <div aria-hidden="true" className="h-[80svh]" />
         <PartsScene />
+        <div aria-hidden="true" className="h-[60svh]" />
       </div>
     </section>
   )

@@ -9,7 +9,7 @@ const navLinks = [
   { label: 'Home', href: '#', active: true },
   { label: 'Fleet', href: '#fleet', active: false },
   { label: 'Importing', href: '#importing', active: false },
-  { label: 'Contact', href: '#contact', active: false },
+  { label: 'Services', href: '#parts', active: false },
 ]
 
 export function SiteHeader() {
