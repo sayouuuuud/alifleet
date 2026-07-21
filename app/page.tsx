@@ -7,6 +7,7 @@ import { FleetShowcase } from '@/components/fleet-showcase'
 import { Services } from '@/components/services'
 import { CtaSection } from '@/components/cta-section'
 import { SiteFooter } from '@/components/site-footer'
+import { ChatbotWidget } from '@/components/chatbot-widget'
 
 export default function Page() {
   return (
@@ -22,6 +23,7 @@ export default function Page() {
         <CtaSection />
       </main>
       <SiteFooter />
+      <ChatbotWidget />
     </>
   )
 }
