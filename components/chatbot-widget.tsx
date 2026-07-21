@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { useChat } from '@ai-sdk/react'
 import { DefaultChatTransport } from 'ai'
-import { MessageCircle, X, Send, RotateCcw, ChevronDown } from 'lucide-react'
+import { Bot, X, Send, RotateCcw, ChevronDown } from 'lucide-react'
 
 export function ChatbotWidget() {
   const [open, setOpen] = useState(false)
@@ -60,12 +60,12 @@ export function ChatbotWidget() {
         role="dialog"
         aria-label="ALI FLEET chat assistant"
         aria-hidden={!open}
-        className={`fixed bottom-24 right-4 z-50 flex w-[calc(100vw-2rem)] max-w-[22rem] flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-foreground/10 transition-all duration-300 sm:right-6 ${
+        className={`fixed right-4 z-50 flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl shadow-foreground/10 transition-all duration-300 sm:right-6 sm:bottom-24 sm:w-[22rem] ${
           open
             ? 'pointer-events-auto translate-y-0 opacity-100'
             : 'pointer-events-none translate-y-4 opacity-0'
-        }`}
-        style={{ maxHeight: 'min(540px, calc(100dvh - 7rem))' }}
+        } bottom-[4.5rem] left-4 sm:left-auto`}
+        style={{ maxHeight: 'min(520px, calc(100dvh - 5.5rem))' }}
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border bg-primary px-4 py-3">
@@ -107,7 +107,7 @@ export function ChatbotWidget() {
           {!hasMessages && (
             <div className="flex flex-col items-center gap-3 py-6 text-center">
               <div className="flex size-14 items-center justify-center rounded-2xl bg-primary/8">
-                <MessageCircle className="size-7 text-primary" />
+                <Bot className="size-7 text-primary" />
               </div>
               <div>
                 <p className="font-semibold text-foreground text-sm">How can we help?</p>
@@ -234,7 +234,7 @@ export function ChatbotWidget() {
           className={`absolute transition-all duration-200 ${open ? '-rotate-90 opacity-0 scale-75' : 'rotate-0 opacity-100 scale-100'}`}
           aria-hidden="true"
         >
-          <MessageCircle className="size-6" />
+          <Bot className="size-6" />
         </span>
       </button>
     </>
