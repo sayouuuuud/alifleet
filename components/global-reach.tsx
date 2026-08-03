@@ -296,7 +296,7 @@ export function GlobalReach() {
                       onMouseLeave={releaseFocus}
                       onFocus={() => focusCity(feature.lat, feature.lng, feature.city)}
                       onBlur={releaseFocus}
-                      className={`group flex w-full items-start gap-4 px-2 py-5 text-left transition-colors duration-300 ${
+                      className={`group flex w-full items-start gap-4 px-2 py-5 text-start transition-colors duration-300 ${
                         isActive ? 'bg-secondary' : 'bg-transparent'
                       }`}
                       aria-label={`${feature.title} — focus globe on ${feature.city}`}
@@ -310,15 +310,17 @@ export function GlobalReach() {
                       >
                         <feature.icon className="size-5" aria-hidden="true" />
                       </span>
-                      <span className="flex flex-col gap-1">
+                      <span className="flex min-w-0 flex-1 flex-col gap-1 text-start">
                         <span
                           className={`font-medium transition-transform duration-300 ${
-                            isActive ? 'translate-x-1 text-accent' : 'text-foreground'
+                            isActive
+                              ? 'ltr:translate-x-1 rtl:-translate-x-1 text-accent'
+                              : 'text-foreground'
                           }`}
                         >
                           {feature.title}
                         </span>
-                        <span className="text-sm leading-relaxed text-muted-foreground">
+                        <span className="text-start text-sm leading-relaxed text-muted-foreground">
                           {feature.text}
                         </span>
                       </span>
