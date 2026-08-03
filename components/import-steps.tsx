@@ -16,10 +16,10 @@ export function ImportSteps() {
   return (
     <section className="border-y border-border bg-secondary/40">
       <div className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
-        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
+        <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent text-start">
           {t.import.stepsEyebrow}
         </p>
-        <h2 className="mt-3 max-w-2xl text-balance font-serif text-3xl leading-tight tracking-tight text-foreground md:text-4xl">
+        <h2 className="mt-3 max-w-2xl text-balance font-serif text-3xl leading-tight tracking-tight text-foreground md:text-4xl text-start">
           {t.import.stepsTitle}
         </h2>
 

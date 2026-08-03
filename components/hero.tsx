@@ -171,7 +171,7 @@ export function Hero() {
             {/* Thumbnail carousel card — floating over the image's left edge like the reference */}
             <div
               data-hero-card
-              className="relative -mt-14 w-fit max-w-full md:absolute md:bottom-10 md:-left-16 md:mt-0 lg:-left-24"
+              className="relative -mt-14 w-fit max-w-full md:absolute md:bottom-10 md:mt-0 md:ltr:-left-16 md:rtl:-right-16 lg:ltr:-left-24 lg:rtl:-right-24"
             >
               <div className="rounded-3xl bg-card p-3 shadow-2xl">
                 <div className="flex gap-3">
@@ -208,7 +208,7 @@ export function Hero() {
                   })}
                 </div>
                 <div className="mt-3 flex items-center justify-between px-1 pb-1">
-                  <p className="text-sm text-muted-foreground">
+                  <p dir="ltr" className="text-sm text-muted-foreground">
                     <span className="text-xl font-semibold text-foreground">
                       {active + 1}
                     </span>

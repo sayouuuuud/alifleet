@@ -27,7 +27,7 @@ function CrosshairCorners() {
 
 function ChapterProgress({ active }: { active: number }) {
   return (
-    <div data-reveal className="absolute bottom-8 right-6 hidden items-center gap-3 md:flex">
+    <div data-reveal className="absolute bottom-8 end-6 hidden items-center gap-3 md:flex">
       <div className="flex gap-1.5">
         {[0, 1, 2].map((d) => (
           <span
@@ -77,7 +77,7 @@ function SceneShell({
       </div>
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/15"
+        className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/45 to-black/15 rtl:bg-gradient-to-l"
       />
       <div
         aria-hidden="true"
@@ -131,8 +131,8 @@ function ShowroomScene() {
       video="/videos/scene-showroom.mp4"
       alt={s.scene1Kicker}
     >
-      <div className="grid items-end gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-center">
-        <div className="max-w-xl">
+      <div className="grid items-end gap-10 md:grid-cols-[1.2fr_0.8fr] md:items-center rtl:md:grid-cols-[0.8fr_1.2fr]">
+        <div className="max-w-xl rtl:order-2">
           <SceneKicker index="01" kicker={s.scene1Kicker} />
           <h3 data-title className="mt-6 overflow-hidden text-balance text-4xl font-semibold tracking-tight text-white md:text-6xl">
             <span data-title-line className="block">{s.scene1Title1}</span>
@@ -161,7 +161,7 @@ function ShowroomScene() {
         {/* Spec sheet card */}
         <div
           data-spec-card
-          className="hidden rounded-xl border border-white/15 bg-black/40 p-6 backdrop-blur-md md:block"
+          className="hidden rounded-xl border border-white/15 bg-black/40 p-6 backdrop-blur-md md:block rtl:order-1"
         >
           <p className="flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
             <span>{s.specSheetTitle}</span>
@@ -263,7 +263,7 @@ function PortScene() {
                   {!isLast && (
                     <span
                       aria-hidden="true"
-                      className={`absolute left-[10px] top-6 h-full w-px ${
+                      className={`absolute start-[10px] top-6 h-full w-px ${
                         isDone ? 'bg-accent/60' : 'bg-white/15'
                       }`}
                     />
@@ -320,9 +320,9 @@ function PartsScene() {
   const s = t.home.services
 
   const partCallouts = [
-    { label: s.callout1Label, code: 'PN 074-145-701',  top: '22%', right: '28%' },
-    { label: s.callout2Label, code: 'PN 651-090-0052', top: '44%', right: '10%' },
-    { label: s.callout3Label, code: 'PN 910-421-002',  top: '64%', right: '32%' },
+    { label: s.callout1Label, code: 'PN 074-145-701',  top: '22%', insetInlineEnd: '28%' },
+    { label: s.callout2Label, code: 'PN 651-090-0052', top: '44%', insetInlineEnd: '10%' },
+    { label: s.callout3Label, code: 'PN 910-421-002',  top: '64%', insetInlineEnd: '32%' },
   ]
 
   const partsStock = [
@@ -342,14 +342,14 @@ function PartsScene() {
       <div
         data-scanline
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-0 left-0 z-0 w-px bg-gradient-to-b from-transparent via-accent/80 to-transparent"
+        className="pointer-events-none absolute inset-y-0 start-0 z-0 w-px bg-gradient-to-b from-transparent via-accent/80 to-transparent"
         style={{ boxShadow: '0 0 24px 2px oklch(0.55 0.2 250 / 0.5)' }}
       />
 
       {/* HUD callouts over the engine */}
       <div className="absolute inset-0 hidden lg:block" aria-hidden="true">
         {partCallouts.map((c) => (
-          <div key={c.label} data-callout className="absolute" style={{ top: c.top, right: c.right }}>
+          <div key={c.label} data-callout className="absolute" style={{ top: c.top, insetInlineEnd: c.insetInlineEnd }}>
             <div className="flex items-center gap-3">
               <span className="relative flex h-4 w-4 items-center justify-center">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/50" />
@@ -418,6 +418,7 @@ export function Services() {
 
   useGSAP(
     () => {
+      const isRtl = document.documentElement.dir === 'rtl'
       const panels = gsap.utils.toArray<HTMLElement>('[data-scene]')
 
       /* Play each background video whenever its scene is actually visible. */
@@ -503,14 +504,14 @@ export function Services() {
         const specCard = panel.querySelector('[data-spec-card]')
         if (specCard) {
           gsap.from(specCard, {
-            x: 60,
+            x: isRtl ? -60 : 60,
             opacity: 0,
             duration: 1,
             ease: 'power3.out',
             scrollTrigger: enter,
           })
           gsap.from(panel.querySelectorAll('[data-spec-row]'), {
-            x: 24,
+            x: isRtl ? -24 : 24,
             opacity: 0,
             stagger: 0.08,
             duration: 0.6,
@@ -520,11 +521,11 @@ export function Services() {
           })
         }
 
-        /* Scene 02: timeline stops slide in and stack top to bottom */
+        /* Scene 02: timeline stops slide in */
         const routeStopEls = panel.querySelectorAll('[data-route-stop]')
         if (routeStopEls.length) {
           gsap.from(routeStopEls, {
-            x: -24,
+            x: isRtl ? 24 : -24,
             opacity: 0,
             stagger: 0.1,
             duration: 0.6,

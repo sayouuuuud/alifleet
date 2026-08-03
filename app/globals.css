@@ -131,8 +131,20 @@ html[lang='he'] {
      serif display face has no RTL coverage — the html[lang] blocks above
      already remap the family, so here we only cancel the italic styling
      that Fraunces used for accented words. */
+  body {
+    overflow-x: hidden;
+  }
   [dir='rtl'] body {
     letter-spacing: 0;
+  }
+  /* Headings should align to the reading start in RTL */
+  [dir='rtl'] h1,
+  [dir='rtl'] h2,
+  [dir='rtl'] h3,
+  [dir='rtl'] h4,
+  [dir='rtl'] h5,
+  [dir='rtl'] h6 {
+    text-align: start;
   }
   [dir='rtl'] .font-serif,
   [dir='rtl'] .italic,

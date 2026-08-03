@@ -75,13 +75,12 @@ export function StatsStrip() {
             {stats.map((stat) => (
               <div key={stat.label} data-stat-card className="flex flex-col gap-2">
                 <p
-                  dir="ltr"
-                  className="text-5xl font-semibold tracking-tight text-foreground md:text-6xl rtl:text-end"
+                  className="text-5xl font-semibold tracking-tight text-foreground md:text-6xl"
                 >
-                  <span data-stat-number data-target={stat.value}>
-                    0
+                  <span dir="ltr" className="inline-flex items-baseline">
+                    <span data-stat-number data-target={stat.value}>0</span>
+                    <span className="text-accent">{stat.suffix}</span>
                   </span>
-                  <span className="text-accent">{stat.suffix}</span>
                 </p>
                 <p className="text-sm text-muted-foreground">{stat.label}</p>
               </div>
