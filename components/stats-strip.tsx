@@ -4,18 +4,20 @@ import { useRef } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const stats = [
-  { value: 850, suffix: '+', label: 'Vehicles delivered' },
-  { value: 40, suffix: '+', label: 'Countries served' },
-  { value: 15, suffix: '', label: 'Years of experience' },
-  { value: 98, suffix: '%', label: 'Client satisfaction' },
-]
-
 export function StatsStrip() {
   const sectionRef = useRef<HTMLElement>(null)
+  const { t } = useLanguage()
+
+  const stats = [
+    { value: 850, suffix: '+', label: t.home.stats.vehicles },
+    { value: 40, suffix: '+', label: t.home.stats.countries },
+    { value: 15, suffix: '', label: t.home.stats.years },
+    { value: 98, suffix: '%', label: t.home.stats.satisfaction },
+  ]
 
   useGSAP(
     () => {
@@ -72,7 +74,10 @@ export function StatsStrip() {
           <div className="relative grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4">
             {stats.map((stat) => (
               <div key={stat.label} data-stat-card className="flex flex-col gap-2">
-                <p className="text-5xl font-semibold tracking-tight text-foreground md:text-6xl">
+                <p
+                  dir="ltr"
+                  className="text-5xl font-semibold tracking-tight text-foreground md:text-6xl rtl:text-end"
+                >
                   <span data-stat-number data-target={stat.value}>
                     0
                   </span>

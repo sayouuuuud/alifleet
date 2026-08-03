@@ -70,6 +70,7 @@ export const he: Dictionary = {
       vehicles: 'רכבים נמסרו',
       countries: 'מדינות שירות',
       parts: 'חלפים במלאי',
+      satisfaction: 'שביעות רצון לקוחות',
     },
     fleet: {
       eyebrow: 'הצי',

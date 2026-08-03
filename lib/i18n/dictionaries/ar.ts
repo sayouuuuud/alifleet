@@ -70,6 +70,7 @@ export const ar: Dictionary = {
       vehicles: 'مركبة تم تسليمها',
       countries: 'دولة نخدمها',
       parts: 'قطعة غيار في المخزون',
+      satisfaction: 'رضا العملاء',
     },
     fleet: {
       eyebrow: 'الأسطول',

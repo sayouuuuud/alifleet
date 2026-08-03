@@ -68,6 +68,7 @@ export const en = {
       vehicles: 'Vehicles delivered',
       countries: 'Countries served',
       parts: 'Parts in stock',
+      satisfaction: 'Client satisfaction',
     },
     fleet: {
       eyebrow: 'The Fleet',
@@ -273,4 +274,15 @@ export const en = {
   },
 } as const
 
-export type Dictionary = typeof en
+/**
+ * `en` is declared `as const` so autocomplete lists every key, but the other
+ * dictionaries must be allowed to hold *different* strings. Widening every
+ * leaf back to `string` keeps the shape checked without pinning the values.
+ */
+type Widen<T> = T extends string
+  ? string
+  : T extends readonly (infer U)[]
+    ? Widen<U>[]
+    : { -readonly [K in keyof T]: Widen<T[K]> }
+
+export type Dictionary = Widen<typeof en>
