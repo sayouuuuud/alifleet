@@ -4,7 +4,7 @@ import {
   Geist,
   Geist_Mono,
   Fraunces,
-  Noto_Sans_Arabic,
+  Cairo,
   Noto_Sans_Hebrew,
 } from 'next/font/google'
 import { cookies } from 'next/headers'
@@ -31,9 +31,9 @@ const fraunces = Fraunces({
   style: ['normal', 'italic'],
   variable: '--font-fraunces',
 })
-const notoArabic = Noto_Sans_Arabic({
-  subsets: ['arabic'],
-  variable: '--font-noto-arabic',
+const cairo = Cairo({
+  subsets: ['arabic', 'latin'],
+  variable: '--font-cairo',
 })
 const notoHebrew = Noto_Sans_Hebrew({
   subsets: ['hebrew'],
@@ -66,7 +66,7 @@ export default async function RootLayout({
     <html
       lang={meta.htmlLang}
       dir={meta.dir}
-      className={`bg-background ${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${notoArabic.variable} ${notoHebrew.variable}`}
+      className={`bg-background ${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${cairo.variable} ${notoHebrew.variable}`}
     >
       <body className="antialiased">
         <LanguageProvider initialLocale={locale}>

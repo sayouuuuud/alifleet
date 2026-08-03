@@ -7,43 +7,9 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Globe2, ShieldCheck, Truck, Plane, Ship } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 gsap.registerPlugin(ScrollTrigger)
-
-// Importing Services data — each feature spins the globe to a representative market
-const IMPORT_FEATURES: {
-  icon: typeof Globe2
-  title: string
-  text: string
-  city: string
-  lat: number
-  lng: number
-}[] = [
-  {
-    icon: Globe2,
-    title: 'Global Sourcing',
-    text: 'Direct access to markets in Europe, Asia, and the Americas for trucks and luxury vehicles.',
-    city: 'London',
-    lat: 51.5074,
-    lng: -0.1278,
-  },
-  {
-    icon: ShieldCheck,
-    title: 'Full Compliance',
-    text: 'Customs clearance, documentation, and homologation handled end-to-end.',
-    city: 'Beijing',
-    lat: 39.9042,
-    lng: 116.4074,
-  },
-  {
-    icon: Truck,
-    title: 'Door-to-Door Delivery',
-    text: 'Secure international shipping with real-time tracking, right to your location.',
-    city: 'New York',
-    lat: 40.7128,
-    lng: -74.006,
-  },
-]
 
 function locationToAngles(lat: number, lng: number): [number, number] {
   return [Math.PI - ((lng * Math.PI) / 180 - Math.PI / 2), (lat * Math.PI) / 180]
@@ -53,6 +19,34 @@ export function GlobalReach() {
   const sectionRef = useRef<HTMLElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapperRef = useRef<HTMLDivElement>(null)
+  const { t } = useLanguage()
+
+  const IMPORT_FEATURES = [
+    {
+      icon: Globe2,
+      title: t.import.step1Title,
+      text: t.import.step1Desc,
+      city: 'London',
+      lat: 51.5074,
+      lng: -0.1278,
+    },
+    {
+      icon: ShieldCheck,
+      title: t.import.step3Title,
+      text: t.import.step3Desc,
+      city: 'Beijing',
+      lat: 39.9042,
+      lng: 116.4074,
+    },
+    {
+      icon: Truck,
+      title: t.import.step4Title,
+      text: t.import.step4Desc,
+      city: 'New York',
+      lat: 40.7128,
+      lng: -74.006,
+    },
+  ]
 
   // Start facing Cairo / Europe so land is visible immediately
   const phiRef = useRef(locationToAngles(30.0444, 31.2357)[0])
@@ -278,18 +272,16 @@ export function GlobalReach() {
                 className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-accent"
               >
                 <Globe2 className="h-4 w-4" aria-hidden="true" />
-                Importing Services
+                {t.import.eyebrow}
               </p>
               <h2
                 data-globe-copy
                 className="text-balance text-3xl font-semibold tracking-tight text-foreground md:text-5xl"
               >
-                The world&apos;s finest, <em className="font-serif italic text-accent">imported</em> for you
+                {t.import.title} <em className="font-serif italic text-accent">{t.import.titleEm}</em>
               </h2>
               <p data-globe-copy className="max-w-md text-pretty leading-relaxed text-muted-foreground">
-                We import trucks and luxury vehicles from every major market. Our
-                global network keeps your vehicle moving — hover a service to spin
-                the globe to its market.
+                {t.import.lead}
               </p>
             </div>
 
@@ -304,7 +296,7 @@ export function GlobalReach() {
                       onMouseLeave={releaseFocus}
                       onFocus={() => focusCity(feature.lat, feature.lng, feature.city)}
                       onBlur={releaseFocus}
-                      className={`group flex w-full items-start gap-4 px-2 py-5 text-left transition-colors duration-300 ${
+                      className={`group flex w-full items-start gap-4 px-2 py-5 text-start transition-colors duration-300 ${
                         isActive ? 'bg-secondary' : 'bg-transparent'
                       }`}
                       aria-label={`${feature.title} — focus globe on ${feature.city}`}
@@ -318,15 +310,17 @@ export function GlobalReach() {
                       >
                         <feature.icon className="size-5" aria-hidden="true" />
                       </span>
-                      <span className="flex flex-col gap-1">
+                      <span className="flex min-w-0 flex-1 flex-col gap-1 text-start">
                         <span
                           className={`font-medium transition-transform duration-300 ${
-                            isActive ? 'translate-x-1 text-accent' : 'text-foreground'
+                            isActive
+                              ? 'ltr:translate-x-1 rtl:-translate-x-1 text-accent'
+                              : 'text-foreground'
                           }`}
                         >
                           {feature.title}
                         </span>
-                        <span className="text-sm leading-relaxed text-muted-foreground">
+                        <span className="text-start text-sm leading-relaxed text-muted-foreground">
                           {feature.text}
                         </span>
                       </span>
@@ -421,14 +415,14 @@ export function GlobalReach() {
                 className="absolute -left-2 top-[18%] flex items-center gap-2 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur-md md:-left-6"
               >
                 <span className="size-2 rounded-full bg-accent" aria-hidden="true" />
-                40+ Countries
+                {t.home.globeCountries}
               </div>
               <div
                 data-globe-chip
                 className="absolute -right-2 top-[62%] flex items-center gap-2 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur-md md:-right-6"
               >
                 <span className="size-2 animate-pulse rounded-full bg-accent" aria-hidden="true" />
-                Live Tracking
+                {t.home.globeTracking}
               </div>
 
               {/* Active city floating label */}

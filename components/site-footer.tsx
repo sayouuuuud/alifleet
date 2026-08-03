@@ -33,7 +33,7 @@ export function SiteFooter() {
       links: [
         { label: t.footer.companyLinks.about, href: '/#fleet' },
         { label: t.footer.companyLinks.careers, href: '/contact' },
-        { label: t.footer.companyLinks.news, href: '/#fleet' },
+        { label: t.footer.companyLinks.news, href: '/blog' },
         { label: t.footer.companyLinks.contact, href: '/contact' },
       ],
     },
