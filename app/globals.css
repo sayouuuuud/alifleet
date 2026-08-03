@@ -83,8 +83,10 @@
 }
 
 @theme {
-  --font-sans: var(--font-geist-sans), 'Geist Fallback', sans-serif;
-  --font-serif: var(--font-fraunces), 'Fraunces Fallback', serif;
+  --font-sans: var(--font-geist-sans), var(--font-noto-arabic),
+    var(--font-noto-hebrew), 'Geist Fallback', sans-serif;
+  --font-serif: var(--font-fraunces), var(--font-noto-arabic),
+    var(--font-noto-hebrew), 'Fraunces Fallback', serif;
   --font-mono: var(--font-geist-mono), 'Geist Mono Fallback', monospace;
 }
 
@@ -110,5 +112,19 @@
       );
     background-size: 26px 26px;
     background-attachment: fixed;
+  }
+  /* Arabic and Hebrew read better with a slightly looser rhythm, and the
+     serif display face has no RTL coverage, so headings fall back to the
+     Noto faces there. */
+  [dir='rtl'] body {
+    letter-spacing: 0;
+  }
+  [dir='rtl'] .font-serif {
+    font-family: var(--font-noto-arabic), var(--font-noto-hebrew), serif;
+    font-style: normal;
+  }
+  /* Flip decorative arrow glyphs that are baked into content. */
+  [dir='rtl'] [data-flip-rtl] {
+    transform: scaleX(-1);
   }
 }

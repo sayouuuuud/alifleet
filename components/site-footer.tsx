@@ -1,21 +1,44 @@
-import Image from 'next/image'
+'use client'
 
-const columns = [
-  {
-    heading: 'Fleet',
-    links: ['Heavy-Duty Trucks', 'Executive Vans', 'Luxury Vehicles', 'Used Inventory'],
-  },
-  {
-    heading: 'Services',
-    links: ['Vehicle Importing', 'Spare Parts', 'Fleet Consulting', 'After-Sales Support'],
-  },
-  {
-    heading: 'Company',
-    links: ['About Us', 'Careers', 'News', 'Contact'],
-  },
-]
+import Image from 'next/image'
+import Link from 'next/link'
+import { Mail, MapPin, Phone } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n/language-context'
+import { siteConfig } from '@/lib/site-config'
 
 export function SiteFooter() {
+  const { t } = useLanguage()
+
+  const columns = [
+    {
+      heading: t.footer.fleet,
+      links: [
+        { label: t.footer.fleetLinks.trucks, href: '/import?type=truck' },
+        { label: t.footer.fleetLinks.vans, href: '/import?type=van' },
+        { label: t.footer.fleetLinks.luxury, href: '/import?type=luxury' },
+        { label: t.footer.fleetLinks.used, href: '/import' },
+      ],
+    },
+    {
+      heading: t.footer.services,
+      links: [
+        { label: t.footer.servicesLinks.import, href: '/import' },
+        { label: t.footer.servicesLinks.parts, href: '/products' },
+        { label: t.footer.servicesLinks.consulting, href: '/contact' },
+        { label: t.footer.servicesLinks.support, href: '/contact' },
+      ],
+    },
+    {
+      heading: t.footer.company,
+      links: [
+        { label: t.footer.companyLinks.about, href: '/#fleet' },
+        { label: t.footer.companyLinks.careers, href: '/contact' },
+        { label: t.footer.companyLinks.news, href: '/#fleet' },
+        { label: t.footer.companyLinks.contact, href: '/contact' },
+      ],
+    },
+  ]
+
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 py-14 md:px-8 md:py-20">
@@ -29,9 +52,32 @@ export function SiteFooter() {
               className="h-11 w-auto"
             />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted-foreground">
-              Luxurious commercial vehicles, global importing, and genuine
-              spare parts — delivered with excellence worldwide.
+              {t.footer.tagline}
             </p>
+            <ul className="mt-6 flex flex-col gap-3 text-sm text-muted-foreground">
+              <li>
+                <a
+                  href={siteConfig.phoneHref}
+                  className="flex items-center gap-2.5 transition-colors hover:text-primary"
+                >
+                  <Phone className="size-4 shrink-0 text-accent" aria-hidden="true" />
+                  <span dir="ltr">{siteConfig.phone}</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`mailto:${siteConfig.email}`}
+                  className="flex items-center gap-2.5 transition-colors hover:text-primary"
+                >
+                  <Mail className="size-4 shrink-0 text-accent" aria-hidden="true" />
+                  <span dir="ltr">{siteConfig.email}</span>
+                </a>
+              </li>
+              <li className="flex items-start gap-2.5">
+                <MapPin className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />
+                <span>{siteConfig.addressLines.join(', ')}</span>
+              </li>
+            </ul>
           </div>
 
           {columns.map((col) => (
@@ -41,13 +87,13 @@ export function SiteFooter() {
               </h3>
               <ul className="flex flex-col gap-2.5">
                 {col.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
+                  <li key={link.label}>
+                    <Link
+                      href={link.href}
                       className="text-sm text-muted-foreground transition-colors hover:text-primary"
                     >
-                      {link}
-                    </a>
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -56,8 +102,10 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-xs text-muted-foreground md:flex-row">
-          <p>© {new Date().getFullYear()} ALI FLEET. All rights reserved.</p>
-          <p>Luxury Fleet. Global Reach.</p>
+          <p>
+            © {new Date().getFullYear()} {siteConfig.name}. {t.footer.rights}
+          </p>
+          <p>{t.footer.slogan}</p>
         </div>
       </div>
     </footer>
