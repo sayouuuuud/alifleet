@@ -2,7 +2,6 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { BlogHero } from '@/components/blog-hero'
 import { BlogBrowser } from '@/components/blog-browser'
-import { ChatbotWidget } from '@/components/chatbot-widget'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -24,7 +23,6 @@ export default function BlogPage() {
         </section>
       </main>
       <SiteFooter />
-      <ChatbotWidget />
     </>
   )
 }
