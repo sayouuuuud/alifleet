@@ -119,6 +119,11 @@
   [dir='rtl'] body {
     letter-spacing: 0;
   }
+  /* Force Cairo as the primary font for all Arabic content */
+  :lang(ar),
+  :lang(ar) * {
+    font-family: var(--font-cairo), sans-serif !important;
+  }
   [dir='rtl'] .font-serif {
     font-family: var(--font-cairo), var(--font-noto-hebrew), serif;
     font-style: normal;
