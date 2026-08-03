@@ -137,15 +137,6 @@ html[lang='he'] {
   [dir='rtl'] body {
     letter-spacing: 0;
   }
-  /* Headings should align to the reading start in RTL */
-  [dir='rtl'] h1,
-  [dir='rtl'] h2,
-  [dir='rtl'] h3,
-  [dir='rtl'] h4,
-  [dir='rtl'] h5,
-  [dir='rtl'] h6 {
-    text-align: start;
-  }
   [dir='rtl'] .font-serif,
   [dir='rtl'] .italic,
   [dir='rtl'] em {
@@ -154,5 +145,20 @@ html[lang='he'] {
   /* Flip decorative arrow glyphs that are baked into content. */
   [dir='rtl'] [data-flip-rtl] {
     transform: scaleX(-1);
+  }
+}
+
+/* Utilities layer wins over component utilities — headings and paragraphs
+   must align to the reading start in RTL regardless of text-balance /
+   text-pretty / text-foreground classes applied inline. */
+@layer utilities {
+  [dir='rtl'] h1,
+  [dir='rtl'] h2,
+  [dir='rtl'] h3,
+  [dir='rtl'] h4,
+  [dir='rtl'] h5,
+  [dir='rtl'] h6,
+  [dir='rtl'] p {
+    text-align: start;
   }
 }
