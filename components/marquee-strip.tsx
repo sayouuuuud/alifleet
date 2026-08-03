@@ -3,17 +3,19 @@
 import { useRef } from 'react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
-
-const items = [
-  'New & Used Vehicles',
-  'Global Importing',
-  'Genuine Spare Parts',
-  'Luxury Commercial Fleet',
-  'Worldwide Delivery',
-]
+import { useLanguage } from '@/lib/i18n/language-context'
 
 export function MarqueeStrip() {
   const wrapRef = useRef<HTMLDivElement>(null)
+  const { t } = useLanguage()
+
+  const items = [
+    t.home.fleet.truckTitle,
+    t.footer.servicesLinks.import,
+    t.products.trustGenuine,
+    t.home.fleet.luxuryTitle,
+    t.footer.servicesLinks.parts,
+  ]
 
   useGSAP(
     () => {

@@ -11,6 +11,7 @@ export const ar: Dictionary = {
     closeMenu: 'إغلاق القائمة',
     cart: 'السلة',
     language: 'اللغة',
+    blog: 'المدونة',
   },
   common: {
     addToCart: 'أضف للسلة',
@@ -91,6 +92,8 @@ export const ar: Dictionary = {
       luxuryDesc:
         'سيارات ودفع رباعي فاخرة مختارة يدويًا من الأسواق العالمية، مستوردة بكامل الأوراق الرسمية.',
     },
+    globeCountries: '40+ دولة',
+    globeTracking: 'تتبع مباشر',
     cta: {
       eyebrow: 'ابدأ الآن',
       title: 'جاهز تنقل عملك لمستوى أعلى؟',
@@ -245,6 +248,30 @@ export const ar: Dictionary = {
     successLead:
       'سيتم فتح برنامج البريد لديك بالرسالة. يمكنك أيضًا التواصل معنا عبر واتساب لرد أسرع.',
     mapAlt: 'خريطة توضح موقع مقر علي فليت',
+  },
+  blog: {
+    eyebrow: 'المدونة',
+    title: 'رؤى من',
+    titleEm: 'الأسطول',
+    lead: 'أخبار الصناعة، نصائح الاستيراد، أدلة إدارة الأساطيل وقصص من وراء الكواليس من فريق علي فليت.',
+    readMore: 'اقرأ المقال',
+    minRead: 'دقيقة للقراءة',
+    allPosts: 'جميع المقالات',
+    categories: {
+      news: 'أخبار',
+      import: 'استيراد',
+      fleet: 'الأسطول',
+      parts: 'قطع الغيار',
+      tips: 'نصائح',
+    },
+    featured: 'مميز',
+    latestPosts: 'أحدث المقالات',
+    backToBlog: 'العودة إلى المدونة',
+    shareArticle: 'شارك هذا المقال',
+    relatedPosts: 'مقالات ذات صلة',
+    publishedOn: 'نُشر في',
+    by: 'بقلم',
+    notFound: 'لم يتم العثور على هذا المقال.',
   },
   footer: {
     tagline:

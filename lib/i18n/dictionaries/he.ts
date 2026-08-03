@@ -11,6 +11,7 @@ export const he: Dictionary = {
     closeMenu: 'סגירת תפריט',
     cart: 'עגלה',
     language: 'שפה',
+    blog: 'בלוג',
   },
   common: {
     addToCart: 'הוסף לעגלה',
@@ -91,6 +92,8 @@ export const he: Dictionary = {
       luxuryDesc:
         'רכבי שטח ויוקרה שנבחרו אישית משווקים גלובליים, מיובאים עם תיעוד מלא.',
     },
+    globeCountries: '40+ מדינות',
+    globeTracking: 'מעקב חי',
     cta: {
       eyebrow: 'בואו נתחיל',
       title: 'מוכנים לקדם את העסק שלכם?',
@@ -245,6 +248,30 @@ export const he: Dictionary = {
     successLead:
       'תוכנת הדואר שלכם נפתחת עם ההודעה. אפשר גם לפנות אלינו בוואטסאפ לתשובה מהירה.',
     mapAlt: 'מפה המציגה את מטה ALI FLEET',
+  },
+  blog: {
+    eyebrow: 'בלוג',
+    title: 'תובנות מ',
+    titleEm: 'הצי',
+    lead: 'חדשות מהתעשייה, טיפים לייבוא, מדריכי ניהול צי וסיפורים מאחורי הקלעים מצוות ALI FLEET.',
+    readMore: 'קראו את המאמר',
+    minRead: 'דקות קריאה',
+    allPosts: 'כל הפוסטים',
+    categories: {
+      news: 'חדשות',
+      import: 'ייבוא',
+      fleet: 'צי',
+      parts: 'חלפים',
+      tips: 'טיפים',
+    },
+    featured: 'מומלץ',
+    latestPosts: 'מאמרים אחרונים',
+    backToBlog: 'חזרה לבלוג',
+    shareArticle: 'שתפו את המאמר',
+    relatedPosts: 'מאמרים קשורים',
+    publishedOn: 'פורסם ב',
+    by: 'מאת',
+    notFound: 'מאמר זה לא נמצא.',
   },
   footer: {
     tagline:

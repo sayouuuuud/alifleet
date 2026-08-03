@@ -9,6 +9,7 @@ export const en = {
     closeMenu: 'Close menu',
     cart: 'Cart',
     language: 'Language',
+    blog: 'Blog',
   },
   common: {
     addToCart: 'Add to cart',
@@ -89,6 +90,8 @@ export const en = {
       luxuryDesc:
         'Hand-selected luxury SUVs and vehicles sourced from global markets, imported with full documentation.',
     },
+    globeCountries: '40+ Countries',
+    globeTracking: 'Live Tracking',
     cta: {
       eyebrow: 'Get started',
       title: 'Ready to move your business forward?',
@@ -244,6 +247,30 @@ export const en = {
     successTitle: 'Message ready',
     successLead: 'Your mail client is opening with the message. You can also reach us on WhatsApp for a faster reply.',
     mapAlt: 'Map showing the ALI FLEET headquarters location',
+  },
+  blog: {
+    eyebrow: 'Blog',
+    title: 'Insights from',
+    titleEm: 'the fleet',
+    lead: 'Industry news, import tips, fleet management guides and behind-the-scenes stories from the ALI FLEET team.',
+    readMore: 'Read article',
+    minRead: 'min read',
+    allPosts: 'All posts',
+    categories: {
+      news: 'News',
+      import: 'Import',
+      fleet: 'Fleet',
+      parts: 'Spare Parts',
+      tips: 'Tips',
+    },
+    featured: 'Featured',
+    latestPosts: 'Latest articles',
+    backToBlog: 'Back to blog',
+    shareArticle: 'Share this article',
+    relatedPosts: 'Related articles',
+    publishedOn: 'Published on',
+    by: 'By',
+    notFound: 'This article could not be found.',
   },
   footer: {
     tagline:

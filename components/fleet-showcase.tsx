@@ -6,38 +6,37 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowUpRight } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const vehicles = [
-  {
-    title: 'Heavy-Duty Trucks',
-    tag: 'New & Used',
-    description:
-      "Premium tractor units and rigid trucks from the world's leading manufacturers — inspected, certified, and road-ready.",
-    image: '/images/truck-light.png',
-    alt: 'Modern blue heavy-duty commercial truck photographed outdoors in daylight',
-  },
-  {
-    title: 'Executive Vans',
-    tag: 'Luxury Line',
-    description:
-      'First-class commercial vans with refined interiors — built for VIP transport, executive shuttles, and premium logistics.',
-    image: '/images/van-light.png',
-    alt: 'Luxury silver executive van in a bright modern showroom',
-  },
-  {
-    title: 'Luxury Vehicles',
-    tag: 'Imported',
-    description:
-      'Hand-selected luxury SUVs and vehicles sourced from global markets, imported with full documentation.',
-    image: '/images/suv-light.png',
-    alt: 'Luxury navy blue SUV in a bright white studio',
-  },
-]
-
 export function FleetShowcase() {
   const sectionRef = useRef<HTMLElement>(null)
+  const { t } = useLanguage()
+
+  const vehicles = [
+    {
+      title: t.home.fleet.truckTitle,
+      tag: t.home.fleet.truckTag,
+      description: t.home.fleet.truckDesc,
+      image: '/images/truck-light.png',
+      alt: t.home.fleet.truckTitle,
+    },
+    {
+      title: t.home.fleet.vanTitle,
+      tag: t.home.fleet.vanTag,
+      description: t.home.fleet.vanDesc,
+      image: '/images/van-light.png',
+      alt: t.home.fleet.vanTitle,
+    },
+    {
+      title: t.home.fleet.luxuryTitle,
+      tag: t.home.fleet.luxuryTag,
+      description: t.home.fleet.luxuryDesc,
+      image: '/images/suv-light.png',
+      alt: t.home.fleet.luxuryTitle,
+    },
+  ]
 
   useGSAP(
     () => {
@@ -76,16 +75,16 @@ export function FleetShowcase() {
         <div data-fleet-heading className="mb-12 flex flex-col justify-between gap-6 md:mb-16 md:flex-row md:items-end">
           <div className="max-w-xl">
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-accent">
-              The Fleet
+              {t.home.fleet.eyebrow}
             </p>
             <h2 className="text-balance text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
-              Luxurious commercial vehicles,{' '}
-              <em className="font-serif italic text-accent">curated</em> for you
+              {t.home.fleet.titleStart}{' '}
+              <em className="font-serif italic text-accent">{t.home.fleet.titleEm}</em>{' '}
+              {t.home.fleet.titleEnd}
             </h2>
           </div>
           <p className="max-w-sm text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">
-            From heavy-duty workhorses to executive luxury, every vehicle is
-            selected for performance, comfort, and prestige.
+            {t.home.fleet.lead}
           </p>
         </div>
 

@@ -11,46 +11,33 @@ import {
   ArrowUpRight,
   Truck,
 } from 'lucide-react'
+import { useLanguage } from '@/lib/i18n/language-context'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const slides = [
-  {
-    src: '/images/hero-showroom.png',
-    label: 'Flagship',
-    alt: 'Futuristic white luxury vehicle with open gullwing doors in a bright showroom',
-  },
-  {
-    src: '/images/truck-light.png',
-    label: 'Trucks',
-    alt: 'Modern heavy-duty commercial truck photographed in daylight',
-  },
-  {
-    src: '/images/van-light.png',
-    label: 'Vans',
-    alt: 'Luxury executive van in a bright modern showroom',
-  },
-  {
-    src: '/images/suv-light.png',
-    label: 'SUVs',
-    alt: 'Luxury SUV in a bright white studio',
-  },
-  {
-    src: '/images/hero-truck.png',
-    label: 'Highway',
-    alt: 'Long-haul highway hauler truck',
-  },
-  {
-    src: '/images/import-global.png',
-    label: 'Imports',
-    alt: 'Globally imported premium vehicles',
-  },
+const slideSrcs = [
+  '/images/hero-showroom.png',
+  '/images/truck-light.png',
+  '/images/van-light.png',
+  '/images/suv-light.png',
+  '/images/hero-truck.png',
+  '/images/import-global.png',
 ]
-
 
 export function Hero() {
   const sectionRef = useRef<HTMLElement>(null)
   const [active, setActive] = useState(0)
+  const { t } = useLanguage()
+
+  const slides = [
+    { src: slideSrcs[0], label: t.home.heroSlides.flagship, alt: t.home.heroAvatarAlt },
+    { src: slideSrcs[1], label: t.home.heroSlides.trucks, alt: t.home.heroSlides.trucks },
+    { src: slideSrcs[2], label: t.home.heroSlides.vans, alt: t.home.heroSlides.vans },
+    { src: slideSrcs[3], label: t.home.heroSlides.suvs, alt: t.home.heroSlides.suvs },
+    { src: slideSrcs[4], label: t.home.heroSlides.highway, alt: t.home.heroSlides.highway },
+    { src: slideSrcs[5], label: t.home.heroSlides.imports, alt: t.home.heroSlides.imports },
+  ]
+
   const total = slides.length
 
   const goTo = (index: number) => setActive((index + total) % total)
@@ -107,11 +94,11 @@ export function Hero() {
             <h1 className="text-balance text-5xl font-semibold leading-[1.1] tracking-tight text-foreground md:text-6xl xl:text-[4.25rem]">
               <span className="block overflow-hidden pb-1">
                 <span data-hero-line className="flex items-center gap-3">
-                  Redefining
+                  {t.home.heroLine1}
                   <span className="hidden h-9 w-[4.5rem] shrink-0 items-center overflow-hidden rounded-full border-[3px] border-background shadow-md md:inline-flex xl:h-11 xl:w-[5.5rem]">
                     <Image
                       src="/images/hero-avatars.png"
-                      alt="Trusted by fleet owners worldwide"
+                      alt={t.home.heroAvatarAlt}
                       width={132}
                       height={48}
                       className="h-full w-full object-cover"
@@ -121,17 +108,17 @@ export function Hero() {
               </span>
               <span className="block overflow-hidden pb-1">
                 <span data-hero-line className="block">
-                  Art of Driving
+                  {t.home.heroLine2}
                 </span>
               </span>
               <span className="block overflow-hidden pb-1">
                 <span data-hero-line className="block">
-                  With Luxury
+                  {t.home.heroLine3}
                 </span>
               </span>
               <span className="block overflow-hidden pb-2">
                 <span data-hero-line className="block">
-                  Performance
+                  {t.home.heroLine4}
                 </span>
               </span>
             </h1>
@@ -148,12 +135,10 @@ export function Hero() {
             {/* Brand + description */}
             <div data-hero-sub className="mt-9">
               <p className="font-serif text-xl font-bold tracking-wide text-accent">
-                ALI FLEET
+                {t.nav.brand}
               </p>
               <p className="mt-3 max-w-[17rem] text-pretty text-[13px] font-bold uppercase leading-relaxed tracking-wide text-foreground">
-                Explore a curated collection of high-end commercial vehicles that
-                combine advanced engineering, elegant interiors, and powerful
-                performance
+                {t.home.heroDescription}
               </p>
             </div>
 
@@ -193,11 +178,11 @@ export function Hero() {
                   {windowSlides.map((thumb, position) => {
                     const isActive = position === 0
                     return (
-                      <button
+                        <button
                         type="button"
                         key={thumb.label}
                         onClick={() => goTo(thumb.index)}
-                        aria-label={`View ${thumb.label}`}
+                        aria-label={`${t.home.heroView} ${thumb.label}`}
                         aria-current={isActive}
                         className={`group relative h-24 w-24 overflow-hidden rounded-2xl outline-none transition md:h-24 md:w-28 ${
                           isActive
@@ -233,7 +218,7 @@ export function Hero() {
                     <button
                       type="button"
                       onClick={prev}
-                      aria-label="Previous vehicle"
+                      aria-label={t.home.heroPrev}
                       className="text-muted-foreground transition-colors hover:text-foreground"
                     >
                       <ArrowLeft className="size-5" />
@@ -241,7 +226,7 @@ export function Hero() {
                     <button
                       type="button"
                       onClick={next}
-                      aria-label="Next vehicle"
+                      aria-label={t.home.heroNext}
                       className="text-foreground transition-transform hover:translate-x-0.5"
                     >
                       <ArrowRight className="size-5" />

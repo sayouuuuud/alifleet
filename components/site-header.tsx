@@ -21,6 +21,7 @@ export function SiteHeader() {
     { label: t.nav.home, href: '/' },
     { label: t.nav.products, href: '/products' },
     { label: t.nav.import, href: '/import' },
+    { label: t.nav.blog, href: '/blog' },
     { label: t.nav.contact, href: '/contact' },
   ]
 
