@@ -83,9 +83,9 @@
 }
 
 @theme {
-  --font-sans: var(--font-geist-sans), var(--font-noto-arabic),
+  --font-sans: var(--font-geist-sans), var(--font-cairo),
     var(--font-noto-hebrew), 'Geist Fallback', sans-serif;
-  --font-serif: var(--font-fraunces), var(--font-noto-arabic),
+  --font-serif: var(--font-fraunces), var(--font-cairo),
     var(--font-noto-hebrew), 'Fraunces Fallback', serif;
   --font-mono: var(--font-geist-mono), 'Geist Mono Fallback', monospace;
 }
@@ -120,7 +120,7 @@
     letter-spacing: 0;
   }
   [dir='rtl'] .font-serif {
-    font-family: var(--font-noto-arabic), var(--font-noto-hebrew), serif;
+    font-family: var(--font-cairo), var(--font-noto-hebrew), serif;
     font-style: normal;
   }
   /* Flip decorative arrow glyphs that are baked into content. */
