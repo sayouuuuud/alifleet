@@ -11,9 +11,6 @@ import { cookies } from 'next/headers'
 import './globals.css'
 import { LanguageProvider } from '@/lib/i18n/language-context'
 import { CartProvider } from '@/lib/cart-context'
-import { AuthProvider } from '@/lib/auth/auth-context'
-import { loadViewer } from '@/lib/auth/queries'
-import { isWpConfigured } from '@/lib/wp/config'
 import {
   LOCALE_STORAGE_KEY,
   defaultLocale,
@@ -65,10 +62,6 @@ export default async function RootLayout({
   const locale = isLocale(stored) ? stored : defaultLocale
   const meta = localeMeta[locale]
 
-  // Resolve the session once per request so the header renders the correct
-  // signed-in state on the first paint instead of flickering after hydration.
-  const viewer = await loadViewer()
-
   return (
     <html
       lang={meta.htmlLang}
@@ -77,9 +70,7 @@ export default async function RootLayout({
     >
       <body className="antialiased">
         <LanguageProvider initialLocale={locale}>
-          <AuthProvider viewer={viewer} backendReady={isWpConfigured()}>
-            <CartProvider>{children}</CartProvider>
-          </AuthProvider>
+          <CartProvider>{children}</CartProvider>
         </LanguageProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
