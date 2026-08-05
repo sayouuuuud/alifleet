@@ -1,0 +1,45 @@
+{
+  "_comment": "ACF options page values. These live in wp_options, not wp_posts, so a CSV post importer cannot place them. Imported by alifleet-import.php.",
+  "site_settings": {
+    "company_info": {
+      "company_name_ar": "علي فليت",
+      "company_name_en": "ALI FLEET",
+      "company_name_he": "ALI FLEET",
+      "phone_number": "+972 50 000 0000",
+      "phone_href": "tel:+972500000000",
+      "whatsapp_number": "972500000000",
+      "email_address": "info@alifleet.com",
+      "address_lines": [
+        {
+          "line_ar": "Industrial Zone, Building 12",
+          "line_en": "Industrial Zone, Building 12",
+          "line_he": "Industrial Zone, Building 12"
+        },
+        {
+          "line_ar": "حيفا، إسرائيل",
+          "line_en": "Haifa, Israel",
+          "line_he": "חיפה, ישראל"
+        }
+      ],
+      "working_hours": "Sun - Thu: 08:00 - 18:00"
+    },
+    "social_links": {
+      "instagram": "https://instagram.com",
+      "facebook": "https://facebook.com",
+      "linkedin": "https://linkedin.com"
+    },
+    "commerce_settings": {
+      "currency_symbol": "₪",
+      "store_base_url": "https://store.alifleet.com",
+      "cart_path": "/cart/"
+    },
+    "footer_content": {
+      "tagline_ar": "مركبات تجارية فاخرة، واستيراد عالمي، وقطع غيار أصلية — نقدمها بأعلى مستوى في كل مكان.",
+      "tagline_en": "Luxurious commercial vehicles, global importing, and genuine spare parts — delivered with excellence worldwide.",
+      "tagline_he": "רכבים מסחריים יוקרתיים, ייבוא גלובלי וחלפים מקוריים — באיכות מעולה בכל העולם.",
+      "slogan_ar": "أسطول فاخر. حضور عالمي.",
+      "slogan_en": "Luxury Fleet. Global Reach.",
+      "slogan_he": "צי יוקרתי. פריסה גלובלית."
+    }
+  }
+}
