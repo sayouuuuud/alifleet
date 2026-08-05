@@ -9,6 +9,9 @@ import { Menu, ShoppingCart, X } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { useCart } from '@/lib/cart-context'
 import { LanguageSwitcher } from '@/components/language-switcher'
+import { AccountMenu } from '@/components/account/account-menu'
+import { useAuth } from '@/lib/auth/auth-context'
+import { logoutAction } from '@/lib/auth/actions'
 
 export function SiteHeader() {
   const headerRef = useRef<HTMLElement>(null)
@@ -16,6 +19,7 @@ export function SiteHeader() {
   const pathname = usePathname()
   const { t } = useLanguage()
   const { count, ready } = useCart()
+  const { signedIn } = useAuth()
 
   const navLinks = [
     { label: t.nav.home, href: '/' },
@@ -81,6 +85,8 @@ export function SiteHeader() {
           className="hidden items-center rounded-full bg-card p-1.5 shadow-lg shadow-foreground/5 md:flex"
         >
           <LanguageSwitcher />
+          <span className="mx-1 h-6 w-px bg-border" aria-hidden="true" />
+          <AccountMenu />
           <span className="mx-1 h-6 w-px bg-border" aria-hidden="true" />
           <Link
             href="/cart"
@@ -153,6 +159,35 @@ export function SiteHeader() {
               {link.label}
             </Link>
           ))}
+          <div className="mt-2 flex flex-col gap-1 border-t border-border pt-3">
+            {signedIn ? (
+              <>
+                <Link
+                  href="/account"
+                  onClick={() => setOpen(false)}
+                  className="rounded-full px-5 py-3 text-center text-base font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+                >
+                  {t.account.myAccount}
+                </Link>
+                <form action={logoutAction}>
+                  <button
+                    type="submit"
+                    className="w-full rounded-full px-5 py-3 text-center text-base font-semibold text-foreground transition-colors hover:bg-secondary"
+                  >
+                    {t.account.signOut}
+                  </button>
+                </form>
+              </>
+            ) : (
+              <Link
+                href="/account/login"
+                onClick={() => setOpen(false)}
+                className="rounded-full px-5 py-3 text-center text-base font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+              >
+                {t.account.signIn}
+              </Link>
+            )}
+          </div>
           <div className="mt-2 border-t border-border pt-3">
             <LanguageSwitcher variant="block" />
           </div>
