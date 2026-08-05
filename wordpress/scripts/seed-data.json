@@ -1212,6 +1212,9 @@
         "category": "brakes"
       },
       "acf": {
+        "name_ar": "طقم أقراص فرامل مهوّاة 330 مم",
+        "name_en": "Ventilated Brake Disc Set 330 mm",
+        "name_he": "סט דיסקי בלם מאווררים 330 מ״מ",
         "sku": "AF-BRK-330V",
         "part_category": "brakes",
         "brand": "Brembo",
@@ -1299,6 +1302,9 @@
         "category": "brakes"
       },
       "acf": {
+        "name_ar": "تيل فرامل للخدمة الشاقة",
+        "name_en": "Heavy-Duty Brake Pad Set",
+        "name_he": "סט רפידות בלם לעבודה כבדה",
         "sku": "AF-BRK-PD24",
         "part_category": "brakes",
         "brand": "Textar",
@@ -1375,6 +1381,9 @@
         "category": "engine"
       },
       "acf": {
+        "name_ar": "شاحن توربيني كامل بهندسة متغيرة",
+        "name_en": "Variable-Geometry Turbocharger",
+        "name_he": "מגדש טורבו בגיאומטריה משתנה",
         "sku": "AF-ENG-TB19",
         "part_category": "engine",
         "brand": "Garrett",
@@ -1462,6 +1471,9 @@
         "category": "engine"
       },
       "acf": {
+        "name_ar": "طقم بساتم وحلقات محرك",
+        "name_en": "Piston & Ring Overhaul Kit",
+        "name_he": "ערכת שיפוץ בוכנות וטבעות",
         "sku": "AF-ENG-PR06",
         "part_category": "engine",
         "brand": "Mahle",
@@ -1538,6 +1550,9 @@
         "category": "lighting"
       },
       "acf": {
+        "name_ar": "وحدة إضاءة أمامية LED مصفوفية",
+        "name_en": "Matrix LED Headlight Unit",
+        "name_he": "יחידת פנס LED מטריצה",
         "sku": "AF-LGT-LED7",
         "part_category": "lighting",
         "brand": "Hella",
@@ -1625,6 +1640,9 @@
         "category": "wheels"
       },
       "acf": {
+        "name_ar": "جنط ألمنيوم مطروق 22 بوصة",
+        "name_en": "Forged Alloy Wheel 22\"",
+        "name_he": "חישוק סגסוגת מחושל 22\"",
         "sku": "AF-WHL-F22",
         "part_category": "wheels",
         "brand": "BBS",
@@ -1709,6 +1727,9 @@
         "category": "transmission"
       },
       "acf": {
+        "name_ar": "طقم تروس ومزامنات ناقل الحركة",
+        "name_en": "Gearbox Synchro & Gear Set",
+        "name_he": "סט סינכרון וגלגלי שיניים",
         "sku": "AF-TRN-SY12",
         "part_category": "transmission",
         "brand": "ZF",
@@ -1785,6 +1806,9 @@
         "category": "filters"
       },
       "acf": {
+        "name_ar": "فلتر زيت أصلي",
+        "name_en": "Premium Spin-On Oil Filter",
+        "name_he": "מסנן שמן פרימיום",
         "sku": "AF-FLT-OL33",
         "part_category": "filters",
         "brand": "Mann-Filter",
@@ -1864,6 +1888,9 @@
         "category": "filters"
       },
       "acf": {
+        "name_ar": "فلتر هواء للشاحنات الثقيلة",
+        "name_en": "Heavy-Duty Air Filter Element",
+        "name_he": "מסנן אוויר לעבודה כבדה",
         "sku": "AF-FLT-AR21",
         "part_category": "filters",
         "brand": "Donaldson",
@@ -1940,6 +1967,9 @@
         "category": "suspension"
       },
       "acf": {
+        "name_ar": "مساعد أمامي بأسطوانة مفردة",
+        "name_en": "Front Monotube Shock Absorber",
+        "name_he": "בולם זעזועים קדמי חד-צינורי",
         "sku": "AF-SUS-SA48",
         "part_category": "suspension",
         "brand": "Bilstein",
@@ -2016,6 +2046,9 @@
         "category": "electrical"
       },
       "acf": {
+        "name_ar": "دينامو 24 فولت / 150 أمبير",
+        "name_en": "Alternator 24V / 150A",
+        "name_he": "אלטרנטור 24V / 150A",
         "sku": "AF-ELC-AL24",
         "part_category": "electrical",
         "brand": "Bosch",
@@ -2100,6 +2133,9 @@
         "category": "transmission"
       },
       "acf": {
+        "name_ar": "طقم دبرياج كامل",
+        "name_en": "Complete Clutch Kit",
+        "name_he": "ערכת מצמד מלאה",
         "sku": "AF-TRN-CL39",
         "part_category": "transmission",
         "brand": "Sachs",

@@ -44,10 +44,10 @@ node wordpress/scripts/validate-content.mjs
 المفروض تشوف:
 
 ```
-Schema: 10 groups, 453 fields
+Schema: 10 groups, 456 fields
   ok   pages.csv: 478 columns, 6 rows — OK
   ok   import-cars.csv: 53 columns, 7 rows — OK
-  ok   spare-parts.csv: 51 columns, 12 rows — OK
+  ok   spare-parts.csv: 54 columns, 12 rows — OK
   ok   blog-posts.csv: 17 columns, 6 rows — OK
   ...
 All checks passed. Safe to import.
@@ -456,7 +456,7 @@ wp acf import --json_file=/tmp/alifleet-acf-schema.json
 | # | المجموعة | مكانها في لوحة التحكم | اسمها في GraphQL |
 |---|---|---|---|
 | 1 | Site Options & Global Settings | Site Settings (صفحة إعدادات) | `siteOptionsFields` |
-| 2 | Home Page Fields | الصفحة المعيّنة كصفحة رئيسية | `homePageFields` |
+| 2 | Home Page Fields | الصفح�� المعيّنة كصفحة رئيسية | `homePageFields` |
 | 3 | Car Import Page Fields | الصفحة `import` | `importPageFields` |
 | 4 | Spare Parts Catalog Page Fields | الصفحة `products` | `sparePartsPageFields` |
 | 5 | Blog Archive Page Fields | الصفحة `blog` | `blogPageFields` |
@@ -565,6 +565,15 @@ Success: created 31, updated 0, media uploaded 24, skipped 0
 
 > **ليه الأسعار والمخزون مش في ACF؟** لأنهم موجودين أصلًا في WooCommerce. لو كانوا في المكانين، أول عملية شراء تخلي رقم ACF قديم وصفحة القطعة تعرض سعر غير سعر السلة. الفرونت بيقرأ `price` و `stockStatus` من WooGraphQL — بالشكل ده المخزون بيتحدّث لوحده مع كل بيعة.
 
+> **⚠️ اسم المنتج — اقرأ ده قبل ما تعدّل أي منتج:** كل قطعة غيار عندها **اسمين مختلفين**، وده مقصود:
+>
+> | المكان | الاستخدام | اللغات |
+> |---|---|---|
+> | عنوان المنتج (`post_title`) | لوحة التحكم، الطلبات، الفواتير، إيميلات ووكومرس | العربي فقط |
+> | ACF: `name_ar` / `name_en` / `name_he` | **اللي الزائر بيشوفه في الموقع** | 3 لغات |
+>
+> السبب إن ووكومرس بيدعم عنوان واحد بس لكل منتج، والموقع بـ3 لغات. **يعني لو عدّلت عنوان المنتج من شاشة ووكومرس، الموقع مش هيتغير** — لازم تعدّل الحقول الـ3 في مجموعة **Spare Parts CPT Fields**. الحقول الـ3 دي `required` وفيها تعليمات تفكّرك بده جوه لوحة التحكم.
+
 #### 7.أ.5 تحقق
 
 ```bash
@@ -584,7 +593,19 @@ echo "slides: " . count($hero["hero_slides"] ?? []) . "\n";'
 
 # إعدادات الموقع
 wp eval '$c = get_field("company_info","option"); echo ($c["company_name_en"] ?? "EMPTY") . " | lines: " . count($c["address_lines"] ?? []) . "\n";'
+
+# أسماء المنتجات بالـ3 لغات — لازم مفيش ولا EMPTY
+wp eval '
+foreach (get_posts(["post_type" => "product", "numberposts" => -1]) as $p) {
+  printf("%-34s ar:%-3s en:%-3s he:%-3s\n",
+    $p->post_name,
+    get_field("name_ar", $p->ID) ? "ok" : "EMPTY",
+    get_field("name_en", $p->ID) ? "ok" : "EMPTY",
+    get_field("name_he", $p->ID) ? "ok" : "EMPTY");
+}'
 ```
+
+> أي `EMPTY` في الأمر الأخير معناه إن الاستيراد اتعمل بنسخة قديمة من الـ schema (قبل ما حقول الاسم تتضاف). الحل: أعد `wp acf import` بالملف الجديد ثم أعد سكربت الاستيراد.
 
 ---
 
@@ -605,7 +626,7 @@ wp eval '$c = get_field("company_info","option"); echo ($c["company_name_en"] ??
 wordpress/import/
 ├── pages.csv           478 عمود × 6 صفوف
 ├── import-cars.csv      53 عمود × 7 صفوف
-├── spare-parts.csv      51 عمود × 12 صف
+├── spare-parts.csv      54 عمود × 12 صف
 ├── blog-posts.csv       17 عمود × 6 صفوف
 └── site-settings.json   إعدادات الموقع — CSV مش بيقدر يستوردها (اقرأ تحت)
 ```
@@ -773,7 +794,7 @@ services_section (group)
 |---|---|---|
 | `car_model` | `Sprinter 519 CDI` | اسم موديل تجاري |
 | `specs.engine` | `2.1L` | رقم فني |
-| `specs.drivetrain` | `RWD` | اختصار عالمي |
+| `specs.drivetrain` | `RWD` | اختصار ��المي |
 | `sku` | `AF-BRK-330V` | كود مخزون |
 | `brand` | `Brembo` | اسم علامة |
 | `compatibility.model_name` | `Actros 1845` | اسم موديل |
@@ -1260,13 +1281,17 @@ curl -s -X POST https://cms.alifleet.com/graphql \
         stockStatus
         image { sourceUrl altText }
       }
-      sparePartFields {
-        sku
-        brand
-        partCategory
-        descriptionEn
-        specs { labelEn valueEn }
-        compatibility { modelName }
+        sparePartFields {
+          nameAr
+          nameEn
+          nameHe
+          sku
+          brand
+          partCategory
+          descriptionEn
+          specs { labelEn valueEn }
+          compatibility { modelName }
+        }
       }
     }
   }
@@ -1274,6 +1299,8 @@ curl -s -X POST https://cms.alifleet.com/graphql \
 ```
 
 > لاحظ: `price` و `stockStatus` جايين من **WooCommerce**، و `sku` و `brand` من **ACF**. ده بالظبط الفصل اللي بيمنع اختلاف الأسعار بين بطاقة القطعة والسلة.
+>
+> ولاحظ كمان إن `name` (عنوان ووكومرس) و `nameAr/nameEn/nameHe` (ACF) **حاجتين مختلفتين**. الموقع بيعرض الحقول الـ3 دي — راجع التحذير في القسم 7.أ.4. لو رجعوا `null` يبقى الاستيراد كان بنسخة قديمة من الـ schema: اسحب `alifleet-acf-schema.json` الجديد، أعد `wp acf import`، وأعد استيراد القطع.
 
 **مقالة:**
 
@@ -1354,6 +1381,7 @@ node wordpress/scripts/validate-content.mjs
 - [ ] **Site Settings** ظاهرة في القائمة وفيها بيانات
 - [ ] **Import Vehicles** فيها ٧ عربيات
 - [ ] Products فيها ١٢ منتج بأسعار ومخزون
+- [ ] كل منتج فيه `name_ar` و `name_en` و `name_he` مليانين (مش فاضيين)
 - [ ] Posts فيها ٦ مقالات بتواريخ وتصنيفات
 - [ ] الصفحة الرئيسية معيّنة ومحتواها ظاهر
 - [ ] المكتبة فيها ٢٤+ صورة
@@ -1519,5 +1547,18 @@ wp db import ~/backups/alifleet-2026-08-05-1430.sql
 الوردبريس بقى بيدّي كل المحتوى في GraphQL، بس **الكود لسه بيقرأ من `lib/data/*.ts` و `lib/i18n/dictionaries/`**. المرحلة الجاية هي ربط الفرونت على ACF فعليًا.
 
 الخطة موجودة كاملة في **[`docs/ACF-WIRING-PLAN.md`](./ACF-WIRING-PLAN.md)**: ترتيب المراحل، شكل طبقة البيانات الجديدة، استراتيجية الرجوع للداتا الثابتة لو ACF فاضي، والكاش.
+
+القرارات الأربعة اللي كانت مطلوبة في الخطة **اتحددت كلها** (القسم 8 هناك):
+
+| القرار | الاختيار |
+|---|---|
+| اسم المنتج متعدد اللغات | 3 حقول ACF — ✅ **متنفّذ خلاص** في الـ schema والـ CSV والـ seed |
+| `siteConfig` | يتحوّل لـ React Context عشان الإعدادات تتحكم من لوحة التحكم |
+| webhook التحديث الفوري | يتعمل في المرحلة 1، عشان كل اللي بعده يتختبر بتحديث فوري |
+| `lib/data` الثابتة | تفضل **fallback للأبد** — مش هتتحذف |
+
+يعني الترتيب بيبدأ من: `app/api/revalidate/route.ts` + الكود في mu-plugin ← ثم إعدادات الموقع ← ثم تحويل `siteConfig` لـ Context.
+
+معيار "المرحلة خلصت": الصفحة بتشتغل صح والوردبريس شغال، **و** بتشتغل صح لو أوقفت الوردبريس (`sudo systemctl stop php8.2-fpm`) — الاتنين لازم يعدّوا، ده بالظبط اللي بيتأكد إن الـ fallback حقيقي.
 
 **متبدأش فيها قبل ما كل بنود قائمة القسم 13.7 تعدي.**
