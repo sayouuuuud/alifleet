@@ -2277,19 +2277,19 @@
             "type": "text"
           },
           {
-            "key": "field_title_ar",
+            "key": "field_blog_title_ar",
             "label": "Title (AR)",
             "name": "title_ar",
             "type": "text"
           },
           {
-            "key": "field_title_en",
+            "key": "field_blog_title_en",
             "label": "Title (EN)",
             "name": "title_en",
             "type": "text"
           },
           {
-            "key": "field_title_he",
+            "key": "field_blog_title_he",
             "label": "Title (HE)",
             "name": "title_he",
             "type": "text"
@@ -2313,21 +2313,21 @@
             "type": "text"
           },
           {
-            "key": "field_lead_ar",
+            "key": "field_blog_lead_ar",
             "label": "Lead Paragraph (AR)",
             "name": "lead_ar",
             "type": "textarea",
             "rows": 3
           },
           {
-            "key": "field_lead_en",
+            "key": "field_blog_lead_en",
             "label": "Lead Paragraph (EN)",
             "name": "lead_en",
             "type": "textarea",
             "rows": 3
           },
           {
-            "key": "field_lead_he",
+            "key": "field_blog_lead_he",
             "label": "Lead Paragraph (HE)",
             "name": "lead_he",
             "type": "textarea",
@@ -2414,39 +2414,39 @@
         "type": "group",
         "sub_fields": [
           {
-            "key": "field_title_ar",
+            "key": "field_cart_title_ar",
             "label": "Title (AR)",
             "name": "title_ar",
             "type": "text"
           },
           {
-            "key": "field_title_en",
+            "key": "field_cart_title_en",
             "label": "Title (EN)",
             "name": "title_en",
             "type": "text"
           },
           {
-            "key": "field_title_he",
+            "key": "field_cart_title_he",
             "label": "Title (HE)",
             "name": "title_he",
             "type": "text"
           },
           {
-            "key": "field_lead_ar",
+            "key": "field_cart_lead_ar",
             "label": "Lead Paragraph (AR)",
             "name": "lead_ar",
             "type": "textarea",
             "rows": 3
           },
           {
-            "key": "field_lead_en",
+            "key": "field_cart_lead_en",
             "label": "Lead Paragraph (EN)",
             "name": "lead_en",
             "type": "textarea",
             "rows": 3
           },
           {
-            "key": "field_lead_he",
+            "key": "field_cart_lead_he",
             "label": "Lead Paragraph (HE)",
             "name": "lead_he",
             "type": "textarea",
