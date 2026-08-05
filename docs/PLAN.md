@@ -131,7 +131,7 @@ WordPress بيخزن `post_title` و `post_excerpt` بلغة **واحدة** بس
 ### ب) ملفات الاستيراد — ملف لكل نوع
 ```
 wordpress/import/
-├── pages.csv              6 صفوف  (Home / Import / Products / Blog / Cart / Contact)
+├── pages.csv              6 ����فوف  (Home / Import / Products / Blog / Cart / Contact)
 ├── import-cars.csv        7 صفوف  ← مولّدة من lib/data/import-cars.ts
 ├── spare-parts.csv       12 صف   ← مولّدة من lib/data/parts.ts
 ├── blog-posts.csv         6 صفوف  ← مولّدة من lib/data/blog.ts
@@ -188,28 +188,52 @@ wordpress/scripts/
 
 | البند | السبب |
 |---|---|
-| تعديل `lib/data/*.ts` أو الـ dictionaries | اتفقنا: الربط مرحلة تانية بعد التأكد إن الوردبريس شغال |
+| تعديل `lib/data/*.ts` أو الـ dictionaries | اتفقنا: الربط مرحلة تانية بعد التأكد إن الوردبريس شغال. وبقرار الربط رقم 4 دول **مش هيتحذفوا خالص** — هيتحوّلوا لطبقة fallback دائمة |
 | نصوص صفحات الحساب في ACF | اتفقنا تفضل في الكود — رسايل خطأ و validation مش محتوى تسويقي |
 | تعديل كود الصفحات | نفس السبب الأول |
 | حذف `.v0/acf/` | ملفات تحليل مؤقتة — هحذفها آخر الشغل |
 
 ---
 
-## 4) الترتيب التنفيذي
+## 4) الترتيب التنفيذي — ✅ اكتمل
 
-```
-1. wordpress/acf/alifleet-acf-schema.json      ← الملف المدمج المصلَّح
-2. wordpress/mu-plugin/alifleet-cms.php        ← CPT + Options Page + GraphQL
-3. wordpress/scripts/seed-data.json            ← كل الداتا مستخرجة من الكود
-4. wordpress/scripts/alifleet-import.php       ← سكربت WP-CLI
-5. wordpress/import/*.csv                      ← 4 ملفات CSV
-6. docs/WORDPRESS-SETUP.md                     ← الدليل الكامل
-7. docs/ACF-WIRING-PLAN.md                     ← خطة الربط
-8. تحقق: JSON صالح + PHP syntax + CSV أعمدة متساوية + تطابق أسماء الحقول
-9. تنضيف .v0/acf/
+| # | المخرج | الحالة |
+|---|---|---|
+| 1 | `wordpress/acf/alifleet-acf-schema.json` — 10 groups / 456 حقل | ✅ |
+| 2 | `wordpress/mu-plugin/alifleet-cms.php` — CPT + Options Page + GraphQL + CORS | ✅ |
+| 3 | `wordpress/scripts/seed-data.json` — كل الداتا مستخرجة من الكود | ✅ |
+| 4 | `wordpress/scripts/alifleet-import.php` — سكربت WP-CLI | ✅ |
+| 5 | `wordpress/import/*.csv` + `site-settings.json` | ✅ |
+| 6 | `docs/WORDPRESS-SETUP.md` — الدليل الكامل | ✅ |
+| 7 | `docs/ACF-WIRING-PLAN.md` — خطة الربط | ✅ |
+| 8 | `wordpress/scripts/validate-content.mjs` — سكربت التحقق | ✅ |
+| 9 | تنضيف `.v0/acf/` | ✅ |
+
+**سكربت التحقق (خطوة 8)** بيتأكد إن كل عمود في كل CSV له حقل مطابق في الـ schema، وإن مفيش مفتاح `field_*` مكرر، وإن كل repeater له عمود العدّاد بتاعه، وإن الـ seed data متطابقة مع الـ CSV. شغّله بـ:
+
+```bash
+node wordpress/scripts/validate-content.mjs
 ```
 
-**خطوة 8 مهمة:** هعمل سكربت تحقق بيتأكد إن كل عمود في الـ CSV له حقل مطابق في الـ schema، وإن كل حقل مطلوب موجود — عشان متكتشفش مشكلة وانت على السيرفر.
+النتيجة الحالية: **كل الفحوصات ناجحة** — 6 صفحات / 7 عربيات / 12 قطعة / 6 مقالات.
+
+### مشاكل إضافية اتكشفت وقت التنفيذ واتصلّحت
+
+| المشكلة | التصليح |
+|---|---|
+| مفاتيح ACF مكرّرة (`field_title_ar` وغيره) بين `group_blog_page` و `group_cart_page` — ACF بيدمج الحقول المتشابهة في المفاتيح ويضيّع بيانات | المفاتيح بقت `field_blog_title_ar` / `field_cart_title_ar` |
+| سطر العنوان في إعدادات الموقع كان إنجليزي في اللغات الـ 3 | اتترجم للعربي والعبري في `seed-data.json` و `site-settings.json` |
+
+### قرارات الربط الأربعة — اتحددت (التفاصيل في `ACF-WIRING-PLAN.md` القسم 8)
+
+| القرار | الاختيار | أثره على الملفات دلوقتي |
+|---|---|---|
+| اسم المنتج متعدد اللغات | 3 حقول ACF | ✅ **اتنفّذ** — `name_ar/en/he` مضافين في `group_spare_part_fields` + 3 أعمدة في `spare-parts.csv` (54 عمود) + `acf.name_*` في الـ12 قطعة في الـ seed |
+| `siteConfig` | يتحوّل لـ React Context | مرحلة الربط — مفيش تغيير في ملفات الاستيراد |
+| webhook التحديث الفوري | في المرحلة 1 | مرحلة الربط — مفيش تغيير في ملفات الاستيراد |
+| `lib/data` | fallback للأبد، مش هيتحذف | يأكّد البند التاني في القسم 3 تحت |
+
+القرار الأول كان الوحيد اللي بيلمس الـ schema، وده السبب إنه اتنفّذ فورًا: أرخص وقت لتغيير الـ schema هو **قبل** الاستيراد. لو كنت استوردت قبل التغيير ده، أعد `wp acf import` ثم أعد استيراد القطع.
 
 ---
 
@@ -237,4 +261,4 @@ wordpress/scripts/
 
 ---
 
-*آخر تحديث: قبل بدء التنفيذ*
+*آخر تحديث: بعد اكتمال التنفيذ — ابدأ من `docs/WORDPRESS-SETUP.md`*
