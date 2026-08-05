@@ -55,17 +55,27 @@ All checks passed. Safe to import.
 
 لو طلع أي `FAIL` — **متكمّلش**. صلّحه الأول، لأن نفس الغلطة على السيرفر هتاخد وقت أطول بكتير لحد ما تكتشفها.
 
-الملفات اللي هترفعها للسيرفر:
+### خريطة مجلد `wordpress/` — كل ملف وإزاي يتشغّل
 
-```
-wordpress/
-├── acf/alifleet-acf-schema.json     ← 10 مجموعات حقول
-├── mu-plugin/alifleet-cms.php       ← CPT + Options Page + GraphQL + CORS
-├── scripts/alifleet-import.php      ← سكربت WP-CLI
-├── scripts/seed-data.json           ← كل الداتا
-├── scripts/validate-content.mjs     ← المدقّق (بيشتغل محليًا وعلى السيرفر)
-└── import/*.csv + site-settings.json ← البديل اليدوي
-```
+مجلد `wordpress/` فيه **١٠ ملفات**. الجدول ده بيقول لكل واحد فيهم: بيتحمّل إزاي، وفي أنهي قسم.
+
+| الملف | بيوصل للسيرفر إزاي | الأمر اللي بيشغّله | القسم |
+|---|---|---|---|
+| `acf/alifleet-acf-schema.json` | `scp` لـ `/tmp` | `wp acf import --json_file=...` | **6** |
+| `mu-plugin/alifleet-cms.php` | `scp` لـ `/tmp` ثم `cp` لـ `wp-content/mu-plugins/` | بتتحمّل تلقائيًا — مفيش تنشيط | **5** |
+| `scripts/alifleet-import.php` | `scp` لـ `/tmp` | `wp eval-file /tmp/alifleet-import.php` | **7.أ** |
+| `scripts/seed-data.json` | `scp` لـ `/tmp` | بيتقرأ بـ `--seed=` من السكربت اللي فوق | **7.أ** |
+| `scripts/validate-content.mjs` | ❌ **مبيتنسخش خالص** | `node wordpress/scripts/validate-content.mjs` — **على جهازك** | فوق + **13** |
+| `import/pages.csv` | رفع من المتصفح (WP All Import) | شاشة All Import → Pages | **7.ب** |
+| `import/import-cars.csv` | رفع من المتصفح | شاشة All Import → Import Vehicles | **7.ب** |
+| `import/spare-parts.csv` | رفع من المتصفح | شاشة All Import → Products | **7.ب** |
+| `import/blog-posts.csv` | رفع من المتصفح | شاشة All Import → Posts | **7.ب** |
+| `import/site-settings.json` | `scp` لـ `/tmp` | `wp eval` (أمر جاهز في القسم) | **7.ب.3** |
+
+**نقطتين مهمين في الجدول ده:**
+
+1. **الطريقة أ والطريقة ب بديلين، مش خطوتين.** الطريقة أ (سكربت WP-CLI) بتعمل كل حاجة ومحتاجة `seed-data.json` بس — يعني **الـ٤ ملفات CSV مش هتلمسها خالص** لو اخترتها. الطريقة ب هي البديل اليدوي لو عايز تعدّل في Excel الأول. متعملهم الاتنين.
+2. **`validate-content.mjs` أداة محلية بحتة.** بيقرأ الـ schema والـ CSV والـ seed بمسارات نسبية لمكان الملف جوه المشروع، فلازم يشتغل من مجلد المشروع على جهازك — مش على السيرفر.
 
 ---
 
@@ -456,7 +466,7 @@ wp acf import --json_file=/tmp/alifleet-acf-schema.json
 | # | المجموعة | مكانها في لوحة التحكم | اسمها في GraphQL |
 |---|---|---|---|
 | 1 | Site Options & Global Settings | Site Settings (صفحة إعدادات) | `siteOptionsFields` |
-| 2 | Home Page Fields | الصفح�� المعيّنة كصفحة رئيسية | `homePageFields` |
+| 2 | Home Page Fields | الصفح���� المعيّنة كصفحة رئيسية | `homePageFields` |
 | 3 | Car Import Page Fields | الصفحة `import` | `importPageFields` |
 | 4 | Spare Parts Catalog Page Fields | الصفحة `products` | `sparePartsPageFields` |
 | 5 | Blog Archive Page Fields | الصفحة `blog` | `blogPageFields` |
@@ -506,13 +516,19 @@ wp eval 'echo function_exists("acf_add_options_page") ? "ACF PRO OK\n" : "ACF PR
 
 ```bash
 # على جهازك، من مجلد المشروع
-scp wordpress/scripts/alifleet-import.php  deploy@YOUR_SERVER_IP:/tmp/
-scp wordpress/scripts/seed-data.json       deploy@YOUR_SERVER_IP:/tmp/
-scp wordpress/scripts/validate-content.mjs deploy@YOUR_SERVER_IP:/tmp/
 
-# الصور: الفولدر public بتاع Next.js
+# 1) تأكد إن الداتا سليمة قبل ما ترفع أي حاجة (محلي — مش على السيرفر)
+node wordpress/scripts/validate-content.mjs
+
+# 2) ارفع السكربت والداتا
+scp wordpress/scripts/alifleet-import.php deploy@YOUR_SERVER_IP:/tmp/
+scp wordpress/scripts/seed-data.json      deploy@YOUR_SERVER_IP:/tmp/
+
+# 3) الصور: الفولدر public بتاع Next.js
 scp -r public/images deploy@YOUR_SERVER_IP:/tmp/nextjs-public-images
 ```
+
+> **`validate-content.mjs` مبيتنسخش للسيرفر.** هو أداة فحص محلية بتقرأ الـ schema والـ CSV والـ seed من مجلد المشروع بمسارات نسبية لمكان الملف نفسه — لو شغّلته من `/tmp` على السيرفر هيدوّر على `/wordpress/acf/...` ويفشل. شغّله على جهازك، ولو طلع `All checks passed` كمّل الرفع.
 
 #### 7.أ.2 تجربة على الفاضي (dry run)
 
@@ -649,6 +665,8 @@ wordpress/import/
 4. في **Custom Fields / ACF** اربط كل عمود على الحقل اللي بنفس الاسم
 5. في **Step 4** حدّد **Unique Identifier = `post_name`** — بدونها كل استيراد بيعمل نسخ مكرّرة
 6. Confirm & Run
+
+> **في `spare-parts.csv` خصوصًا:** متنساش تربط الأعمدة التلاتة `name_ar` و `name_en` و `name_he` على حقول ACF بنفس الأسماء. دول اللي الموقع بيعرضهم للزائر — `post_title` بيستخدمه ووكومرس في لوحة التحكم والفواتير بس. لو سيبتهم فاضيين، أسماء المنتجات هتطلع فاضية في الموقع. التفاصيل في التحذير آخر القسم 7.أ.4.
 
 #### 7.ب.3 إعدادات الموقع (`site-settings.json`)
 
@@ -1194,7 +1212,7 @@ curl -s -X POST https://cms.alifleet.com/graphql \
 
 ### 13.3 حقول ACF واصلة
 
-> **قبل أي حاجة:** افتح **GraphQL → GraphiQL IDE** في لوحة التحكم وأكّد أسماء الحقول. WPGraphQL بيحوّل `hero_line1_ar` لـ camelCase (`heroLine1Ar`)، وحسب نسخة WPGraphQL for ACF شكل التعشيش بيختلف شوية. الاستعلامات دي مكتوبة على شكل v2.x — استخدم الإكمال التلقائي في GraphiQL لتأكيدها.
+> **قبل أي حاجة:** افتح **GraphQL → GraphiQL IDE** في لوحة التحكم وأكّد أسماء الحقول. WPGraphQL بيحوّل `hero_line1_ar` لـ camelCase (`heroLine1Ar`)، وحسب نسخة WPGraphQL for ACF شكل التعشيش بيختلف شوية. الاستعلامات دي مكتوبة على شكل v2.x — استخدم الإكمال ا��تلقائي في GraphiQL لتأكيدها.
 
 **الصفحة الرئيسية:**
 
