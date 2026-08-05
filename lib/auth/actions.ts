@@ -33,6 +33,14 @@ const codeOf = (error: unknown): AuthErrorCode => {
 const text = (data: FormData, key: string) =>
   String(data.get(key) ?? '').trim()
 
+/**
+ * The sign-in and reset forms label this input `usernameOrEmail` (WordPress
+ * accepts either), while the register form calls it `username`. Reading both
+ * keys keeps the server action tolerant of whichever form posted to it.
+ */
+const identifier = (data: FormData) =>
+  text(data, 'usernameOrEmail') || text(data, 'username')
+
 /** Only used to catch obvious typos client-side validation may have missed. */
 const looksLikeEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)
 
@@ -46,12 +54,12 @@ export async function loginAction(
 ): Promise<AuthActionState> {
   if (!isWpConfigured()) return fail('not_configured')
 
-  const username = text(formData, 'username')
+  const username = identifier(formData)
   const password = String(formData.get('password') ?? '')
   const redirectTo = text(formData, 'redirectTo') || '/account'
 
   const fieldErrors: AuthActionState['fieldErrors'] = {}
-  if (!username) fieldErrors.username = 'missing_fields'
+  if (!username) fieldErrors.usernameOrEmail = 'missing_fields'
   if (!password) fieldErrors.password = 'missing_fields'
   if (Object.keys(fieldErrors).length) return fail('missing_fields', fieldErrors)
 
@@ -110,9 +118,18 @@ export async function registerAction(
       REGISTER_USER,
       { username, email, password, firstName, lastName }
     )
+  } catch (error) {
+    return fail(codeOf(error))
+  }
 
-    // WordPress does not return a JWT from registerUser, so sign the new user
-    // in immediately with the credentials they just chose.
+  // From here on the WordPress account EXISTS. Auto-login is a convenience and
+  // its failure must never be reported as a failed registration — otherwise the
+  // visitor retries and hits "email already exists" on an account that is
+  // genuinely theirs. This is exactly what happens when the WPGraphQL JWT
+  // Authentication plugin is absent (no `login` field in the schema) or when the
+  // site requires email confirmation before first sign-in.
+  let signedIn = false
+  try {
     const loginData = await wpFetch<{
       login: { authToken: string | null; refreshToken: string | null } | null
     }>(LOGIN, { username, password })
@@ -120,19 +137,21 @@ export async function registerAction(
     const authToken = loginData.login?.authToken
     const refreshToken = loginData.login?.refreshToken
 
-    if (!authToken || !refreshToken) {
-      // The account exists but auto-login failed (e.g. the site requires email
-      // confirmation first). Report success and let them sign in manually.
-      return { status: 'success', code: 'session_expired' }
+    if (authToken && refreshToken) {
+      await setSessionCookies({ authToken, refreshToken })
+      signedIn = true
     }
-
-    await setSessionCookies({ authToken, refreshToken })
   } catch (error) {
-    return fail(codeOf(error))
+    console.log(
+      '[v0] Account created but auto-login is unavailable:',
+      codeOf(error)
+    )
   }
 
   revalidatePath('/account')
-  redirect('/account')
+  // `registered=1` makes the sign-in page explain that the account is ready and
+  // only the automatic sign-in step was skipped.
+  redirect(signedIn ? '/account' : '/account/login?registered=1')
 }
 
 /* -------------------------------------------------------------------------- */
@@ -155,8 +174,10 @@ export async function forgotPasswordAction(
 ): Promise<AuthActionState> {
   if (!isWpConfigured()) return fail('not_configured')
 
-  const username = text(formData, 'username')
-  if (!username) return fail('missing_fields', { username: 'missing_fields' })
+  const username = identifier(formData)
+  if (!username) {
+    return fail('missing_fields', { usernameOrEmail: 'missing_fields' })
+  }
 
   try {
     await wpFetch(SEND_PASSWORD_RESET, { username })
