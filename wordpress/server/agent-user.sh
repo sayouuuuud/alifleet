@@ -21,7 +21,9 @@ set -euo pipefail
 #  إعدادات — عدّلها لو مختلفة عندك
 # ---------------------------------------------------------------------------
 AGENT_USER="afagent"
-WP_PATH="/var/www/cms.alifleet.com"
+# سيبها فاضية والسكربت هيلاقي مسار ووردبريس لوحده، أو حدّدها بنفسك.
+# تقدر كمان تمرّرها وقت التشغيل:  WP_PATH=/var/www/html bash agent-user.sh create
+WP_PATH="${WP_PATH:-}"
 SUDOERS_SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/alifleet-agent.sudoers"
 SUDOERS_DST="/etc/sudoers.d/alifleet-agent"
 EXPIRE_DAYS="3"          # الحساب بيتقفل تلقائيًا بعد كام يوم
@@ -39,18 +41,51 @@ need_root() {
   fi
 }
 
+# ---------------------------------------------------------------------------
+#  البحث عن مسار ووردبريس — بيدوّر على wp-config.php في الأماكن المعتادة
+# ---------------------------------------------------------------------------
+resolve_wp_path() {
+  # 1) لو المستخدم حدّدها، نتحقق منها وبس
+  if [[ -n "$WP_PATH" ]]; then
+    if [[ -f "$WP_PATH/wp-config.php" ]]; then
+      c_ok "مسار ووردبريس (محدَّد يدويًا): $WP_PATH"
+      return 0
+    fi
+    c_err "المسار اللي حدّدته مفيه wp-config.php: $WP_PATH"
+    exit 1
+  fi
+
+  # 2) بحث تلقائي
+  local found=()
+  while IFS= read -r cfg; do
+    found+=("$(dirname "$cfg")")
+  done < <(find /var/www /srv /home /usr/share/nginx -maxdepth 4 -name wp-config.php -type f 2>/dev/null)
+
+  if [[ ${#found[@]} -eq 0 ]]; then
+    c_err "ملقيتش wp-config.php في /var/www أو /srv أو /home أو /usr/share/nginx"
+    c_err "دوّر عليه بنفسك:  find / -name wp-config.php -maxdepth 6 2>/dev/null"
+    c_err "وبعدها شغّل:  WP_PATH=/المسار/الصح bash agent-user.sh create"
+    exit 1
+  fi
+
+  if [[ ${#found[@]} -gt 1 ]]; then
+    c_err "لقيت أكتر من تنصيب ووردبريس — حدّد اللي عايزه بنفسك:"
+    printf '   - %s\n' "${found[@]}"
+    c_err "شغّل:  WP_PATH=/المسار/الصح bash agent-user.sh create"
+    exit 1
+  fi
+
+  WP_PATH="${found[0]}"
+  c_ok "مسار ووردبريس (اتلقى تلقائيًا): $WP_PATH"
+}
+
 # ===========================================================================
 #  create
 # ===========================================================================
 do_create() {
   c_head "1/7 — التحقق من المتطلبات"
 
-  if [[ ! -d "$WP_PATH" ]]; then
-    c_err "مسار ووردبريس مش موجود: $WP_PATH"
-    c_err "عدّل WP_PATH في أول السكربت وأعد المحاولة."
-    exit 1
-  fi
-  c_ok "مسار ووردبريس: $WP_PATH"
+  resolve_wp_path
 
   if [[ ! -f "$SUDOERS_SRC" ]]; then
     c_err "ملف الـ sudoers مش موجود جنب السكربت: $SUDOERS_SRC"
@@ -150,7 +185,7 @@ do_create() {
 
   ينتهي تلقائيًا: $EXPIRE_DATE
 
-════════════════════════════════════════════════════════════════════
+═════════════════════════════���══════════════════════════════════════
   اللي لازم تعمله قبل ما تسلّم التيرمينال
 ════════════════════════════════════════════════════════════════════
 
@@ -162,7 +197,7 @@ do_create() {
 
   3) انسخ البرومبت من docs/AGENT.md وإداهله.
 
-  4) خلّي عينك على اللي بيعمله:
+  4) خل��ي عينك على اللي بيعمله:
        sudo journalctl -f _COMM=sudo
        sudo tail -f /var/log/auth.log
 
@@ -260,10 +295,15 @@ do_delete() {
     c_ok "اليوزر مش موجود"
   fi
 
-  # رجّع wp-config لصلاحية أضيق
-  if [[ -f "$WP_PATH/wp-config.php" ]]; then
+  # رجّع wp-config لصلاحية أضيق — بنلاقي المسار تاني لأنه ممكن يكون اتلقى تلقائيًا
+  if [[ -z "$WP_PATH" ]]; then
+    WP_PATH="$(find /var/www /srv /home /usr/share/nginx -maxdepth 4 -name wp-config.php -type f 2>/dev/null | head -1 | xargs -r dirname)"
+  fi
+  if [[ -n "$WP_PATH" && -f "$WP_PATH/wp-config.php" ]]; then
     chmod 640 "$WP_PATH/wp-config.php"
-    c_ok "wp-config.php رجع 640"
+    c_ok "wp-config.php رجع 640 ($WP_PATH)"
+  else
+    c_warn "ملقيتش wp-config.php — رجّع صلاحيته بنفسك:  chmod 640 /المسار/wp-config.php"
   fi
 
   c_head "خطوة أخيرة مهمة"
@@ -289,7 +329,7 @@ case "${1:-}" in
 
 الإعدادات الحالية (عدّلها في أول الملف لو مختلفة):
   AGENT_USER  = $AGENT_USER
-  WP_PATH     = $WP_PATH
+  WP_PATH     = ${WP_PATH:-<بحث تلقائي عن wp-config.php>}
   EXPIRE_DAYS = $EXPIRE_DAYS
 EOF
     exit 1 ;;
