@@ -127,7 +127,7 @@ sudo bash /tmp/agent-user.sh backup
 | **مسار WordPress** | `/var/www/html` **جوه الكونتينر**. `/var/www` على الهوست فاضي — ده طبيعي |
 | **ملفات المشروع** | موجودة local على جهاز المستخدم وانت شايفها. النقل **خطوتين**: `scp` للهوست ثم `sudo wp-agent put` للكونتينر |
 
-### �� السيرفر مشترك — أهم قيد في الملف
+### ���� السيرفر مشترك — أهم قيد في الملف
 
 عليه **16 كونتينر**، منهم إنتاج مش تابع للمشروع ده: `usesend`، تطبيقين تانيين،
 4 قواعد PostgreSQL، Redis، وطبقة Coolify نفسها.
@@ -142,7 +142,7 @@ sudo bash /tmp/agent-user.sh backup
 |---|---|---|
 | البيئة | ✅ Docker + Coolify 4.1.2 | كل أوامر WP من خلال `sudo wp-agent` — مفيش `wp` على الهوست |
 | WordPress | ✅ منصَّب في كونتينر | متعملش `wp core install` ولا `wp config create` |
-| `wp-cli` | ⚠️ **مش منصّب** | أول خطوة في M0: `sudo wp-agent bootstrap`. وبيروح مع أي rebuild من Coolify — اتحقق من وجوده في أول كل جلسة |
+| `wp-cli` | ⚠️ **مش منصّب** | أول خطوة في M0: `sudo wp-agent bootstrap`. ��بيروح مع أي rebuild من Coolify — اتحقق من وجوده في أول كل جلسة |
 | قاعدة البيانات | ✅ MySQL 8 في كونتينر منفصل | ممنوع تلمس كونتينر الداتابيز. `wp db` مرفوض من `wp-agent` |
 | Traefik / الدومين / SSL | ✅ شغال، وبيتدار من Coolify | **مش شغلك.** بلّغ بالحالة وبس |
 | `nginx` / `php-fpm` / `mariadb` على الهوست | ✅ inactive (مقصود) | متحاولش تشغّلهم. القسم 11 في دليل التشغيل ملغي |
@@ -226,7 +226,7 @@ doctor` بيجيبهم كلهم. **ممنوع أي أمر كتابة قبل ما
 5. ❌ **Traefik / SSL:** أي تعديل على توجيه أو شهادات. (`nginx` و `certbot` مش موجودين شغالين أصلًا — القسم 11 في دليل التشغيل ملغي.)
 6. ❌ **تحويل الدومين:** `wp search-replace`, تغيير `siteurl` / `home`, أي حاجة في DNS. أخطر خطوة في المشروع كله.
 7. ❌ `rm -rf` بأي شكل، و`rm` على أي حاجة بره `/tmp`.
-8. ❌ `mysql` / `mysqldump` / `mariadb`, وأي `DROP` / `TRUNCATE` / `DELETE` — سواء بأمر مباشر أو من جوه `wp eval`.
+8. ❌ `mysql` / `mysqldump` / `mariadb`, وأي `DROP` / `TRUNCATE` / `DELETE` �� سواء بأمر مباشر أو من جوه `wp eval`.
 9. ❌ `sudo su`, `su -`, `visudo`, تعديل `/etc/sudoers*`, تعديل `/usr/local/bin/wp-agent`, إضافة يوزر, `authorized_keys`, `ufw`.
 10. ❌ **تسريب أسرار:** طبع محتوى `wp-config.php`, `wp config list --fields=name,value`, `wp config get DB_PASSWORD`, طبع `GRAPHQL_JWT_AUTH_SECRET_KEY` أو أي مفتاح. الأسرار تتولّد وتتحط في **نفس الأمر** من غير `echo`. للتحقق من الوجود: `sudo wp-agent wp config has <NAME>`.
 11. ❌ `git commit` / `git push`, أو تعديل `app/` أو `lib/` أو `components/` — الربط بالكود مرحلة تانية بتتعمل في v0، مش هنا.
@@ -345,7 +345,7 @@ sudo wp-agent doctor       # الجرد الكامل بعد ما wp-cli يبقى
 **بوابات الوقوف:**
 
 - أي `FAIL` من `validate-content.mjs` → **قف**.
-- لقيت داتا مستوردة قبل كده → **قف واسأل**.
+- لقيت ��اتا مستوردة قبل كده → **قف واسأل**.
 - **الـ volume بيغطي `wp-content` بس** → ⏸ قف. M2 كله (`wp config set`) هيروح مع أول rebuild، والثوابت لازم تتحوّل لمتغيرات بيئة في Coolify — **والمستخدم هو اللي يعملها**.
 - **`mu-plugins` بره الـ volume** → ⏸ قف. M3 و M4 مبنيين عليها.
 - **`siteurl` مش مطابق لدومين Traefik** → ⏸ قف وبلّغ بس. تصحيحه = تحويل دومين = 🔴 ممنوع.
@@ -472,7 +472,8 @@ sudo wp-agent wp eval 'echo post_type_exists("import_car") ? "CPT OK\n" : "CPT M
 scp wordpress/acf/alifleet-acf-schema.json afagent@SERVER_IP:/tmp/
 # على السيرفر — لازم ينتقل جوه الكونتينر الأول
 sudo wp-agent stage /tmp/alifleet-acf-schema.json
-sudo wp-agent wp acf import --json_file=/tmp/alifleet-stage/alifleet-acf-schema.json
+# ACF 6.8: الصيغة القديمة `wp acf import --json_file=…` مش موجودة، الأمر بقى:
+sudo wp-agent wp acf json import /tmp/alifleet-stage/alifleet-acf-schema.json
 ```
 
 **تحقق:** لازم **10 مجموعات** وكلها `show_in_graphql`.
@@ -513,7 +514,7 @@ sudo wp-agent wp eval-file /tmp/alifleet-stage/alifleet-import.php \
 **5.3 🚪 بوابة:** اعرض ملخص الجاف (كام create / كام update / كام `Image not found`) واستنى موافقة.
 أي `Image not found` → **صلّح المسار وأعد الجاف**. متكمّلش على التنفيذ الحقيقي.
 
-**5.4 التنفيذ** (بعد الموافقة بس): نفس الأمر بدون `--dry-run`.
+**5.4 التنفيذ** (بعد الم��افقة بس): نفس الأمر بدون `--dry-run`.
 المتوقع: `Success: created 31, updated 0, media uploaded 24, skipped 0`
 
 **5.5 تحقق:**
@@ -554,6 +555,37 @@ foreach (get_posts(["post_type" => "product", "numberposts" => -1]) as $p) {
 **أي `EMPTY` في الأمر الأخير = فشل** → قف وبلّغ. (السبب: schema قديمة. الحل إعادة `wp acf import` ثم إعادة السكربت — **بإذن**.)
 
 > السكربت idempotent وبيحمي `post_content`، فالإعادة آمنة — ومع ذلك تفضل 🟡 ASK.
+
+---
+
+#### 🔴🔴 قاعدة إلزامية: **متثقش في رسالة `DRY RUN` — اتحقق من الأعداد**
+
+**حصلت فعلًا (2026-08-06):** `--dry-run` طبع `DRY RUN — no changes will be written`
+وبعدها كتب **27 كائن** في داتابيز إنتاج وحدّث 4 صفحات قايمة.
+
+**السبب:** `wp eval-file` بيعمل `eval()` للملف **من جوه ميثود**، فأعلى الملف **مش**
+الـ global scope. يعني `$dry_run = true;` في أول الملف **مش** global، وكل
+`global $dry_run;` جوه الدوال بتقرا **NULL** → falsy → **كل الحمايات بتتقفل لوحدها
+في صمت**. ونفس المشكلة كانت بتخلي `$stats` تعدّ صفر و`$images_dir` فاضي (0 صورة).
+
+**القاعدة:** قبل وبعد **كل** أمر ممكن يكتب — حتى لو `--dry-run` — نفّذ:
+
+```bash
+for t in page post product import_car attachment; do
+  printf "%-11s " $t; sudo wp-agent wp post list --post_type=$t --format=count; echo
+done
+sudo wp-agent wp option get page_on_front
+```
+
+**العدد اتغيّر بعد dry-run؟** ⛔ قف فورًا وبلّغ — دي حادثة كتابة، مش نجاح.
+
+**كمان لأي سكربت PHP بيتشغّل بـ `eval-file`:**
+- ❌ `declare(strict_types=1)` — PHP بيرفضه جوه `eval()`، الملف بيموت قبل أول سطر
+- ❌ متغيرات أعلى الملف مع `global` جوه الدوال — استخدم `$GLOBALS['x']` صريح
+- ❌ `__DIR__` — بيرجّع مجلد WP-CLI، مش مجلد السكربت
+- ❌ `--flags` — WP-CLI بياخدها لنفسه ويرفضها (`unknown --seed parameter`).
+  و`WP_CLI_STRICT_ARGS_MODE=1` **مش بينفع** لأن `wp-agent` بيعمل `docker exec`
+  بدون `-e`. مرّر الوسائط **بدون شرطتين**: `dry-run seed=/path/x.json`
 > **ممنوع** تستخدم طريقة CSV / WP All Import. المسار ده بس.
 
 > ⚠️ **`eval-file` = تنفيذ PHP حر جوه الكونتينر.** ده أوسع صلاحية عندك في
@@ -571,7 +603,7 @@ foreach (get_posts(["post_type" => "product", "numberposts" => -1]) as $p) {
 
 ```bash
 sudo wp-agent wp option update woocommerce_store_address "Industrial Zone, Building 12"
-sudo wp-agent wp option update woocommerce_store_city "Haifa"
+sudo wp-agent wp option update woocommerce_store_city "Haifa"   # ⚠️ كان "Reine" على السيرفر (بيانات إنتاج) — الأمر ده بيكتب فوقها
 sudo wp-agent wp option update woocommerce_default_country "IL"
 sudo wp-agent wp option update woocommerce_currency "ILS"
 sudo wp-agent wp option update woocommerce_currency_pos "right"
@@ -610,17 +642,40 @@ curl -s -X POST https://cms.alifleet.com/graphql -H 'Content-Type: application/j
   -d '{"query":"{ importCars(first: 3) { nodes { slug title } } }"}'
 
 curl -s -X POST https://cms.alifleet.com/graphql -H 'Content-Type: application/json' \
-  -d '{"query":"{ siteOptions { siteOptionsFields { companyInfo { companyNameEn phoneNumber } commerceSettings { currencySymbol } } } }"}'
+  -d '{"query":"{ page(id: \"home\", idType: URI) { title homePageFields { heroSection { heroLine1Ar heroLine1En } } } }"}'
+
+# حقول CPT مسطّحة (مش متعشّشة) — الأسماء دي مؤكَّدة من السيرفر
+curl -s -X POST https://cms.alifleet.com/graphql -H 'Content-Type: application/json' \
+  -d '{"query":"{ importCars(first:2){ nodes { title importCarFields { carModel year price status featuredImage { node { sourceUrl } } } } } }"}'
 
 curl -s -X POST https://cms.alifleet.com/graphql -H 'Content-Type: application/json' \
-  -d '{"query":"{ page(id: \"home\", idType: URI) { title homePageFields { heroSection { heroLine1Ar heroLine1En } } } }"}'
+  -d '{"query":"{ products(first:2){ nodes { name sparePartFields { sku nameEn brand } ... on SimpleProduct { price } } } }"}'
+
+curl -s -X POST https://cms.alifleet.com/graphql -H 'Content-Type: application/json' \
+  -d '{"query":"{ posts(first:2){ nodes { title blogPostFields { readingMinutes } } } }"}'
 ```
+
+**⚠️ `siteOptions` مش موجود في الـ schema — وده مقصود، مش عيب.** إعدادات الموقع
+(`companyInfo` / `commerceSettings` / إلخ) بتستخدم ACF options page، واللي محتاج
+**ACF PRO**. الموجود هنا هو ACF المجانية (`acf_get_options_pages()` غير معرَّفة)، فمفيش
+`siteOptions` في RootQuery خالص. القيم **مكتوبة فعلًا** في `wp_options` بالبادئة
+`options_` (`options_company_info`, `options_commerce_settings`, `options_header_settings`,
+`options_footer_settings`) وبتتقرا بـ `get_field('company_info','option')` من PHP.
+لو الفرونت محتاجها من GraphQL: إما ACF PRO، أو تعرّضها بـ `register_graphql_field`
+في mu-plugin (تغيير في المستودع — 🟡 محتاج إذن).
+
+**ملحوظة على الـ introspection:** `__type` / `__schema` **مرفوضين للطلبات العامة**
+افتراضيًا (`GraphQL introspection is not allowed for public requests`). يعني `curl`
+مش هيعرف يجيب أسماء الحقول. أكّدها من `wordpress/acf/alifleet-acf-schema.json` محليًا،
+أو من WPGraphQL IDE في لوحة التحكم (وهي مفعّلة: `wpgraphql-ide` 5.4.0).
 
 | الناتج | معناه |
 |---|---|
 | `Cannot query field "importCars"` | mu-plugin مش متحمّلة → ارجع لـ M3 |
 | حقول ACF بترجّع `null` | `wpgraphql-acf` مش مفعّلة أو ترتيبها غلط → M1 |
-| أسماء حقول مختلفة | WPGraphQL بيحوّل لـ camelCase وشكل التعشيش يختلف بحسب النسخة. **أكّد الأسماء من GraphiQL IDE في لوحة التحكم** قبل ما تقول فشل |
+| `Cannot query field "siteOptions"` | ✅ **متوقّع** — ACF المجانية، شوف الملحوظة فوق. **مش فشل** |
+| `Did you mean "readingMinutes"?` | اسم الحقل تخمين غلط. WPGraphQL بيحوّل `snake_case` لـ `camelCase` وبيسطّح الحقول — **الحقول مش متعشّشة تحت مجموعات** زي `basicInfo`. هات الاسم الحقيقي من ملف الـ schema |
+| أسماء حقول مختلفة | **أكّد الأسماء من ملف الـ schema أو WPGraphQL IDE** قبل ما تقول فشل |
 
 **استخدم الدومين الفعلي اللي طلع من `doctor`** (من Traefik labels) — مش `cms.alifleet.com`
 مفترضًا. لو مختلف: بلّغ بالفرق ولا تصلّح حاجة.
@@ -661,7 +716,7 @@ curl -s -X POST http://127.0.0.1/graphql -H 'Host: <الدومين-من-doctor>'
    • لو الثوابت مش في volume → لازم تتحوّل لمتغيرات بيئة في Coolify (انت اللي تعملها)
 
 📌 محتاج لوحة تحكم (منك): مناطق الشحن في WooCommerce — الدومين والشهادة —
-   <أي يوزر تجريبي اتعمل ومحتاج حذف>
+   <أي ي��زر تجريبي اتعمل ومحتاج حذف>
 ⚠️ ملاحظات ومخاطر مفتوحة: <...>
 🔑 أسرار: مفيش سر واحد اتطبع في أي رسالة
 🧹 للتنظيف: sudo bash /tmp/agent-user.sh delete  ثم دوّر مفتاح الـ JWT وباسورد DB من Coolify
