@@ -540,12 +540,14 @@ export function Services() {
           const full = trackingCode.textContent ?? ''
           trackingCode.textContent = ''
           let idx = 0
-          const typewriter = gsap.to({}, {
+          gsap.to({}, {
             duration: full.length * 0.06,
             ease: 'none',
             scrollTrigger: enter,
-            onUpdate() {
-              const progress = Math.round(typewriter.progress() * full.length)
+            // GSAP fires onUpdate synchronously on creation, before the const
+            // assignment lands — read progress from `this` (the tween) instead.
+            onUpdate(this: gsap.core.Tween) {
+              const progress = Math.round(this.progress() * full.length)
               if (progress > idx) {
                 idx = progress
                 trackingCode.textContent = full.slice(0, idx)
