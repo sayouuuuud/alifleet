@@ -126,6 +126,65 @@ verify_docker_env() {
 }
 
 # ===========================================================================
+#  check_ssh_password_login
+#
+#  السكربت بيظبط باسورد، بس أغلب الـ VPS بتكون PasswordAuthentication no.
+#  في الحالة دي الباسورد ملوش أي لازمة والـ agent مش هيقدر يدخل خالص.
+#  بنفحص ونبلّغ **وبس** — مش بنعدّل إعدادات SSH لوحدنا، ده قرار المستخدم.
+# ===========================================================================
+check_ssh_password_login() {
+  echo "حالة الدخول بالباسورد عبر SSH:"
+
+  local eff=""
+  if command -v sshd &>/dev/null; then
+    eff="$(sshd -T 2>/dev/null | awk '$1=="passwordauthentication"{print $2}')"
+  elif [[ -x /usr/sbin/sshd ]]; then
+    eff="$(/usr/sbin/sshd -T 2>/dev/null | awk '$1=="passwordauthentication"{print $2}')"
+  fi
+
+  if [[ -z "$eff" ]]; then
+    c_warn "    مش قادر أقرأ إعداد sshd الفعلي — اتأكد بنفسك:"
+    echo  "      sudo sshd -T | grep -i passwordauthentication"
+    return
+  fi
+
+  if [[ "$eff" == "yes" ]]; then
+    c_ok "    PasswordAuthentication yes → الباسورد اللي تحت هيشتغل"
+    return
+  fi
+
+  c_err "    PasswordAuthentication no → الباسورد اللي تحت **مش** هيشتغل!"
+  cat <<'SSHEOF'
+
+    عندك تلات اختيارات — اختار واحد:
+
+    (أ) مفتاح SSH للـ agent — الأنضف، ومفيش تخفيف أمان على السيرفر كله:
+        الـ agent يبعتلك المفتاح العام بتاعه، وانت تحطه:
+          sudo mkdir -p /home/afagent/.ssh
+          sudo nano /home/afagent/.ssh/authorized_keys     # الصق المفتاح العام
+          sudo chown -R afagent:afagent /home/afagent/.ssh
+          sudo chmod 700 /home/afagent/.ssh
+          sudo chmod 600 /home/afagent/.ssh/authorized_keys
+
+    (ب) اسمح بالباسورد لليوزر ده **بس** (مش للسيرفر كله):
+          sudo tee /etc/ssh/sshd_config.d/60-afagent.conf >/dev/null <<'EOF'
+        Match User afagent
+            PasswordAuthentication yes
+        EOF
+          sudo sshd -t && sudo systemctl reload ssh
+        وبعد ما يخلّص، امسح الملف:
+          sudo rm /etc/ssh/sshd_config.d/60-afagent.conf && sudo systemctl reload ssh
+
+    (ج) متفتحش SSH خالص — انت تنفّذ الأوامر بنفسك والـ agent يكتبها لك.
+        (أأمن اختيار، بس أبطأ.)
+
+    ⚠️ متعملش PasswordAuthentication yes على مستوى السيرفر كله — ده بيفتح
+       root وكل اليوزرات لهجمات التخمين، والسيرفر ده عليه إنتاج لمشاريع تانية.
+
+SSHEOF
+}
+
+# ===========================================================================
 #  create
 # ===========================================================================
 do_create() {
@@ -213,6 +272,9 @@ do_create() {
   sudo -l -U "$AGENT_USER" 2>/dev/null | sed 's/^/    /' || c_warn "متعرفش تقرأ القايمة"
 
   echo
+  check_ssh_password_login
+
+  echo
   echo "اختبار سريع إن الباب شغال (بيتنفّذ كـ $AGENT_USER):"
   su -s /bin/bash -c "sudo -n $WPAGENT_DST help >/dev/null 2>&1 && echo '    ✔ wp-agent شغال' || echo '    ✖ wp-agent مش شغال — راجع الـ sudoers'" "$AGENT_USER" || true
   su -s /bin/bash -c "sudo -n /usr/bin/docker ps >/dev/null 2>&1 && echo '    ✖ خطر: docker متاح لليوزر!' || echo '    ✔ docker مش متاح لليوزر (صح)'" "$AGENT_USER" || true
@@ -274,7 +336,7 @@ do_backup() {
   chmod 700 "$dest"
 
   # 1) قاعدة البيانات — من كونتينر MySQL. بيانات الاتصال بتتقرا من متغيرات
-  #    بيئة كونتينر WordPress، فمفيش باسورد مكتوب في السكربت ده ولا بيتطبع.
+  #    بيئة كو��تينر WordPress، فمفيش باسورد مكتوب في السكربت ده ولا بيتطبع.
   c_warn "بيتم تصدير قاعدة البيانات من $DB_CONTAINER ..."
   local envs db_name db_user db_pass
   envs="$(docker inspect -f '{{range .Config.Env}}{{println .}}{{end}}' "$WP_CONTAINER")"
@@ -448,7 +510,7 @@ case "${1:-}" in
 
   create   إنشاء اليوزر المؤقت + باسورد عشوائي + تركيب wp-agent والصلاحيات
   backup   نسخة احتياطية (DB + wp-config + wp-content) — إلزامية قبل create
-  status   عرض حالة اليوزر والجلسات ولوج wp-agent
+  status   ع��ض حالة اليوزر والجلسات ولوج wp-agent
   revoke   قفل فوري للحساب (طوارئ) — بيشيل wp-agent الأول
   delete   مسح الحساب نهائيًا بعد ما الـ agent يخلّص
 
