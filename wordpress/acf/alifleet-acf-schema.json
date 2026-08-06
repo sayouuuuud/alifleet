@@ -1,5 +1,6 @@
 [
   {
+    "_acf_pro_note": "Converted from ACF PRO repeaters to fixed-count ACF free groups (see docs/ACF-FREE-CONVERSION-PLAN.md) because no ACF PRO licence was purchased. Every former repeater is now N numbered groups with a hard maximum; adding slot N+1 means editing this schema by hand. Migration path back: buy ACF PRO Personal (advancedcustomfields.com/pro), re-import the repeater schema, then copy each numbered group into a repeater row (small dataset, one-time manual job).",
     "key": "group_site_options",
     "title": "Site Options & Global Settings",
     "fields": [
@@ -58,26 +59,80 @@
             "default_value": "info@alifleet.com"
           },
           {
-            "key": "field_options_address_lines",
-            "label": "Address Lines",
-            "name": "address_lines",
-            "type": "repeater",
-            "layout": "table",
+            "key": "field_options_address_lines_1",
+            "label": "Address Line 1",
+            "name": "address_line_1",
+            "type": "group",
+            "layout": "row",
             "sub_fields": [
               {
-                "key": "field_options_address_line_ar",
+                "key": "field_options_address_line_ar_1",
                 "label": "Address Line (AR)",
                 "name": "line_ar",
                 "type": "text"
               },
               {
-                "key": "field_options_address_line_en",
+                "key": "field_options_address_line_en_1",
                 "label": "Address Line (EN)",
                 "name": "line_en",
                 "type": "text"
               },
               {
-                "key": "field_options_address_line_he",
+                "key": "field_options_address_line_he_1",
+                "label": "Address Line (HE)",
+                "name": "line_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_options_address_lines_2",
+            "label": "Address Line 2",
+            "name": "address_line_2",
+            "type": "group",
+            "layout": "row",
+            "sub_fields": [
+              {
+                "key": "field_options_address_line_ar_2",
+                "label": "Address Line (AR)",
+                "name": "line_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_options_address_line_en_2",
+                "label": "Address Line (EN)",
+                "name": "line_en",
+                "type": "text"
+              },
+              {
+                "key": "field_options_address_line_he_2",
+                "label": "Address Line (HE)",
+                "name": "line_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_options_address_lines_3",
+            "label": "Address Line 3",
+            "name": "address_line_3",
+            "type": "group",
+            "layout": "row",
+            "sub_fields": [
+              {
+                "key": "field_options_address_line_ar_3",
+                "label": "Address Line (AR)",
+                "name": "line_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_options_address_line_en_3",
+                "label": "Address Line (EN)",
+                "name": "line_en",
+                "type": "text"
+              },
+              {
+                "key": "field_options_address_line_he_3",
                 "label": "Address Line (HE)",
                 "name": "line_he",
                 "type": "text"
@@ -350,52 +405,259 @@
             "type": "textarea"
           },
           {
-            "key": "field_home_hero_slides",
-            "label": "Hero Slides",
-            "name": "hero_slides",
-            "type": "repeater",
+            "key": "field_home_hero_slides_1",
+            "label": "Hero Slide 1",
+            "name": "hero_slide_1",
+            "type": "group",
             "layout": "block",
-            "button_label": "Add Hero Slide",
             "sub_fields": [
               {
-                "key": "field_home_hero_slide_image",
+                "key": "field_home_hero_slide_image_1",
                 "label": "Slide Image",
                 "name": "slide_image",
                 "type": "image",
                 "return_format": "array"
               },
               {
-                "key": "field_home_hero_slide_label_ar",
+                "key": "field_home_hero_slide_label_ar_1",
                 "label": "Slide Label (AR)",
                 "name": "slide_label_ar",
                 "type": "text"
               },
               {
-                "key": "field_home_hero_slide_label_en",
+                "key": "field_home_hero_slide_label_en_1",
                 "label": "Slide Label (EN)",
                 "name": "slide_label_en",
                 "type": "text"
               },
               {
-                "key": "field_home_hero_slide_label_he",
+                "key": "field_home_hero_slide_label_he_1",
                 "label": "Slide Label (HE)",
                 "name": "slide_label_he",
                 "type": "text"
               },
               {
-                "key": "field_home_hero_slide_alt_ar",
+                "key": "field_home_hero_slide_alt_ar_1",
                 "label": "Slide Alt Text (AR)",
                 "name": "slide_alt_ar",
                 "type": "text"
               },
               {
-                "key": "field_home_hero_slide_alt_en",
+                "key": "field_home_hero_slide_alt_en_1",
                 "label": "Slide Alt Text (EN)",
                 "name": "slide_alt_en",
                 "type": "text"
               },
               {
-                "key": "field_home_hero_slide_alt_he",
+                "key": "field_home_hero_slide_alt_he_1",
+                "label": "Slide Alt Text (HE)",
+                "name": "slide_alt_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_home_hero_slides_2",
+            "label": "Hero Slide 2",
+            "name": "hero_slide_2",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_hero_slide_image_2",
+                "label": "Slide Image",
+                "name": "slide_image",
+                "type": "image",
+                "return_format": "array"
+              },
+              {
+                "key": "field_home_hero_slide_label_ar_2",
+                "label": "Slide Label (AR)",
+                "name": "slide_label_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_label_en_2",
+                "label": "Slide Label (EN)",
+                "name": "slide_label_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_label_he_2",
+                "label": "Slide Label (HE)",
+                "name": "slide_label_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_ar_2",
+                "label": "Slide Alt Text (AR)",
+                "name": "slide_alt_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_en_2",
+                "label": "Slide Alt Text (EN)",
+                "name": "slide_alt_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_he_2",
+                "label": "Slide Alt Text (HE)",
+                "name": "slide_alt_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_home_hero_slides_3",
+            "label": "Hero Slide 3",
+            "name": "hero_slide_3",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_hero_slide_image_3",
+                "label": "Slide Image",
+                "name": "slide_image",
+                "type": "image",
+                "return_format": "array"
+              },
+              {
+                "key": "field_home_hero_slide_label_ar_3",
+                "label": "Slide Label (AR)",
+                "name": "slide_label_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_label_en_3",
+                "label": "Slide Label (EN)",
+                "name": "slide_label_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_label_he_3",
+                "label": "Slide Label (HE)",
+                "name": "slide_label_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_ar_3",
+                "label": "Slide Alt Text (AR)",
+                "name": "slide_alt_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_en_3",
+                "label": "Slide Alt Text (EN)",
+                "name": "slide_alt_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_he_3",
+                "label": "Slide Alt Text (HE)",
+                "name": "slide_alt_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_home_hero_slides_4",
+            "label": "Hero Slide 4",
+            "name": "hero_slide_4",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_hero_slide_image_4",
+                "label": "Slide Image",
+                "name": "slide_image",
+                "type": "image",
+                "return_format": "array"
+              },
+              {
+                "key": "field_home_hero_slide_label_ar_4",
+                "label": "Slide Label (AR)",
+                "name": "slide_label_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_label_en_4",
+                "label": "Slide Label (EN)",
+                "name": "slide_label_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_label_he_4",
+                "label": "Slide Label (HE)",
+                "name": "slide_label_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_ar_4",
+                "label": "Slide Alt Text (AR)",
+                "name": "slide_alt_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_en_4",
+                "label": "Slide Alt Text (EN)",
+                "name": "slide_alt_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_he_4",
+                "label": "Slide Alt Text (HE)",
+                "name": "slide_alt_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_home_hero_slides_5",
+            "label": "Hero Slide 5",
+            "name": "hero_slide_5",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_hero_slide_image_5",
+                "label": "Slide Image",
+                "name": "slide_image",
+                "type": "image",
+                "return_format": "array"
+              },
+              {
+                "key": "field_home_hero_slide_label_ar_5",
+                "label": "Slide Label (AR)",
+                "name": "slide_label_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_label_en_5",
+                "label": "Slide Label (EN)",
+                "name": "slide_label_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_label_he_5",
+                "label": "Slide Label (HE)",
+                "name": "slide_label_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_ar_5",
+                "label": "Slide Alt Text (AR)",
+                "name": "slide_alt_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_en_5",
+                "label": "Slide Alt Text (EN)",
+                "name": "slide_alt_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_hero_slide_alt_he_5",
                 "label": "Slide Alt Text (HE)",
                 "name": "slide_alt_he",
                 "type": "text"
@@ -431,51 +693,254 @@
             "type": "text"
           },
           {
-            "key": "field_home_stats_items",
-            "label": "Stat Counter Items",
-            "name": "stats_items",
-            "type": "repeater",
-            "layout": "table",
-            "button_label": "Add Stat Counter",
+            "key": "field_home_stats_items_1",
+            "label": "Stat Counter 1",
+            "name": "stat_item_1",
+            "type": "group",
+            "layout": "row",
             "sub_fields": [
               {
-                "key": "field_home_stat_value",
+                "key": "field_home_stat_value_1",
                 "label": "Stat Number",
                 "name": "stat_value",
                 "type": "number"
               },
               {
-                "key": "field_home_stat_suffix_ar",
+                "key": "field_home_stat_suffix_ar_1",
                 "label": "Stat Suffix (AR)",
                 "name": "stat_suffix_ar",
                 "type": "text"
               },
               {
-                "key": "field_home_stat_suffix_en",
+                "key": "field_home_stat_suffix_en_1",
                 "label": "Stat Suffix (EN)",
                 "name": "stat_suffix_en",
                 "type": "text"
               },
               {
-                "key": "field_home_stat_suffix_he",
+                "key": "field_home_stat_suffix_he_1",
                 "label": "Stat Suffix (HE)",
                 "name": "stat_suffix_he",
                 "type": "text"
               },
               {
-                "key": "field_home_stat_label_ar",
+                "key": "field_home_stat_label_ar_1",
                 "label": "Stat Label (AR)",
                 "name": "stat_label_ar",
                 "type": "text"
               },
               {
-                "key": "field_home_stat_label_en",
+                "key": "field_home_stat_label_en_1",
                 "label": "Stat Label (EN)",
                 "name": "stat_label_en",
                 "type": "text"
               },
               {
-                "key": "field_home_stat_label_he",
+                "key": "field_home_stat_label_he_1",
+                "label": "Stat Label (HE)",
+                "name": "stat_label_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_home_stats_items_2",
+            "label": "Stat Counter 2",
+            "name": "stat_item_2",
+            "type": "group",
+            "layout": "row",
+            "sub_fields": [
+              {
+                "key": "field_home_stat_value_2",
+                "label": "Stat Number",
+                "name": "stat_value",
+                "type": "number"
+              },
+              {
+                "key": "field_home_stat_suffix_ar_2",
+                "label": "Stat Suffix (AR)",
+                "name": "stat_suffix_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_suffix_en_2",
+                "label": "Stat Suffix (EN)",
+                "name": "stat_suffix_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_suffix_he_2",
+                "label": "Stat Suffix (HE)",
+                "name": "stat_suffix_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_ar_2",
+                "label": "Stat Label (AR)",
+                "name": "stat_label_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_en_2",
+                "label": "Stat Label (EN)",
+                "name": "stat_label_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_he_2",
+                "label": "Stat Label (HE)",
+                "name": "stat_label_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_home_stats_items_3",
+            "label": "Stat Counter 3",
+            "name": "stat_item_3",
+            "type": "group",
+            "layout": "row",
+            "sub_fields": [
+              {
+                "key": "field_home_stat_value_3",
+                "label": "Stat Number",
+                "name": "stat_value",
+                "type": "number"
+              },
+              {
+                "key": "field_home_stat_suffix_ar_3",
+                "label": "Stat Suffix (AR)",
+                "name": "stat_suffix_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_suffix_en_3",
+                "label": "Stat Suffix (EN)",
+                "name": "stat_suffix_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_suffix_he_3",
+                "label": "Stat Suffix (HE)",
+                "name": "stat_suffix_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_ar_3",
+                "label": "Stat Label (AR)",
+                "name": "stat_label_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_en_3",
+                "label": "Stat Label (EN)",
+                "name": "stat_label_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_he_3",
+                "label": "Stat Label (HE)",
+                "name": "stat_label_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_home_stats_items_4",
+            "label": "Stat Counter 4",
+            "name": "stat_item_4",
+            "type": "group",
+            "layout": "row",
+            "sub_fields": [
+              {
+                "key": "field_home_stat_value_4",
+                "label": "Stat Number",
+                "name": "stat_value",
+                "type": "number"
+              },
+              {
+                "key": "field_home_stat_suffix_ar_4",
+                "label": "Stat Suffix (AR)",
+                "name": "stat_suffix_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_suffix_en_4",
+                "label": "Stat Suffix (EN)",
+                "name": "stat_suffix_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_suffix_he_4",
+                "label": "Stat Suffix (HE)",
+                "name": "stat_suffix_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_ar_4",
+                "label": "Stat Label (AR)",
+                "name": "stat_label_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_en_4",
+                "label": "Stat Label (EN)",
+                "name": "stat_label_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_he_4",
+                "label": "Stat Label (HE)",
+                "name": "stat_label_he",
+                "type": "text"
+              }
+            ]
+          },
+          {
+            "key": "field_home_stats_items_5",
+            "label": "Stat Counter 5",
+            "name": "stat_item_5",
+            "type": "group",
+            "layout": "row",
+            "sub_fields": [
+              {
+                "key": "field_home_stat_value_5",
+                "label": "Stat Number",
+                "name": "stat_value",
+                "type": "number"
+              },
+              {
+                "key": "field_home_stat_suffix_ar_5",
+                "label": "Stat Suffix (AR)",
+                "name": "stat_suffix_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_suffix_en_5",
+                "label": "Stat Suffix (EN)",
+                "name": "stat_suffix_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_suffix_he_5",
+                "label": "Stat Suffix (HE)",
+                "name": "stat_suffix_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_ar_5",
+                "label": "Stat Label (AR)",
+                "name": "stat_label_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_en_5",
+                "label": "Stat Label (EN)",
+                "name": "stat_label_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_stat_label_he_5",
                 "label": "Stat Label (HE)",
                 "name": "stat_label_he",
                 "type": "text"
@@ -587,69 +1052,278 @@
             "type": "textarea"
           },
           {
-            "key": "field_home_fleet_vehicles",
-            "label": "Showcase Panels",
-            "name": "fleet_vehicles",
-            "type": "repeater",
+            "key": "field_home_fleet_vehicles_1",
+            "label": "Showcase Panel 1",
+            "name": "fleet_vehicle_1",
+            "type": "group",
             "layout": "block",
-            "button_label": "Add Vehicle Panel",
             "sub_fields": [
               {
-                "key": "field_home_fleet_vehicle_title_ar",
+                "key": "field_home_fleet_vehicle_title_ar_1",
                 "label": "Title (AR)",
                 "name": "title_ar",
                 "type": "text"
               },
               {
-                "key": "field_home_fleet_vehicle_title_en",
+                "key": "field_home_fleet_vehicle_title_en_1",
                 "label": "Title (EN)",
                 "name": "title_en",
                 "type": "text"
               },
               {
-                "key": "field_home_fleet_vehicle_title_he",
+                "key": "field_home_fleet_vehicle_title_he_1",
                 "label": "Title (HE)",
                 "name": "title_he",
                 "type": "text"
               },
               {
-                "key": "field_home_fleet_vehicle_tag_ar",
+                "key": "field_home_fleet_vehicle_tag_ar_1",
                 "label": "Tag Label (AR)",
                 "name": "tag_ar",
                 "type": "text"
               },
               {
-                "key": "field_home_fleet_vehicle_tag_en",
+                "key": "field_home_fleet_vehicle_tag_en_1",
                 "label": "Tag Label (EN)",
                 "name": "tag_en",
                 "type": "text"
               },
               {
-                "key": "field_home_fleet_vehicle_tag_he",
+                "key": "field_home_fleet_vehicle_tag_he_1",
                 "label": "Tag Label (HE)",
                 "name": "tag_he",
                 "type": "text"
               },
               {
-                "key": "field_home_fleet_vehicle_description_ar",
+                "key": "field_home_fleet_vehicle_description_ar_1",
                 "label": "Description (AR)",
                 "name": "description_ar",
                 "type": "textarea"
               },
               {
-                "key": "field_home_fleet_vehicle_description_en",
+                "key": "field_home_fleet_vehicle_description_en_1",
                 "label": "Description (EN)",
                 "name": "description_en",
                 "type": "textarea"
               },
               {
-                "key": "field_home_fleet_vehicle_description_he",
+                "key": "field_home_fleet_vehicle_description_he_1",
                 "label": "Description (HE)",
                 "name": "description_he",
                 "type": "textarea"
               },
               {
-                "key": "field_home_fleet_vehicle_image",
+                "key": "field_home_fleet_vehicle_image_1",
+                "label": "Panel Image",
+                "name": "image",
+                "type": "image",
+                "return_format": "array"
+              }
+            ]
+          },
+          {
+            "key": "field_home_fleet_vehicles_2",
+            "label": "Showcase Panel 2",
+            "name": "fleet_vehicle_2",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_fleet_vehicle_title_ar_2",
+                "label": "Title (AR)",
+                "name": "title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_title_en_2",
+                "label": "Title (EN)",
+                "name": "title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_title_he_2",
+                "label": "Title (HE)",
+                "name": "title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_ar_2",
+                "label": "Tag Label (AR)",
+                "name": "tag_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_en_2",
+                "label": "Tag Label (EN)",
+                "name": "tag_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_he_2",
+                "label": "Tag Label (HE)",
+                "name": "tag_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_ar_2",
+                "label": "Description (AR)",
+                "name": "description_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_en_2",
+                "label": "Description (EN)",
+                "name": "description_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_he_2",
+                "label": "Description (HE)",
+                "name": "description_he",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_image_2",
+                "label": "Panel Image",
+                "name": "image",
+                "type": "image",
+                "return_format": "array"
+              }
+            ]
+          },
+          {
+            "key": "field_home_fleet_vehicles_3",
+            "label": "Showcase Panel 3",
+            "name": "fleet_vehicle_3",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_fleet_vehicle_title_ar_3",
+                "label": "Title (AR)",
+                "name": "title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_title_en_3",
+                "label": "Title (EN)",
+                "name": "title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_title_he_3",
+                "label": "Title (HE)",
+                "name": "title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_ar_3",
+                "label": "Tag Label (AR)",
+                "name": "tag_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_en_3",
+                "label": "Tag Label (EN)",
+                "name": "tag_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_he_3",
+                "label": "Tag Label (HE)",
+                "name": "tag_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_ar_3",
+                "label": "Description (AR)",
+                "name": "description_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_en_3",
+                "label": "Description (EN)",
+                "name": "description_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_he_3",
+                "label": "Description (HE)",
+                "name": "description_he",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_image_3",
+                "label": "Panel Image",
+                "name": "image",
+                "type": "image",
+                "return_format": "array"
+              }
+            ]
+          },
+          {
+            "key": "field_home_fleet_vehicles_4",
+            "label": "Showcase Panel 4",
+            "name": "fleet_vehicle_4",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_fleet_vehicle_title_ar_4",
+                "label": "Title (AR)",
+                "name": "title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_title_en_4",
+                "label": "Title (EN)",
+                "name": "title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_title_he_4",
+                "label": "Title (HE)",
+                "name": "title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_ar_4",
+                "label": "Tag Label (AR)",
+                "name": "tag_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_en_4",
+                "label": "Tag Label (EN)",
+                "name": "tag_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_tag_he_4",
+                "label": "Tag Label (HE)",
+                "name": "tag_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_ar_4",
+                "label": "Description (AR)",
+                "name": "description_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_en_4",
+                "label": "Description (EN)",
+                "name": "description_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_description_he_4",
+                "label": "Description (HE)",
+                "name": "description_he",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_fleet_vehicle_image_4",
                 "label": "Panel Image",
                 "name": "image",
                 "type": "image",
@@ -660,27 +1334,215 @@
         ]
       },
       {
-        "key": "field_home_marquee_items",
-        "label": "Marquee Strip Text Items",
-        "name": "marquee_items",
-        "type": "repeater",
-        "layout": "table",
-        "button_label": "Add Marquee Text",
+        "key": "field_home_marquee_items_1",
+        "label": "Marquee Item 1",
+        "name": "marquee_item_1",
+        "type": "group",
+        "layout": "row",
         "sub_fields": [
           {
-            "key": "field_home_marquee_text_ar",
+            "key": "field_home_marquee_text_ar_1",
             "label": "Item Text (AR)",
             "name": "item_text_ar",
             "type": "text"
           },
           {
-            "key": "field_home_marquee_text_en",
+            "key": "field_home_marquee_text_en_1",
             "label": "Item Text (EN)",
             "name": "item_text_en",
             "type": "text"
           },
           {
-            "key": "field_home_marquee_text_he",
+            "key": "field_home_marquee_text_he_1",
+            "label": "Item Text (HE)",
+            "name": "item_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_home_marquee_items_2",
+        "label": "Marquee Item 2",
+        "name": "marquee_item_2",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_home_marquee_text_ar_2",
+            "label": "Item Text (AR)",
+            "name": "item_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_en_2",
+            "label": "Item Text (EN)",
+            "name": "item_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_he_2",
+            "label": "Item Text (HE)",
+            "name": "item_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_home_marquee_items_3",
+        "label": "Marquee Item 3",
+        "name": "marquee_item_3",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_home_marquee_text_ar_3",
+            "label": "Item Text (AR)",
+            "name": "item_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_en_3",
+            "label": "Item Text (EN)",
+            "name": "item_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_he_3",
+            "label": "Item Text (HE)",
+            "name": "item_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_home_marquee_items_4",
+        "label": "Marquee Item 4",
+        "name": "marquee_item_4",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_home_marquee_text_ar_4",
+            "label": "Item Text (AR)",
+            "name": "item_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_en_4",
+            "label": "Item Text (EN)",
+            "name": "item_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_he_4",
+            "label": "Item Text (HE)",
+            "name": "item_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_home_marquee_items_5",
+        "label": "Marquee Item 5",
+        "name": "marquee_item_5",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_home_marquee_text_ar_5",
+            "label": "Item Text (AR)",
+            "name": "item_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_en_5",
+            "label": "Item Text (EN)",
+            "name": "item_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_he_5",
+            "label": "Item Text (HE)",
+            "name": "item_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_home_marquee_items_6",
+        "label": "Marquee Item 6",
+        "name": "marquee_item_6",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_home_marquee_text_ar_6",
+            "label": "Item Text (AR)",
+            "name": "item_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_en_6",
+            "label": "Item Text (EN)",
+            "name": "item_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_he_6",
+            "label": "Item Text (HE)",
+            "name": "item_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_home_marquee_items_7",
+        "label": "Marquee Item 7",
+        "name": "marquee_item_7",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_home_marquee_text_ar_7",
+            "label": "Item Text (AR)",
+            "name": "item_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_en_7",
+            "label": "Item Text (EN)",
+            "name": "item_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_he_7",
+            "label": "Item Text (HE)",
+            "name": "item_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_home_marquee_items_8",
+        "label": "Marquee Item 8",
+        "name": "marquee_item_8",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_home_marquee_text_ar_8",
+            "label": "Item Text (AR)",
+            "name": "item_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_en_8",
+            "label": "Item Text (EN)",
+            "name": "item_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_home_marquee_text_he_8",
             "label": "Item Text (HE)",
             "name": "item_text_he",
             "type": "text"
@@ -771,75 +1633,299 @@
             "type": "textarea"
           },
           {
-            "key": "field_home_global_features",
-            "label": "Interactive Globe Features",
-            "name": "global_features",
-            "type": "repeater",
+            "key": "field_home_global_features_1",
+            "label": "Global Feature 1",
+            "name": "global_feature_1",
+            "type": "group",
             "layout": "block",
-            "button_label": "Add Globe Location Feature",
             "sub_fields": [
               {
-                "key": "field_home_global_feature_title_ar",
+                "key": "field_home_global_feature_title_ar_1",
                 "label": "Feature Title (AR)",
                 "name": "title_ar",
                 "type": "text"
               },
               {
-                "key": "field_home_global_feature_title_en",
+                "key": "field_home_global_feature_title_en_1",
                 "label": "Feature Title (EN)",
                 "name": "title_en",
                 "type": "text"
               },
               {
-                "key": "field_home_global_feature_title_he",
+                "key": "field_home_global_feature_title_he_1",
                 "label": "Feature Title (HE)",
                 "name": "title_he",
                 "type": "text"
               },
               {
-                "key": "field_home_global_feature_text_ar",
+                "key": "field_home_global_feature_text_ar_1",
                 "label": "Feature Description (AR)",
                 "name": "text_ar",
                 "type": "textarea"
               },
               {
-                "key": "field_home_global_feature_text_en",
+                "key": "field_home_global_feature_text_en_1",
                 "label": "Feature Description (EN)",
                 "name": "text_en",
                 "type": "textarea"
               },
               {
-                "key": "field_home_global_feature_text_he",
+                "key": "field_home_global_feature_text_he_1",
                 "label": "Feature Description (HE)",
                 "name": "text_he",
                 "type": "textarea"
               },
               {
-                "key": "field_home_global_feature_city_ar",
+                "key": "field_home_global_feature_city_ar_1",
                 "label": "City Name (AR)",
                 "name": "city_ar",
                 "type": "text"
               },
               {
-                "key": "field_home_global_feature_city_en",
+                "key": "field_home_global_feature_city_en_1",
                 "label": "City Name (EN)",
                 "name": "city_en",
                 "type": "text"
               },
               {
-                "key": "field_home_global_feature_city_he",
+                "key": "field_home_global_feature_city_he_1",
                 "label": "City Name (HE)",
                 "name": "city_he",
                 "type": "text"
               },
               {
-                "key": "field_home_global_feature_lat",
+                "key": "field_home_global_feature_lat_1",
                 "label": "Latitude",
                 "name": "lat",
                 "type": "number"
               },
               {
-                "key": "field_home_global_feature_lng",
+                "key": "field_home_global_feature_lng_1",
+                "label": "Longitude",
+                "name": "lng",
+                "type": "number"
+              }
+            ]
+          },
+          {
+            "key": "field_home_global_features_2",
+            "label": "Global Feature 2",
+            "name": "global_feature_2",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_global_feature_title_ar_2",
+                "label": "Feature Title (AR)",
+                "name": "title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_title_en_2",
+                "label": "Feature Title (EN)",
+                "name": "title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_title_he_2",
+                "label": "Feature Title (HE)",
+                "name": "title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_text_ar_2",
+                "label": "Feature Description (AR)",
+                "name": "text_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_text_en_2",
+                "label": "Feature Description (EN)",
+                "name": "text_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_text_he_2",
+                "label": "Feature Description (HE)",
+                "name": "text_he",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_city_ar_2",
+                "label": "City Name (AR)",
+                "name": "city_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_city_en_2",
+                "label": "City Name (EN)",
+                "name": "city_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_city_he_2",
+                "label": "City Name (HE)",
+                "name": "city_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_lat_2",
+                "label": "Latitude",
+                "name": "lat",
+                "type": "number"
+              },
+              {
+                "key": "field_home_global_feature_lng_2",
+                "label": "Longitude",
+                "name": "lng",
+                "type": "number"
+              }
+            ]
+          },
+          {
+            "key": "field_home_global_features_3",
+            "label": "Global Feature 3",
+            "name": "global_feature_3",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_global_feature_title_ar_3",
+                "label": "Feature Title (AR)",
+                "name": "title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_title_en_3",
+                "label": "Feature Title (EN)",
+                "name": "title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_title_he_3",
+                "label": "Feature Title (HE)",
+                "name": "title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_text_ar_3",
+                "label": "Feature Description (AR)",
+                "name": "text_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_text_en_3",
+                "label": "Feature Description (EN)",
+                "name": "text_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_text_he_3",
+                "label": "Feature Description (HE)",
+                "name": "text_he",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_city_ar_3",
+                "label": "City Name (AR)",
+                "name": "city_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_city_en_3",
+                "label": "City Name (EN)",
+                "name": "city_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_city_he_3",
+                "label": "City Name (HE)",
+                "name": "city_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_lat_3",
+                "label": "Latitude",
+                "name": "lat",
+                "type": "number"
+              },
+              {
+                "key": "field_home_global_feature_lng_3",
+                "label": "Longitude",
+                "name": "lng",
+                "type": "number"
+              }
+            ]
+          },
+          {
+            "key": "field_home_global_features_4",
+            "label": "Global Feature 4",
+            "name": "global_feature_4",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_home_global_feature_title_ar_4",
+                "label": "Feature Title (AR)",
+                "name": "title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_title_en_4",
+                "label": "Feature Title (EN)",
+                "name": "title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_title_he_4",
+                "label": "Feature Title (HE)",
+                "name": "title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_text_ar_4",
+                "label": "Feature Description (AR)",
+                "name": "text_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_text_en_4",
+                "label": "Feature Description (EN)",
+                "name": "text_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_text_he_4",
+                "label": "Feature Description (HE)",
+                "name": "text_he",
+                "type": "textarea"
+              },
+              {
+                "key": "field_home_global_feature_city_ar_4",
+                "label": "City Name (AR)",
+                "name": "city_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_city_en_4",
+                "label": "City Name (EN)",
+                "name": "city_en",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_city_he_4",
+                "label": "City Name (HE)",
+                "name": "city_he",
+                "type": "text"
+              },
+              {
+                "key": "field_home_global_feature_lat_4",
+                "label": "Latitude",
+                "name": "lat",
+                "type": "number"
+              },
+              {
+                "key": "field_home_global_feature_lng_4",
                 "label": "Longitude",
                 "name": "lng",
                 "type": "number"
@@ -1053,44 +2139,44 @@
                 "default_value": "ALI-FLEET / 01"
               },
               {
-                "key": "field_home_scene1_specs_list",
-                "label": "Spec Items",
-                "name": "specs_list",
-                "type": "repeater",
-                "layout": "table",
+                "key": "field_home_scene1_specs_list_1",
+                "label": "Spec Row 1",
+                "name": "spec_item_1",
+                "type": "group",
+                "layout": "row",
                 "sub_fields": [
                   {
-                    "key": "field_home_scene1_spec_label_ar",
+                    "key": "field_home_scene1_spec_label_ar_1",
                     "label": "Label (AR)",
                     "name": "label_ar",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene1_spec_label_en",
+                    "key": "field_home_scene1_spec_label_en_1",
                     "label": "Label (EN)",
                     "name": "label_en",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene1_spec_label_he",
+                    "key": "field_home_scene1_spec_label_he_1",
                     "label": "Label (HE)",
                     "name": "label_he",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene1_spec_value_ar",
+                    "key": "field_home_scene1_spec_value_ar_1",
                     "label": "Value (AR)",
                     "name": "value_ar",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene1_spec_value_en",
+                    "key": "field_home_scene1_spec_value_en_1",
                     "label": "Value (EN)",
                     "name": "value_en",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene1_spec_value_he",
+                    "key": "field_home_scene1_spec_value_he_1",
                     "label": "Value (HE)",
                     "name": "value_he",
                     "type": "text"
@@ -1098,50 +2184,332 @@
                 ]
               },
               {
-                "key": "field_home_scene1_stats_list",
-                "label": "Scene Stats",
-                "name": "stats_list",
-                "type": "repeater",
-                "layout": "table",
+                "key": "field_home_scene1_specs_list_2",
+                "label": "Spec Row 2",
+                "name": "spec_item_2",
+                "type": "group",
+                "layout": "row",
                 "sub_fields": [
                   {
-                    "key": "field_home_scene1_stat_val",
-                    "label": "Value",
-                    "name": "value",
-                    "type": "number"
-                  },
-                  {
-                    "key": "field_home_scene1_stat_suf_ar",
-                    "label": "Suffix (AR)",
-                    "name": "suffix_ar",
-                    "type": "text"
-                  },
-                  {
-                    "key": "field_home_scene1_stat_suf_en",
-                    "label": "Suffix (EN)",
-                    "name": "suffix_en",
-                    "type": "text"
-                  },
-                  {
-                    "key": "field_home_scene1_stat_suf_he",
-                    "label": "Suffix (HE)",
-                    "name": "suffix_he",
-                    "type": "text"
-                  },
-                  {
-                    "key": "field_home_scene1_stat_lbl_ar",
+                    "key": "field_home_scene1_spec_label_ar_2",
                     "label": "Label (AR)",
                     "name": "label_ar",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene1_stat_lbl_en",
+                    "key": "field_home_scene1_spec_label_en_2",
                     "label": "Label (EN)",
                     "name": "label_en",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene1_stat_lbl_he",
+                    "key": "field_home_scene1_spec_label_he_2",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_ar_2",
+                    "label": "Value (AR)",
+                    "name": "value_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_en_2",
+                    "label": "Value (EN)",
+                    "name": "value_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_he_2",
+                    "label": "Value (HE)",
+                    "name": "value_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene1_specs_list_3",
+                "label": "Spec Row 3",
+                "name": "spec_item_3",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene1_spec_label_ar_3",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_label_en_3",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_label_he_3",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_ar_3",
+                    "label": "Value (AR)",
+                    "name": "value_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_en_3",
+                    "label": "Value (EN)",
+                    "name": "value_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_he_3",
+                    "label": "Value (HE)",
+                    "name": "value_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene1_specs_list_4",
+                "label": "Spec Row 4",
+                "name": "spec_item_4",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene1_spec_label_ar_4",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_label_en_4",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_label_he_4",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_ar_4",
+                    "label": "Value (AR)",
+                    "name": "value_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_en_4",
+                    "label": "Value (EN)",
+                    "name": "value_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_he_4",
+                    "label": "Value (HE)",
+                    "name": "value_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene1_specs_list_5",
+                "label": "Spec Row 5",
+                "name": "spec_item_5",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene1_spec_label_ar_5",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_label_en_5",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_label_he_5",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_ar_5",
+                    "label": "Value (AR)",
+                    "name": "value_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_en_5",
+                    "label": "Value (EN)",
+                    "name": "value_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_spec_value_he_5",
+                    "label": "Value (HE)",
+                    "name": "value_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene1_stats_list_1",
+                "label": "Stat 1",
+                "name": "stat_list_item_1",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene1_stat_val_1",
+                    "label": "Value",
+                    "name": "value",
+                    "type": "number"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_ar_1",
+                    "label": "Suffix (AR)",
+                    "name": "suffix_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_en_1",
+                    "label": "Suffix (EN)",
+                    "name": "suffix_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_he_1",
+                    "label": "Suffix (HE)",
+                    "name": "suffix_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_ar_1",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_en_1",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_he_1",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene1_stats_list_2",
+                "label": "Stat 2",
+                "name": "stat_list_item_2",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene1_stat_val_2",
+                    "label": "Value",
+                    "name": "value",
+                    "type": "number"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_ar_2",
+                    "label": "Suffix (AR)",
+                    "name": "suffix_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_en_2",
+                    "label": "Suffix (EN)",
+                    "name": "suffix_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_he_2",
+                    "label": "Suffix (HE)",
+                    "name": "suffix_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_ar_2",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_en_2",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_he_2",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene1_stats_list_3",
+                "label": "Stat 3",
+                "name": "stat_list_item_3",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene1_stat_val_3",
+                    "label": "Value",
+                    "name": "value",
+                    "type": "number"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_ar_3",
+                    "label": "Suffix (AR)",
+                    "name": "suffix_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_en_3",
+                    "label": "Suffix (EN)",
+                    "name": "suffix_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_suf_he_3",
+                    "label": "Suffix (HE)",
+                    "name": "suffix_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_ar_3",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_en_3",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene1_stat_lbl_he_3",
                     "label": "Label (HE)",
                     "name": "label_he",
                     "type": "text"
@@ -1272,56 +2640,56 @@
                 "default_value": "ALIFLT-2026-0071"
               },
               {
-                "key": "field_home_scene2_route_stops",
-                "label": "Logistics Route Stops",
-                "name": "route_stops",
-                "type": "repeater",
+                "key": "field_home_scene2_route_stops_1",
+                "label": "Route Stop 1",
+                "name": "route_stop_1",
+                "type": "group",
                 "layout": "block",
                 "sub_fields": [
                   {
-                    "key": "field_home_scene2_stop_code",
+                    "key": "field_home_scene2_stop_code_1",
                     "label": "Stop Code",
                     "name": "code",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_label_ar",
+                    "key": "field_home_scene2_stop_label_ar_1",
                     "label": "Stop Label (AR)",
                     "name": "label_ar",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_label_en",
+                    "key": "field_home_scene2_stop_label_en_1",
                     "label": "Stop Label (EN)",
                     "name": "label_en",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_label_he",
+                    "key": "field_home_scene2_stop_label_he_1",
                     "label": "Stop Label (HE)",
                     "name": "label_he",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_place_ar",
+                    "key": "field_home_scene2_stop_place_ar_1",
                     "label": "Location/City (AR)",
                     "name": "place_ar",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_place_en",
+                    "key": "field_home_scene2_stop_place_en_1",
                     "label": "Location/City (EN)",
                     "name": "place_en",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_place_he",
+                    "key": "field_home_scene2_stop_place_he_1",
                     "label": "Location/City (HE)",
                     "name": "place_he",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_status",
+                    "key": "field_home_scene2_stop_status_1",
                     "label": "Status",
                     "name": "status",
                     "type": "select",
@@ -1332,19 +2700,259 @@
                     }
                   },
                   {
-                    "key": "field_home_scene2_stop_meta_ar",
+                    "key": "field_home_scene2_stop_meta_ar_1",
                     "label": "Meta / ETA (AR)",
                     "name": "meta_ar",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_meta_en",
+                    "key": "field_home_scene2_stop_meta_en_1",
                     "label": "Meta / ETA (EN)",
                     "name": "meta_en",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene2_stop_meta_he",
+                    "key": "field_home_scene2_stop_meta_he_1",
+                    "label": "Meta / ETA (HE)",
+                    "name": "meta_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene2_route_stops_2",
+                "label": "Route Stop 2",
+                "name": "route_stop_2",
+                "type": "group",
+                "layout": "block",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene2_stop_code_2",
+                    "label": "Stop Code",
+                    "name": "code",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_ar_2",
+                    "label": "Stop Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_en_2",
+                    "label": "Stop Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_he_2",
+                    "label": "Stop Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_ar_2",
+                    "label": "Location/City (AR)",
+                    "name": "place_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_en_2",
+                    "label": "Location/City (EN)",
+                    "name": "place_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_he_2",
+                    "label": "Location/City (HE)",
+                    "name": "place_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_status_2",
+                    "label": "Status",
+                    "name": "status",
+                    "type": "select",
+                    "choices": {
+                      "done": "Completed",
+                      "current": "In Progress",
+                      "pending": "Pending"
+                    }
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_ar_2",
+                    "label": "Meta / ETA (AR)",
+                    "name": "meta_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_en_2",
+                    "label": "Meta / ETA (EN)",
+                    "name": "meta_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_he_2",
+                    "label": "Meta / ETA (HE)",
+                    "name": "meta_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene2_route_stops_3",
+                "label": "Route Stop 3",
+                "name": "route_stop_3",
+                "type": "group",
+                "layout": "block",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene2_stop_code_3",
+                    "label": "Stop Code",
+                    "name": "code",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_ar_3",
+                    "label": "Stop Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_en_3",
+                    "label": "Stop Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_he_3",
+                    "label": "Stop Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_ar_3",
+                    "label": "Location/City (AR)",
+                    "name": "place_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_en_3",
+                    "label": "Location/City (EN)",
+                    "name": "place_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_he_3",
+                    "label": "Location/City (HE)",
+                    "name": "place_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_status_3",
+                    "label": "Status",
+                    "name": "status",
+                    "type": "select",
+                    "choices": {
+                      "done": "Completed",
+                      "current": "In Progress",
+                      "pending": "Pending"
+                    }
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_ar_3",
+                    "label": "Meta / ETA (AR)",
+                    "name": "meta_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_en_3",
+                    "label": "Meta / ETA (EN)",
+                    "name": "meta_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_he_3",
+                    "label": "Meta / ETA (HE)",
+                    "name": "meta_he",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene2_route_stops_4",
+                "label": "Route Stop 4",
+                "name": "route_stop_4",
+                "type": "group",
+                "layout": "block",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene2_stop_code_4",
+                    "label": "Stop Code",
+                    "name": "code",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_ar_4",
+                    "label": "Stop Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_en_4",
+                    "label": "Stop Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_label_he_4",
+                    "label": "Stop Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_ar_4",
+                    "label": "Location/City (AR)",
+                    "name": "place_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_en_4",
+                    "label": "Location/City (EN)",
+                    "name": "place_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_place_he_4",
+                    "label": "Location/City (HE)",
+                    "name": "place_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_status_4",
+                    "label": "Status",
+                    "name": "status",
+                    "type": "select",
+                    "choices": {
+                      "done": "Completed",
+                      "current": "In Progress",
+                      "pending": "Pending"
+                    }
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_ar_4",
+                    "label": "Meta / ETA (AR)",
+                    "name": "meta_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_en_4",
+                    "label": "Meta / ETA (EN)",
+                    "name": "meta_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene2_stop_meta_he_4",
                     "label": "Meta / ETA (HE)",
                     "name": "meta_he",
                     "type": "text"
@@ -1449,44 +3057,44 @@
                 "type": "url"
               },
               {
-                "key": "field_home_scene3_callouts",
-                "label": "HUD Component Callouts",
-                "name": "part_callouts",
-                "type": "repeater",
-                "layout": "table",
+                "key": "field_home_scene3_callouts_1",
+                "label": "Part Callout 1",
+                "name": "part_callout_1",
+                "type": "group",
+                "layout": "row",
                 "sub_fields": [
                   {
-                    "key": "field_home_scene3_callout_label_ar",
+                    "key": "field_home_scene3_callout_label_ar_1",
                     "label": "Label (AR)",
                     "name": "label_ar",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene3_callout_label_en",
+                    "key": "field_home_scene3_callout_label_en_1",
                     "label": "Label (EN)",
                     "name": "label_en",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene3_callout_label_he",
+                    "key": "field_home_scene3_callout_label_he_1",
                     "label": "Label (HE)",
                     "name": "label_he",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene3_callout_code",
+                    "key": "field_home_scene3_callout_code_1",
                     "label": "Part Number Code",
                     "name": "code",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene3_callout_top",
+                    "key": "field_home_scene3_callout_top_1",
                     "label": "Top Position (%)",
                     "name": "top",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene3_callout_right",
+                    "key": "field_home_scene3_callout_right_1",
                     "label": "Right Position (%)",
                     "name": "inset_inline_end",
                     "type": "text"
@@ -1494,32 +3102,266 @@
                 ]
               },
               {
-                "key": "field_home_scene3_inventory_list",
-                "label": "Live Inventory Stock Bars",
-                "name": "inventory_list",
-                "type": "repeater",
-                "layout": "table",
+                "key": "field_home_scene3_callouts_2",
+                "label": "Part Callout 2",
+                "name": "part_callout_2",
+                "type": "group",
+                "layout": "row",
                 "sub_fields": [
                   {
-                    "key": "field_home_scene3_stock_name_ar",
+                    "key": "field_home_scene3_callout_label_ar_2",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_label_en_2",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_label_he_2",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_code_2",
+                    "label": "Part Number Code",
+                    "name": "code",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_top_2",
+                    "label": "Top Position (%)",
+                    "name": "top",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_right_2",
+                    "label": "Right Position (%)",
+                    "name": "inset_inline_end",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene3_callouts_3",
+                "label": "Part Callout 3",
+                "name": "part_callout_3",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene3_callout_label_ar_3",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_label_en_3",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_label_he_3",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_code_3",
+                    "label": "Part Number Code",
+                    "name": "code",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_top_3",
+                    "label": "Top Position (%)",
+                    "name": "top",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_right_3",
+                    "label": "Right Position (%)",
+                    "name": "inset_inline_end",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene3_callouts_4",
+                "label": "Part Callout 4",
+                "name": "part_callout_4",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene3_callout_label_ar_4",
+                    "label": "Label (AR)",
+                    "name": "label_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_label_en_4",
+                    "label": "Label (EN)",
+                    "name": "label_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_label_he_4",
+                    "label": "Label (HE)",
+                    "name": "label_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_code_4",
+                    "label": "Part Number Code",
+                    "name": "code",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_top_4",
+                    "label": "Top Position (%)",
+                    "name": "top",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_callout_right_4",
+                    "label": "Right Position (%)",
+                    "name": "inset_inline_end",
+                    "type": "text"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene3_inventory_list_1",
+                "label": "Inventory Item 1",
+                "name": "inventory_item_1",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene3_stock_name_ar_1",
                     "label": "Item Name (AR)",
                     "name": "name_ar",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene3_stock_name_en",
+                    "key": "field_home_scene3_stock_name_en_1",
                     "label": "Item Name (EN)",
                     "name": "name_en",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene3_stock_name_he",
+                    "key": "field_home_scene3_stock_name_he_1",
                     "label": "Item Name (HE)",
                     "name": "name_he",
                     "type": "text"
                   },
                   {
-                    "key": "field_home_scene3_stock_level",
+                    "key": "field_home_scene3_stock_level_1",
+                    "label": "Stock Level (%)",
+                    "name": "level",
+                    "type": "number"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene3_inventory_list_2",
+                "label": "Inventory Item 2",
+                "name": "inventory_item_2",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene3_stock_name_ar_2",
+                    "label": "Item Name (AR)",
+                    "name": "name_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_name_en_2",
+                    "label": "Item Name (EN)",
+                    "name": "name_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_name_he_2",
+                    "label": "Item Name (HE)",
+                    "name": "name_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_level_2",
+                    "label": "Stock Level (%)",
+                    "name": "level",
+                    "type": "number"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene3_inventory_list_3",
+                "label": "Inventory Item 3",
+                "name": "inventory_item_3",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene3_stock_name_ar_3",
+                    "label": "Item Name (AR)",
+                    "name": "name_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_name_en_3",
+                    "label": "Item Name (EN)",
+                    "name": "name_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_name_he_3",
+                    "label": "Item Name (HE)",
+                    "name": "name_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_level_3",
+                    "label": "Stock Level (%)",
+                    "name": "level",
+                    "type": "number"
+                  }
+                ]
+              },
+              {
+                "key": "field_home_scene3_inventory_list_4",
+                "label": "Inventory Item 4",
+                "name": "inventory_item_4",
+                "type": "group",
+                "layout": "row",
+                "sub_fields": [
+                  {
+                    "key": "field_home_scene3_stock_name_ar_4",
+                    "label": "Item Name (AR)",
+                    "name": "name_ar",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_name_en_4",
+                    "label": "Item Name (EN)",
+                    "name": "name_en",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_name_he_4",
+                    "label": "Item Name (HE)",
+                    "name": "name_he",
+                    "type": "text"
+                  },
+                  {
+                    "key": "field_home_scene3_stock_level_4",
                     "label": "Stock Level (%)",
                     "name": "level",
                     "type": "number"
@@ -1848,63 +3690,251 @@
             "type": "text"
           },
           {
-            "key": "field_import_steps_repeater",
-            "label": "Steps List",
-            "name": "steps_list",
-            "type": "repeater",
+            "key": "field_import_steps_repeater_1",
+            "label": "Step 1",
+            "name": "step_item_1",
+            "type": "group",
             "layout": "block",
-            "button_label": "Add Step",
             "sub_fields": [
               {
-                "key": "field_import_step_num_ar",
+                "key": "field_import_step_num_ar_1",
                 "label": "Step Number/Code (AR)",
                 "name": "step_number_ar",
                 "type": "text"
               },
               {
-                "key": "field_import_step_num_en",
+                "key": "field_import_step_num_en_1",
                 "label": "Step Number/Code (EN)",
                 "name": "step_number_en",
                 "type": "text"
               },
               {
-                "key": "field_import_step_num_he",
+                "key": "field_import_step_num_he_1",
                 "label": "Step Number/Code (HE)",
                 "name": "step_number_he",
                 "type": "text"
               },
               {
-                "key": "field_import_step_title_ar",
+                "key": "field_import_step_title_ar_1",
                 "label": "Step Title (AR)",
                 "name": "step_title_ar",
                 "type": "text"
               },
               {
-                "key": "field_import_step_title_en",
+                "key": "field_import_step_title_en_1",
                 "label": "Step Title (EN)",
                 "name": "step_title_en",
                 "type": "text"
               },
               {
-                "key": "field_import_step_title_he",
+                "key": "field_import_step_title_he_1",
                 "label": "Step Title (HE)",
                 "name": "step_title_he",
                 "type": "text"
               },
               {
-                "key": "field_import_step_desc_ar",
+                "key": "field_import_step_desc_ar_1",
                 "label": "Step Description (AR)",
                 "name": "step_description_ar",
                 "type": "textarea"
               },
               {
-                "key": "field_import_step_desc_en",
+                "key": "field_import_step_desc_en_1",
                 "label": "Step Description (EN)",
                 "name": "step_description_en",
                 "type": "textarea"
               },
               {
-                "key": "field_import_step_desc_he",
+                "key": "field_import_step_desc_he_1",
+                "label": "Step Description (HE)",
+                "name": "step_description_he",
+                "type": "textarea"
+              }
+            ]
+          },
+          {
+            "key": "field_import_steps_repeater_2",
+            "label": "Step 2",
+            "name": "step_item_2",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_import_step_num_ar_2",
+                "label": "Step Number/Code (AR)",
+                "name": "step_number_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_num_en_2",
+                "label": "Step Number/Code (EN)",
+                "name": "step_number_en",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_num_he_2",
+                "label": "Step Number/Code (HE)",
+                "name": "step_number_he",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_ar_2",
+                "label": "Step Title (AR)",
+                "name": "step_title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_en_2",
+                "label": "Step Title (EN)",
+                "name": "step_title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_he_2",
+                "label": "Step Title (HE)",
+                "name": "step_title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_desc_ar_2",
+                "label": "Step Description (AR)",
+                "name": "step_description_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_import_step_desc_en_2",
+                "label": "Step Description (EN)",
+                "name": "step_description_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_import_step_desc_he_2",
+                "label": "Step Description (HE)",
+                "name": "step_description_he",
+                "type": "textarea"
+              }
+            ]
+          },
+          {
+            "key": "field_import_steps_repeater_3",
+            "label": "Step 3",
+            "name": "step_item_3",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_import_step_num_ar_3",
+                "label": "Step Number/Code (AR)",
+                "name": "step_number_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_num_en_3",
+                "label": "Step Number/Code (EN)",
+                "name": "step_number_en",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_num_he_3",
+                "label": "Step Number/Code (HE)",
+                "name": "step_number_he",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_ar_3",
+                "label": "Step Title (AR)",
+                "name": "step_title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_en_3",
+                "label": "Step Title (EN)",
+                "name": "step_title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_he_3",
+                "label": "Step Title (HE)",
+                "name": "step_title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_desc_ar_3",
+                "label": "Step Description (AR)",
+                "name": "step_description_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_import_step_desc_en_3",
+                "label": "Step Description (EN)",
+                "name": "step_description_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_import_step_desc_he_3",
+                "label": "Step Description (HE)",
+                "name": "step_description_he",
+                "type": "textarea"
+              }
+            ]
+          },
+          {
+            "key": "field_import_steps_repeater_4",
+            "label": "Step 4",
+            "name": "step_item_4",
+            "type": "group",
+            "layout": "block",
+            "sub_fields": [
+              {
+                "key": "field_import_step_num_ar_4",
+                "label": "Step Number/Code (AR)",
+                "name": "step_number_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_num_en_4",
+                "label": "Step Number/Code (EN)",
+                "name": "step_number_en",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_num_he_4",
+                "label": "Step Number/Code (HE)",
+                "name": "step_number_he",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_ar_4",
+                "label": "Step Title (AR)",
+                "name": "step_title_ar",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_en_4",
+                "label": "Step Title (EN)",
+                "name": "step_title_en",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_title_he_4",
+                "label": "Step Title (HE)",
+                "name": "step_title_he",
+                "type": "text"
+              },
+              {
+                "key": "field_import_step_desc_ar_4",
+                "label": "Step Description (AR)",
+                "name": "step_description_ar",
+                "type": "textarea"
+              },
+              {
+                "key": "field_import_step_desc_en_4",
+                "label": "Step Description (EN)",
+                "name": "step_description_en",
+                "type": "textarea"
+              },
+              {
+                "key": "field_import_step_desc_he_4",
                 "label": "Step Description (HE)",
                 "name": "step_description_he",
                 "type": "textarea"
@@ -2889,34 +4919,271 @@
         "return_format": "array"
       },
       {
-        "key": "field_car_gallery",
-        "label": "Photo Gallery",
-        "name": "gallery",
-        "type": "repeater",
-        "layout": "table",
-        "button_label": "Add Gallery Image",
+        "key": "field_car_gallery_1",
+        "label": "Gallery Image 1",
+        "name": "gallery_image_1",
+        "type": "group",
+        "layout": "row",
         "sub_fields": [
           {
-            "key": "field_car_gallery_image",
+            "key": "field_car_gallery_image_1",
             "label": "Photo",
             "name": "image",
             "type": "image",
             "return_format": "array"
           },
           {
-            "key": "field_car_gallery_alt_ar",
+            "key": "field_car_gallery_alt_ar_1",
             "label": "Alt Text (AR)",
             "name": "alt_text_ar",
             "type": "text"
           },
           {
-            "key": "field_car_gallery_alt_en",
+            "key": "field_car_gallery_alt_en_1",
             "label": "Alt Text (EN)",
             "name": "alt_text_en",
             "type": "text"
           },
           {
-            "key": "field_car_gallery_alt_he",
+            "key": "field_car_gallery_alt_he_1",
+            "label": "Alt Text (HE)",
+            "name": "alt_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_gallery_2",
+        "label": "Gallery Image 2",
+        "name": "gallery_image_2",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_gallery_image_2",
+            "label": "Photo",
+            "name": "image",
+            "type": "image",
+            "return_format": "array"
+          },
+          {
+            "key": "field_car_gallery_alt_ar_2",
+            "label": "Alt Text (AR)",
+            "name": "alt_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_en_2",
+            "label": "Alt Text (EN)",
+            "name": "alt_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_he_2",
+            "label": "Alt Text (HE)",
+            "name": "alt_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_gallery_3",
+        "label": "Gallery Image 3",
+        "name": "gallery_image_3",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_gallery_image_3",
+            "label": "Photo",
+            "name": "image",
+            "type": "image",
+            "return_format": "array"
+          },
+          {
+            "key": "field_car_gallery_alt_ar_3",
+            "label": "Alt Text (AR)",
+            "name": "alt_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_en_3",
+            "label": "Alt Text (EN)",
+            "name": "alt_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_he_3",
+            "label": "Alt Text (HE)",
+            "name": "alt_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_gallery_4",
+        "label": "Gallery Image 4",
+        "name": "gallery_image_4",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_gallery_image_4",
+            "label": "Photo",
+            "name": "image",
+            "type": "image",
+            "return_format": "array"
+          },
+          {
+            "key": "field_car_gallery_alt_ar_4",
+            "label": "Alt Text (AR)",
+            "name": "alt_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_en_4",
+            "label": "Alt Text (EN)",
+            "name": "alt_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_he_4",
+            "label": "Alt Text (HE)",
+            "name": "alt_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_gallery_5",
+        "label": "Gallery Image 5",
+        "name": "gallery_image_5",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_gallery_image_5",
+            "label": "Photo",
+            "name": "image",
+            "type": "image",
+            "return_format": "array"
+          },
+          {
+            "key": "field_car_gallery_alt_ar_5",
+            "label": "Alt Text (AR)",
+            "name": "alt_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_en_5",
+            "label": "Alt Text (EN)",
+            "name": "alt_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_he_5",
+            "label": "Alt Text (HE)",
+            "name": "alt_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_gallery_6",
+        "label": "Gallery Image 6",
+        "name": "gallery_image_6",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_gallery_image_6",
+            "label": "Photo",
+            "name": "image",
+            "type": "image",
+            "return_format": "array"
+          },
+          {
+            "key": "field_car_gallery_alt_ar_6",
+            "label": "Alt Text (AR)",
+            "name": "alt_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_en_6",
+            "label": "Alt Text (EN)",
+            "name": "alt_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_he_6",
+            "label": "Alt Text (HE)",
+            "name": "alt_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_gallery_7",
+        "label": "Gallery Image 7",
+        "name": "gallery_image_7",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_gallery_image_7",
+            "label": "Photo",
+            "name": "image",
+            "type": "image",
+            "return_format": "array"
+          },
+          {
+            "key": "field_car_gallery_alt_ar_7",
+            "label": "Alt Text (AR)",
+            "name": "alt_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_en_7",
+            "label": "Alt Text (EN)",
+            "name": "alt_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_he_7",
+            "label": "Alt Text (HE)",
+            "name": "alt_text_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_gallery_8",
+        "label": "Gallery Image 8",
+        "name": "gallery_image_8",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_gallery_image_8",
+            "label": "Photo",
+            "name": "image",
+            "type": "image",
+            "return_format": "array"
+          },
+          {
+            "key": "field_car_gallery_alt_ar_8",
+            "label": "Alt Text (AR)",
+            "name": "alt_text_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_en_8",
+            "label": "Alt Text (EN)",
+            "name": "alt_text_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_gallery_alt_he_8",
             "label": "Alt Text (HE)",
             "name": "alt_text_he",
             "type": "text"
@@ -2942,27 +5209,215 @@
         "type": "textarea"
       },
       {
-        "key": "field_car_highlights",
-        "label": "Key Vehicle Highlights",
-        "name": "highlights",
-        "type": "repeater",
-        "layout": "table",
-        "button_label": "Add Highlight Item",
+        "key": "field_car_highlights_1",
+        "label": "Highlight 1",
+        "name": "highlight_1",
+        "type": "group",
+        "layout": "row",
         "sub_fields": [
           {
-            "key": "field_car_highlight_item_ar",
+            "key": "field_car_highlight_item_ar_1",
             "label": "Highlight Feature (AR)",
             "name": "item_ar",
             "type": "text"
           },
           {
-            "key": "field_car_highlight_item_en",
+            "key": "field_car_highlight_item_en_1",
             "label": "Highlight Feature (EN)",
             "name": "item_en",
             "type": "text"
           },
           {
-            "key": "field_car_highlight_item_he",
+            "key": "field_car_highlight_item_he_1",
+            "label": "Highlight Feature (HE)",
+            "name": "item_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_highlights_2",
+        "label": "Highlight 2",
+        "name": "highlight_2",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_highlight_item_ar_2",
+            "label": "Highlight Feature (AR)",
+            "name": "item_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_en_2",
+            "label": "Highlight Feature (EN)",
+            "name": "item_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_he_2",
+            "label": "Highlight Feature (HE)",
+            "name": "item_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_highlights_3",
+        "label": "Highlight 3",
+        "name": "highlight_3",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_highlight_item_ar_3",
+            "label": "Highlight Feature (AR)",
+            "name": "item_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_en_3",
+            "label": "Highlight Feature (EN)",
+            "name": "item_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_he_3",
+            "label": "Highlight Feature (HE)",
+            "name": "item_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_highlights_4",
+        "label": "Highlight 4",
+        "name": "highlight_4",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_highlight_item_ar_4",
+            "label": "Highlight Feature (AR)",
+            "name": "item_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_en_4",
+            "label": "Highlight Feature (EN)",
+            "name": "item_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_he_4",
+            "label": "Highlight Feature (HE)",
+            "name": "item_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_highlights_5",
+        "label": "Highlight 5",
+        "name": "highlight_5",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_highlight_item_ar_5",
+            "label": "Highlight Feature (AR)",
+            "name": "item_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_en_5",
+            "label": "Highlight Feature (EN)",
+            "name": "item_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_he_5",
+            "label": "Highlight Feature (HE)",
+            "name": "item_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_highlights_6",
+        "label": "Highlight 6",
+        "name": "highlight_6",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_highlight_item_ar_6",
+            "label": "Highlight Feature (AR)",
+            "name": "item_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_en_6",
+            "label": "Highlight Feature (EN)",
+            "name": "item_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_he_6",
+            "label": "Highlight Feature (HE)",
+            "name": "item_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_highlights_7",
+        "label": "Highlight 7",
+        "name": "highlight_7",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_highlight_item_ar_7",
+            "label": "Highlight Feature (AR)",
+            "name": "item_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_en_7",
+            "label": "Highlight Feature (EN)",
+            "name": "item_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_he_7",
+            "label": "Highlight Feature (HE)",
+            "name": "item_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_car_highlights_8",
+        "label": "Highlight 8",
+        "name": "highlight_8",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_car_highlight_item_ar_8",
+            "label": "Highlight Feature (AR)",
+            "name": "item_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_en_8",
+            "label": "Highlight Feature (EN)",
+            "name": "item_en",
+            "type": "text"
+          },
+          {
+            "key": "field_car_highlight_item_he_8",
             "label": "Highlight Feature (HE)",
             "name": "item_he",
             "type": "text"
@@ -3159,45 +5614,44 @@
         "type": "textarea"
       },
       {
-        "key": "field_part_specs",
-        "label": "Specification Key-Value Pairs",
-        "name": "specs",
-        "type": "repeater",
-        "layout": "table",
-        "button_label": "Add Specification",
+        "key": "field_part_specs_1",
+        "label": "Spec 1",
+        "name": "spec_1",
+        "type": "group",
+        "layout": "row",
         "sub_fields": [
           {
-            "key": "field_part_spec_label_ar",
+            "key": "field_part_spec_label_ar_1",
             "label": "Spec Label (AR)",
             "name": "label_ar",
             "type": "text"
           },
           {
-            "key": "field_part_spec_label_en",
+            "key": "field_part_spec_label_en_1",
             "label": "Spec Label (EN)",
             "name": "label_en",
             "type": "text"
           },
           {
-            "key": "field_part_spec_label_he",
+            "key": "field_part_spec_label_he_1",
             "label": "Spec Label (HE)",
             "name": "label_he",
             "type": "text"
           },
           {
-            "key": "field_part_spec_value_ar",
+            "key": "field_part_spec_value_ar_1",
             "label": "Spec Value (AR)",
             "name": "value_ar",
             "type": "text"
           },
           {
-            "key": "field_part_spec_value_en",
+            "key": "field_part_spec_value_en_1",
             "label": "Spec Value (EN)",
             "name": "value_en",
             "type": "text"
           },
           {
-            "key": "field_part_spec_value_he",
+            "key": "field_part_spec_value_he_1",
             "label": "Spec Value (HE)",
             "name": "value_he",
             "type": "text"
@@ -3205,15 +5659,464 @@
         ]
       },
       {
-        "key": "field_part_compatibility",
-        "label": "Compatible Vehicle Models",
-        "name": "compatibility",
-        "type": "repeater",
-        "layout": "table",
-        "button_label": "Add Model",
+        "key": "field_part_specs_2",
+        "label": "Spec 2",
+        "name": "spec_2",
+        "type": "group",
+        "layout": "row",
         "sub_fields": [
           {
-            "key": "field_model_name",
+            "key": "field_part_spec_label_ar_2",
+            "label": "Spec Label (AR)",
+            "name": "label_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_en_2",
+            "label": "Spec Label (EN)",
+            "name": "label_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_he_2",
+            "label": "Spec Label (HE)",
+            "name": "label_he",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_ar_2",
+            "label": "Spec Value (AR)",
+            "name": "value_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_en_2",
+            "label": "Spec Value (EN)",
+            "name": "value_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_he_2",
+            "label": "Spec Value (HE)",
+            "name": "value_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_specs_3",
+        "label": "Spec 3",
+        "name": "spec_3",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_part_spec_label_ar_3",
+            "label": "Spec Label (AR)",
+            "name": "label_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_en_3",
+            "label": "Spec Label (EN)",
+            "name": "label_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_he_3",
+            "label": "Spec Label (HE)",
+            "name": "label_he",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_ar_3",
+            "label": "Spec Value (AR)",
+            "name": "value_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_en_3",
+            "label": "Spec Value (EN)",
+            "name": "value_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_he_3",
+            "label": "Spec Value (HE)",
+            "name": "value_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_specs_4",
+        "label": "Spec 4",
+        "name": "spec_4",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_part_spec_label_ar_4",
+            "label": "Spec Label (AR)",
+            "name": "label_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_en_4",
+            "label": "Spec Label (EN)",
+            "name": "label_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_he_4",
+            "label": "Spec Label (HE)",
+            "name": "label_he",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_ar_4",
+            "label": "Spec Value (AR)",
+            "name": "value_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_en_4",
+            "label": "Spec Value (EN)",
+            "name": "value_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_he_4",
+            "label": "Spec Value (HE)",
+            "name": "value_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_specs_5",
+        "label": "Spec 5",
+        "name": "spec_5",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_part_spec_label_ar_5",
+            "label": "Spec Label (AR)",
+            "name": "label_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_en_5",
+            "label": "Spec Label (EN)",
+            "name": "label_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_he_5",
+            "label": "Spec Label (HE)",
+            "name": "label_he",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_ar_5",
+            "label": "Spec Value (AR)",
+            "name": "value_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_en_5",
+            "label": "Spec Value (EN)",
+            "name": "value_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_he_5",
+            "label": "Spec Value (HE)",
+            "name": "value_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_specs_6",
+        "label": "Spec 6",
+        "name": "spec_6",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_part_spec_label_ar_6",
+            "label": "Spec Label (AR)",
+            "name": "label_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_en_6",
+            "label": "Spec Label (EN)",
+            "name": "label_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_he_6",
+            "label": "Spec Label (HE)",
+            "name": "label_he",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_ar_6",
+            "label": "Spec Value (AR)",
+            "name": "value_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_en_6",
+            "label": "Spec Value (EN)",
+            "name": "value_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_he_6",
+            "label": "Spec Value (HE)",
+            "name": "value_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_specs_7",
+        "label": "Spec 7",
+        "name": "spec_7",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_part_spec_label_ar_7",
+            "label": "Spec Label (AR)",
+            "name": "label_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_en_7",
+            "label": "Spec Label (EN)",
+            "name": "label_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_he_7",
+            "label": "Spec Label (HE)",
+            "name": "label_he",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_ar_7",
+            "label": "Spec Value (AR)",
+            "name": "value_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_en_7",
+            "label": "Spec Value (EN)",
+            "name": "value_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_he_7",
+            "label": "Spec Value (HE)",
+            "name": "value_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_specs_8",
+        "label": "Spec 8",
+        "name": "spec_8",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_part_spec_label_ar_8",
+            "label": "Spec Label (AR)",
+            "name": "label_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_en_8",
+            "label": "Spec Label (EN)",
+            "name": "label_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_label_he_8",
+            "label": "Spec Label (HE)",
+            "name": "label_he",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_ar_8",
+            "label": "Spec Value (AR)",
+            "name": "value_ar",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_en_8",
+            "label": "Spec Value (EN)",
+            "name": "value_en",
+            "type": "text"
+          },
+          {
+            "key": "field_part_spec_value_he_8",
+            "label": "Spec Value (HE)",
+            "name": "value_he",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_1",
+        "label": "Compatible Model 1",
+        "name": "compat_model_1",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_1",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_2",
+        "label": "Compatible Model 2",
+        "name": "compat_model_2",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_2",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_3",
+        "label": "Compatible Model 3",
+        "name": "compat_model_3",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_3",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_4",
+        "label": "Compatible Model 4",
+        "name": "compat_model_4",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_4",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_5",
+        "label": "Compatible Model 5",
+        "name": "compat_model_5",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_5",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_6",
+        "label": "Compatible Model 6",
+        "name": "compat_model_6",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_6",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_7",
+        "label": "Compatible Model 7",
+        "name": "compat_model_7",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_7",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_8",
+        "label": "Compatible Model 8",
+        "name": "compat_model_8",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_8",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_9",
+        "label": "Compatible Model 9",
+        "name": "compat_model_9",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_9",
+            "label": "Vehicle Model Name",
+            "name": "model_name",
+            "type": "text"
+          }
+        ]
+      },
+      {
+        "key": "field_part_compatibility_10",
+        "label": "Compatible Model 10",
+        "name": "compat_model_10",
+        "type": "group",
+        "layout": "row",
+        "sub_fields": [
+          {
+            "key": "field_model_name_10",
             "label": "Vehicle Model Name",
             "name": "model_name",
             "type": "text"

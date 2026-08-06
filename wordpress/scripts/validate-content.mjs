@@ -4,9 +4,15 @@
  *
  * Catches the mistakes that are expensive to discover while you are already
  * SSH'd into the VPS: a CSV column that no ACF field answers to, a seed value
- * written under the wrong field name, a repeater row missing its counter
- * column, a select value outside its allowed choices, a file without a BOM
- * that turns Arabic into mojibake in Excel.
+ * written under the wrong field name, more rows than the fixed group slots can
+ * hold, a select value outside its allowed choices, a file without a BOM that
+ * turns Arabic into mojibake in Excel.
+ *
+ * There are no repeaters in this schema: ACF free has no repeater field, so
+ * every former repeater is a fixed number of numbered groups
+ * (hero_slide_1 … hero_slide_5). Empty slots are fine; a slot number above the
+ * highest one in the schema is a hard error, because that data would be
+ * silently dropped on import.
  *
  * Run from the repository root, no dependencies required:
  *
@@ -49,6 +55,15 @@ const keySeen = new Map()
 
 function indexField(field, groupKey, path) {
   const here = path ? `${path}.${field.name}` : field.name
+
+  // Repeater, flexible content, clone and gallery are ACF PRO only. Importing a
+  // schema that uses them onto a free install silently produces empty fields.
+  const PRO_ONLY = ['repeater', 'flexible_content', 'clone', 'gallery']
+  if (PRO_ONLY.includes(field.type)) {
+    fail(
+      `${groupKey}: field "${here}" is type "${field.type}", which needs ACF PRO — use fixed numbered groups instead (docs/ACF-FREE-CONVERSION-PLAN.md).`,
+    )
+  }
 
   if (!field.name) fail(`${groupKey}: a field is missing its "name".`)
   if (!field.key) fail(`${groupKey}: field "${here}" is missing its "key".`)
@@ -95,10 +110,37 @@ for (const group of schema) {
 /* --------------------------------------------------------- path resolution -- */
 
 /**
- * Resolves a flattened meta key ("hero_section_hero_slides_0_slide_label_ar")
- * against the schema. WordPress stores group and repeater values with the
- * parent name prefixed and repeater rows numbered, so the only reliable way to
- * check a CSV header is to walk the tree greedily.
+ * Explains an unresolvable name when it looks like slot N of a numbered group
+ * family that only goes up to M. Without this the reported error would be the
+ * generic "no ACF field matches", which reads like a typo instead of "your
+ * sixth slide has nowhere to go".
+ *
+ * @returns {string | null}
+ */
+function slotOverflowReason(candidates, remaining) {
+  for (const m of remaining.matchAll(/_(\d+)(?=_|$)/g)) {
+    const base = remaining.slice(0, m.index)
+    const slot = Number(m[1])
+    const existing = candidates
+      .map((f) => /^(.*)_(\d+)$/.exec(f.name))
+      .filter((parts) => parts && parts[1] === base)
+      .map((parts) => Number(parts[2]))
+
+    if (existing.length) {
+      const max = Math.max(...existing)
+      if (slot > max) {
+        return `"${base}" has only ${max} fixed slots (${base}_1 … ${base}_${max}) — add another group to alifleet-acf-schema.json or trim the data, otherwise slot ${slot} is silently dropped.`
+      }
+    }
+  }
+  return null
+}
+
+/**
+ * Resolves a flattened meta key ("hero_section_hero_slide_1_slide_label_ar")
+ * against the schema. WordPress stores group values with every parent name
+ * prefixed, so the only reliable way to check a CSV header is to walk the tree
+ * greedily.
  *
  * @returns {{ok: true, field: object} | {ok: false, reason: string}}
  */
@@ -115,10 +157,6 @@ function resolveMetaKey(metaKey, allowedGroupKeys) {
 
     for (const field of sorted) {
       if (remaining === field.name) {
-        if (field.type === 'repeater') {
-          // Bare repeater name = the row-count column. Valid on its own.
-          return { ok: true, field, isCounter: true }
-        }
         if (field.type === 'group') {
           return { ok: false, reason: `"${sofar}${field.name}" is a group, not a value — use one of its sub fields.` }
         }
@@ -131,16 +169,10 @@ function resolveMetaKey(metaKey, allowedGroupKeys) {
       if (field.type === 'group') {
         return walk(rest, field.sub_fields ?? [], `${sofar}${field.name}_`)
       }
-      if (field.type === 'repeater') {
-        const m = /^(\d+)_(.+)$/.exec(rest)
-        if (!m) {
-          return { ok: false, reason: `repeater "${sofar}${field.name}" needs a row index, e.g. ${field.name}_0_${(field.sub_fields ?? [])[0]?.name ?? 'sub'}.` }
-        }
-        return walk(m[2], field.sub_fields ?? [], `${sofar}${field.name}_${m[1]}_`)
-      }
     }
 
-    return { ok: false, reason: `no ACF field matches "${sofar}${remaining}".` }
+    const overflow = slotOverflowReason(candidates, remaining)
+    return { ok: false, reason: overflow ?? `no ACF field matches "${sofar}${remaining}".` }
   }
 }
 
@@ -285,23 +317,9 @@ for (const target of CSV_TARGETS) {
     if (slugs.some((s) => !s)) fail(`${label}: at least one row has an empty post_name.`)
   }
 
-  // Every repeater referenced by an indexed column needs its counter column,
-  // otherwise ACF reads zero rows no matter how many are filled in.
-  const repeaterPrefixes = new Set()
-  for (const column of header) {
-    // Greedy on purpose: a group named scene_01 also contains "_01_", so the
-    // candidate prefix is only kept when the schema says it is a repeater.
-    for (const m of column.matchAll(/_(\d+)_/g)) {
-      const candidate = column.slice(0, m.index)
-      const resolved = resolveMetaKey(candidate, target.groups)
-      if (resolved.ok && resolved.field.type === 'repeater') repeaterPrefixes.add(candidate)
-    }
-  }
-  for (const prefix of repeaterPrefixes) {
-    if (!header.includes(prefix)) {
-      fail(`${label}: columns use repeater "${prefix}" but the row-count column "${prefix}" is missing.`)
-    }
-  }
+  // Fixed groups need no row-count column — ACF reads each numbered group
+  // directly — so a leftover bare repeater name is now dead weight that ACF
+  // would ignore. resolveMetaKey already fails such a column above.
 
   notes.push(`${label}: ${header.length} columns, ${dataRows.length} rows — OK`)
 }
@@ -311,8 +329,9 @@ for (const target of CSV_TARGETS) {
 const seed = JSON.parse(readFileSync(rel('wordpress/scripts/seed-data.json'), 'utf8'))
 
 /**
- * Walks a seed ACF tree against the schema, checking names, repeater shapes
- * and select choices.
+ * Walks a seed ACF tree against the schema, checking names, group shapes and
+ * select choices. Numbered groups may be `{}` — an empty slot renders nothing,
+ * exactly like a repeater row that was never added.
  */
 function checkAcfTree(value, fields, where, label) {
   const byName = new Map(fields.map((f) => [f.name, f]))
@@ -320,31 +339,32 @@ function checkAcfTree(value, fields, where, label) {
   for (const [name, val] of Object.entries(value ?? {})) {
     const field = byName.get(name)
     if (!field) {
-      fail(`${label}: ${where}${name} does not exist in the schema.`)
+      const overflow = slotOverflowReason(fields, name)
+      const legacyRepeater = Array.isArray(val)
+        ? `${label}: ${where}${name} is an array and matches no field — it looks like a leftover ACF PRO repeater; spread its rows over the numbered groups (docs/ACF-FREE-CONVERSION-PLAN.md).`
+        : null
+      fail(
+        overflow
+          ? `${label}: ${where}${name} — ${overflow}`
+          : legacyRepeater ?? `${label}: ${where}${name} does not exist in the schema.`,
+      )
       continue
     }
 
     if (field.type === 'group') {
       if (typeof val !== 'object' || Array.isArray(val) || val === null) {
-        fail(`${label}: ${where}${name} is a group and needs an object.`)
+        fail(`${label}: ${where}${name} is a group and needs an object ({} for an unused slot).`)
         continue
       }
       checkAcfTree(val, field.sub_fields ?? [], `${where}${name}.`, label)
       continue
     }
 
-    if (field.type === 'repeater') {
-      if (!Array.isArray(val)) {
-        fail(`${label}: ${where}${name} is a repeater and needs an array.`)
-        continue
-      }
-      val.forEach((rowValue, i) => {
-        if (typeof rowValue !== 'object' || rowValue === null || Array.isArray(rowValue)) {
-          fail(`${label}: ${where}${name}[${i}] must be an object of sub fields.`)
-          return
-        }
-        checkAcfTree(rowValue, field.sub_fields ?? [], `${where}${name}[${i}].`, label)
-      })
+    if (Array.isArray(val)) {
+      // ACF free has no repeater: an array here is leftover PRO-era seed data.
+      fail(
+        `${label}: ${where}${name} is an array, but this schema has no repeaters — split it across numbered groups (see docs/ACF-FREE-CONVERSION-PLAN.md).`,
+      )
       continue
     }
 

@@ -3,8 +3,15 @@
  * ALI FLEET content importer (WP-CLI).
  *
  * Seeds every page, import vehicle, WooCommerce spare part and blog article
- * described in seed-data.json, including ACF groups and repeaters and the media
- * library uploads.
+ * described in seed-data.json, including every ACF group and the media library
+ * uploads.
+ *
+ * This schema runs on ACF free, so there are no repeaters: what used to be a
+ * repeater is now a fixed number of numbered groups (hero_slide_1 …
+ * hero_slide_5, gallery_image_1 … gallery_image_8). See
+ * docs/ACF-FREE-CONVERSION-PLAN.md. Nothing here needs to know about that:
+ * update_field() writes a whole group tree in one call, and an unused slot
+ * arrives as an empty object in the seed and clears its sub fields.
  *
  * Usage (run from the WordPress root):
  *
@@ -24,11 +31,11 @@
  * seed file.
  *
  * Why this instead of a CSV import?
- *   ACF repeaters (gallery, highlights, specs, compatibility, address lines,
- *   import steps) cannot be imported by the free WP All Import; they need the
- *   paid Pro version plus its ACF add-on. This script handles them natively
- *   through update_field() at no cost, and it also creates the WooCommerce
- *   products with correct prices and stock status.
+ *   The numbered groups (gallery_image_1…8, highlight_1…8, spec_1…8,
+ *   compat_model_1…10, address_line_1…3, step_item_1…4) turn into hundreds of
+ *   flattened CSV columns that are painful to keep aligned by hand. This script
+ *   writes them natively through update_field(), and it also creates the
+ *   WooCommerce products with correct prices and stock status.
  */
 
 declare( strict_types = 1 );
@@ -271,6 +278,15 @@ function alifleet_write_acf( int $post_id, array $acf ): void {
 		return;
 	}
 	foreach ( $acf as $name => $value ) {
+		// A list of rows means the seed still holds a PRO-era repeater. ACF free
+		// would write it as one opaque meta value that no field ever reads, so say
+		// so loudly instead of importing silent nothing.
+		if ( is_array( $value ) && ! empty( $value ) && array_is_list( $value ) ) {
+			WP_CLI::warning(
+				"  \"{$name}\" is a list of rows, but this schema has no repeaters — spread it over the numbered groups (docs/ACF-FREE-CONVERSION-PLAN.md). Skipped."
+			);
+			continue;
+		}
 		update_field( $name, alifleet_resolve_images( $value, $name ), $post_id );
 	}
 }

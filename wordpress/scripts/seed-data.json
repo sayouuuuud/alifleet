@@ -16,18 +16,17 @@
       "phone_href": "tel:+972500000000",
       "whatsapp_number": "972500000000",
       "email_address": "info@alifleet.com",
-      "address_lines": [
-        {
-          "line_ar": "المنطقة الصناعية، مبنى 12",
-          "line_en": "Industrial Zone, Building 12",
-          "line_he": "אזור תעשייה, בניין 12"
-        },
-        {
-          "line_ar": "حيفا، إسرائيل",
-          "line_en": "Haifa, Israel",
-          "line_he": "חיפה, ישראל"
-        }
-      ],
+      "address_line_1": {
+        "line_ar": "المنطقة الصناعية، مبنى 12",
+        "line_en": "Industrial Zone, Building 12",
+        "line_he": "אזור תעשייה, בניין 12"
+      },
+      "address_line_2": {
+        "line_ar": "حيفا، إسرائيل",
+        "line_en": "Haifa, Israel",
+        "line_he": "חיפה, ישראל"
+      },
+      "address_line_3": {},
       "working_hours": "Sun - Thu: 08:00 - 18:00"
     },
     "social_links": {
@@ -75,84 +74,81 @@
           "hero_description_ar": "اكتشف مجموعة مختارة من المركبات التجارية الفاخرة التي تجمع بين الهندسة المتقدمة والتصميم الداخلي الأنيق والأداء القوي",
           "hero_description_en": "Explore a curated collection of high-end commercial vehicles that combine advanced engineering, elegant interiors, and powerful performance",
           "hero_description_he": "גלו אוסף נבחר של רכבים מסחריים יוקרתיים המשלבים הנדסה מתקדמת, פנים אלגנטי וביצועים עוצמתיים",
-          "hero_slides": [
-            {
-              "slide_image": "/wp-content/uploads/images/hero-truck.png",
-              "slide_label_ar": "شاحنات",
-              "slide_label_en": "Trucks",
-              "slide_label_he": "משאיות",
-              "slide_alt_ar": "شاحنات ثقيلة",
-              "slide_alt_en": "Heavy-duty trucks",
-              "slide_alt_he": "משאיות כבדות"
-            },
-            {
-              "slide_image": "/wp-content/uploads/images/van-light.png",
-              "slide_label_ar": "فانات",
-              "slide_label_en": "Vans",
-              "slide_label_he": "ואנים",
-              "slide_alt_ar": "فانات تنفيذية",
-              "slide_alt_en": "Executive vans",
-              "slide_alt_he": "ואנים ניהוליים"
-            },
-            {
-              "slide_image": "/wp-content/uploads/images/suv-light.png",
-              "slide_label_ar": "دفع رباعي",
-              "slide_label_en": "SUVs",
-              "slide_label_he": "רכבי שטח",
-              "slide_alt_ar": "دفع رباعي فاخر",
-              "slide_alt_en": "Luxury SUVs",
-              "slide_alt_he": "רכבי שטח יוקרתיים"
-            },
-            {
-              "slide_image": "/wp-content/uploads/images/truck-light.png",
-              "slide_label_ar": "الطرق السريعة",
-              "slide_label_en": "Highway",
-              "slide_label_he": "כבישים",
-              "slide_alt_ar": "أسطول الطرق السريعة",
-              "slide_alt_en": "Highway fleet vehicles",
-              "slide_alt_he": "צי רכבים בכבישים"
-            },
-            {
-              "slide_image": "/wp-content/uploads/images/import-global.png",
-              "slide_label_ar": "مستوردة",
-              "slide_label_en": "Imports",
-              "slide_label_he": "ייבוא",
-              "slide_alt_ar": "مستوردات عالمية",
-              "slide_alt_en": "Global imports",
-              "slide_alt_he": "ייבוא גלובלי"
-            }
-          ]
+          "hero_slide_1": {
+            "slide_image": "/wp-content/uploads/images/hero-truck.png",
+            "slide_label_ar": "شاحنات",
+            "slide_label_en": "Trucks",
+            "slide_label_he": "משאיות",
+            "slide_alt_ar": "شاحنات ثقيلة",
+            "slide_alt_en": "Heavy-duty trucks",
+            "slide_alt_he": "משאיות כבדות"
+          },
+          "hero_slide_2": {
+            "slide_image": "/wp-content/uploads/images/van-light.png",
+            "slide_label_ar": "فانات",
+            "slide_label_en": "Vans",
+            "slide_label_he": "ואנים",
+            "slide_alt_ar": "فانات تنفيذية",
+            "slide_alt_en": "Executive vans",
+            "slide_alt_he": "ואנים ניהוליים"
+          },
+          "hero_slide_3": {
+            "slide_image": "/wp-content/uploads/images/suv-light.png",
+            "slide_label_ar": "دفع رباعي",
+            "slide_label_en": "SUVs",
+            "slide_label_he": "רכבי שטח",
+            "slide_alt_ar": "دفع رباعي فاخر",
+            "slide_alt_en": "Luxury SUVs",
+            "slide_alt_he": "רכבי שטח יוקרתיים"
+          },
+          "hero_slide_4": {
+            "slide_image": "/wp-content/uploads/images/truck-light.png",
+            "slide_label_ar": "الطرق السريعة",
+            "slide_label_en": "Highway",
+            "slide_label_he": "כבישים",
+            "slide_alt_ar": "أسطول الطرق السريعة",
+            "slide_alt_en": "Highway fleet vehicles",
+            "slide_alt_he": "צי רכבים בכבישים"
+          },
+          "hero_slide_5": {
+            "slide_image": "/wp-content/uploads/images/import-global.png",
+            "slide_label_ar": "مستوردة",
+            "slide_label_en": "Imports",
+            "slide_label_he": "ייבוא",
+            "slide_alt_ar": "مستوردات عالمية",
+            "slide_alt_en": "Global imports",
+            "slide_alt_he": "ייבוא גלובלי"
+          }
         },
         "stats_section": {
           "stats_eyebrow_ar": "بالأرقام",
           "stats_eyebrow_en": "By the numbers",
           "stats_eyebrow_he": "במספרים",
-          "stats_items": [
-            {
-              "stat_value": 1200,
-              "stat_label_ar": "مركبة تم تسليمها",
-              "stat_label_en": "Vehicles delivered",
-              "stat_label_he": "רכבים נמסרו"
-            },
-            {
-              "stat_value": 40,
-              "stat_label_ar": "دولة نخدمها",
-              "stat_label_en": "Countries served",
-              "stat_label_he": "מדינות שירות"
-            },
-            {
-              "stat_value": 5000,
-              "stat_label_ar": "قطعة غيار في المخزون",
-              "stat_label_en": "Parts in stock",
-              "stat_label_he": "חלפים במלאי"
-            },
-            {
-              "stat_value": 98,
-              "stat_label_ar": "رضا العملاء",
-              "stat_label_en": "Client satisfaction",
-              "stat_label_he": "שביעות רצון לקוחות"
-            }
-          ]
+          "stat_item_1": {
+            "stat_value": 1200,
+            "stat_label_ar": "مركبة تم تسليمها",
+            "stat_label_en": "Vehicles delivered",
+            "stat_label_he": "רכבים נמסרו"
+          },
+          "stat_item_2": {
+            "stat_value": 40,
+            "stat_label_ar": "دولة نخدمها",
+            "stat_label_en": "Countries served",
+            "stat_label_he": "מדינות שירות"
+          },
+          "stat_item_3": {
+            "stat_value": 5000,
+            "stat_label_ar": "قطعة غيار في المخزون",
+            "stat_label_en": "Parts in stock",
+            "stat_label_he": "חלפים במלאי"
+          },
+          "stat_item_4": {
+            "stat_value": 98,
+            "stat_label_ar": "رضا العملاء",
+            "stat_label_en": "Client satisfaction",
+            "stat_label_he": "שביעות רצון לקוחות"
+          },
+          "stat_item_5": {}
         },
         "fleet_showcase_section": {
           "fleet_eyebrow_ar": "الأسطول",
@@ -170,60 +166,61 @@
           "fleet_lead_ar": "من الشاحنات الثقيلة إلى الفخامة التنفيذية، كل مركبة مختارة بعناية من حيث الأداء والراحة والمكانة.",
           "fleet_lead_en": "From heavy-duty workhorses to executive luxury, every vehicle is selected for performance, comfort, and prestige.",
           "fleet_lead_he": "ממשאיות עבודה כבדות ועד יוקרה ניהולית — כל רכב נבחר לפי ביצועים, נוחות ויוקרה.",
-          "fleet_vehicles": [
-            {
-              "title_ar": "فانات تنفيذية",
-              "title_en": "Executive Vans",
-              "title_he": "ואנים ניהוליים",
-              "tag_ar": "الفئة الفاخرة",
-              "tag_en": "Luxury Line",
-              "tag_he": "קו היוקרה",
-              "description_ar": "فانات تجارية من الدرجة الأولى بتجهيزات داخلية راقية — مصممة لنقل الشخصيات المهمة والخدمات التنفيذية.",
-              "description_en": "First-class commercial vans with refined interiors — built for VIP transport, executive shuttles, and premium logistics.",
-              "description_he": "ואנים מסחריים ברמה ראשונה עם פנים משובח — להסעות VIP, שירות ניהולי ולוגיסטיקה יוקרתית.",
-              "image": "/wp-content/uploads/images/fleet-van.png"
-            },
-            {
-              "title_ar": "سيارات فاخرة",
-              "title_en": "Luxury Vehicles",
-              "title_he": "רכבי יוקרה",
-              "tag_ar": "مستوردة",
-              "tag_en": "Imported",
-              "tag_he": "מיובאים",
-              "description_ar": "سيارات ودفع رباعي فاخرة مختارة يدويًا من الأسواق العالمية، مستوردة بكامل الأوراق الرسمية.",
-              "description_en": "Hand-selected luxury SUVs and vehicles sourced from global markets, imported with full documentation.",
-              "description_he": "רכבי שטח ויוקרה שנבחרו אישית משווקים גלובליים, מיובאים עם תיעוד מלא.",
-              "image": "/wp-content/uploads/images/fleet-suv.png"
-            }
-          ]
+          "fleet_vehicle_1": {
+            "title_ar": "فانات تنفيذية",
+            "title_en": "Executive Vans",
+            "title_he": "ואנים ניהוליים",
+            "tag_ar": "الفئة الفاخرة",
+            "tag_en": "Luxury Line",
+            "tag_he": "קו היוקרה",
+            "description_ar": "فانات تجارية من الدرجة الأولى بتجهيزات داخلية راقية — مصممة لنقل الشخصيات المهمة والخدمات التنفيذية.",
+            "description_en": "First-class commercial vans with refined interiors — built for VIP transport, executive shuttles, and premium logistics.",
+            "description_he": "ואנים מסחריים ברמה ראשונה עם פנים משובח — להסעות VIP, שירות ניהולי ולוגיסטיקה יוקרתית.",
+            "image": "/wp-content/uploads/images/fleet-van.png"
+          },
+          "fleet_vehicle_2": {
+            "title_ar": "سيارات فاخرة",
+            "title_en": "Luxury Vehicles",
+            "title_he": "רכבי יוקרה",
+            "tag_ar": "مستوردة",
+            "tag_en": "Imported",
+            "tag_he": "מיובאים",
+            "description_ar": "سيارات ودفع رباعي فاخرة مختارة يدويًا من الأسواق العالمية، مستوردة بكامل الأوراق الرسمية.",
+            "description_en": "Hand-selected luxury SUVs and vehicles sourced from global markets, imported with full documentation.",
+            "description_he": "רכבי שטח ויוקרה שנבחרו אישית משווקים גלובליים, מיובאים עם תיעוד מלא.",
+            "image": "/wp-content/uploads/images/fleet-suv.png"
+          },
+          "fleet_vehicle_3": {},
+          "fleet_vehicle_4": {}
         },
-        "marquee_items": [
-          {
-            "item_text_ar": "حضور عالمي",
-            "item_text_en": "Global Reach",
-            "item_text_he": "פריסה גלובלית"
-          },
-          {
-            "item_text_ar": "مركبات متميزة",
-            "item_text_en": "Premium Vehicles",
-            "item_text_he": "רכבים יוקרתיים"
-          },
-          {
-            "item_text_ar": "استيراد سيارات",
-            "item_text_en": "Car Importing",
-            "item_text_he": "ייבוא רכבים"
-          },
-          {
-            "item_text_ar": "قطع غيار أصلية",
-            "item_text_en": "Genuine Parts",
-            "item_text_he": "חלפים מקוריים"
-          },
-          {
-            "item_text_ar": "معتمد عالميًا",
-            "item_text_en": "Certified Worldwide",
-            "item_text_he": "מאושר ברחבי העולם"
-          }
-        ],
+        "marquee_item_1": {
+          "item_text_ar": "حضور عالمي",
+          "item_text_en": "Global Reach",
+          "item_text_he": "פריסה גלובלית"
+        },
+        "marquee_item_2": {
+          "item_text_ar": "مركبات متميزة",
+          "item_text_en": "Premium Vehicles",
+          "item_text_he": "רכבים יוקרתיים"
+        },
+        "marquee_item_3": {
+          "item_text_ar": "استيراد سيارات",
+          "item_text_en": "Car Importing",
+          "item_text_he": "ייבוא רכבים"
+        },
+        "marquee_item_4": {
+          "item_text_ar": "قطع غيار أصلية",
+          "item_text_en": "Genuine Parts",
+          "item_text_he": "חלפים מקוריים"
+        },
+        "marquee_item_5": {
+          "item_text_ar": "معتمد عالميًا",
+          "item_text_en": "Certified Worldwide",
+          "item_text_he": "מאושר ברחבי העולם"
+        },
+        "marquee_item_6": {},
+        "marquee_item_7": {},
+        "marquee_item_8": {},
         "global_reach_section": {
           "global_eyebrow_ar": "استيراد السيارات",
           "global_eyebrow_en": "Car Import",
@@ -237,47 +234,46 @@
           "global_lead_ar": "نبحث ونفحص ونشحن ونخلّص السيارات من أوروبا والخليج وأمريكا وآسيا — بأوراق كاملة وسعر نهائي ثابت.",
           "global_lead_en": "We source, inspect, ship and clear vehicles from Europe, the Gulf, the USA and Asia — with full paperwork and a fixed landed price.",
           "global_lead_he": "אנו מאתרים, בודקים, משנעים ומשחררים רכבים מאירופה, המפרץ, ארה״ב ואסיה — עם תיעוד מלא ומחיר סופי קבוע.",
-          "global_features": [
-            {
-              "title_ar": "منطقة الخليج",
-              "title_en": "Gulf Region",
-              "title_he": "אזור המפרץ",
-              "text_ar": "مركبات الإمارات تُفحص وتُخلَّص عبر شبكتنا الخليجية قبل الشحن.",
-              "text_en": "UAE-based vehicles inspected and cleared through our Gulf network before shipping.",
-              "text_he": "רכבים מהאמירויות נבדקים ומשוחררים דרך הרשת שלנו במפרץ לפני המשלוח.",
-              "city_ar": "دبي",
-              "city_en": "Dubai",
-              "city_he": "דובאי",
-              "lat": 25.2048,
-              "lng": 55.2708
-            },
-            {
-              "title_ar": "أمريكا الشمالية",
-              "title_en": "North America",
-              "title_he": "צפון אמריקה",
-              "text_ar": "استيرادات المواصفات الأمريكية تُعالج من الميناء إلى التسجيل — كل الأوراق مُدارة بالكامل.",
-              "text_en": "US-spec imports handled from port to registration — all paperwork managed end to end.",
-              "text_he": "ייבוא מפרט אמריקאי מהנמל ועד לרישום — כל הניירת מנוהלת מקצה לקצה.",
-              "city_ar": "نيويورك",
-              "city_en": "New York",
-              "city_he": "ניו יורק",
-              "lat": 40.7128,
-              "lng": -74.006
-            },
-            {
-              "title_ar": "الشرق الأوسط",
-              "title_en": "Middle East",
-              "title_he": "המזרח התיכון",
-              "text_ar": "التسليم النهائي والتسجيل يتم في وجهة الوصول لخدمة متكاملة من الباب للباب.",
-              "text_en": "Final delivery and registration handled at destination for full door-to-door service.",
-              "text_he": "מסירה סופית ורישום מבוצעים בנקודת היעד לשירות דלת לדלת מלא.",
-              "city_ar": "القاهرة",
-              "city_en": "Cairo",
-              "city_he": "קהיר",
-              "lat": 30.0444,
-              "lng": 31.2357
-            }
-          ]
+          "global_feature_1": {
+            "title_ar": "منطقة الخليج",
+            "title_en": "Gulf Region",
+            "title_he": "אזור המפרץ",
+            "text_ar": "مركبات الإمارات تُفحص وتُخلَّص عبر شبكتنا الخليجية قبل الشحن.",
+            "text_en": "UAE-based vehicles inspected and cleared through our Gulf network before shipping.",
+            "text_he": "רכבים מהאמירויות נבדקים ומשוחררים דרך הרשת שלנו במפרץ לפני המשלוח.",
+            "city_ar": "دبي",
+            "city_en": "Dubai",
+            "city_he": "דובאי",
+            "lat": 25.2048,
+            "lng": 55.2708
+          },
+          "global_feature_2": {
+            "title_ar": "أمريكا الشمالية",
+            "title_en": "North America",
+            "title_he": "צפון אמריקה",
+            "text_ar": "استيرادات المواصفات الأمريكية تُعالج من الميناء إلى التسجيل — كل الأوراق مُدارة بالكامل.",
+            "text_en": "US-spec imports handled from port to registration — all paperwork managed end to end.",
+            "text_he": "ייבוא מפרט אמריקאי מהנמל ועד לרישום — כל הניירת מנוהלת מקצה לקצה.",
+            "city_ar": "نيويورك",
+            "city_en": "New York",
+            "city_he": "ניו יורק",
+            "lat": 40.7128,
+            "lng": -74.006
+          },
+          "global_feature_3": {
+            "title_ar": "الشرق الأوسط",
+            "title_en": "Middle East",
+            "title_he": "המזרח התיכון",
+            "text_ar": "التسليم النهائي والتسجيل يتم في وجهة الوصول لخدمة متكاملة من الباب للباب.",
+            "text_en": "Final delivery and registration handled at destination for full door-to-door service.",
+            "text_he": "מסירה סופית ורישום מבוצעים בנקודת היעד לשירות דלת לדלת מלא.",
+            "city_ar": "القاهرة",
+            "city_en": "Cairo",
+            "city_he": "קהיר",
+            "lat": 30.0444,
+            "lng": 31.2357
+          },
+          "global_feature_4": {}
         },
         "services_section": {
           "services_eyebrow_ar": "خدماتنا",
@@ -310,46 +306,45 @@
             "spec_sheet_title_en": "Vehicle Spec Sheet",
             "spec_sheet_title_he": "גיליון מפרט רכב",
             "spec_sheet_code": "ALI-FLEET / 01",
-            "specs_list": [
-              {
-                "label_ar": "الحالة",
-                "label_en": "Condition",
-                "label_he": "מצב",
-                "value_ar": "جديد ومعتمد مستعمل",
-                "value_en": "New & Certified Used",
-                "value_he": "חדש ומשומש מאושר"
-              },
-              {
-                "label_ar": "الفئة",
-                "label_en": "Class",
-                "label_he": "קטגוריה",
-                "value_ar": "فاخر تجاري",
-                "value_en": "Luxury Commercial",
-                "value_he": "יוקרה מסחרית"
-              },
-              {
-                "label_ar": "التسليم",
-                "label_en": "Handover",
-                "label_he": "מסירה",
-                "value_ar": "يُسلَّم لباب منزلك",
-                "value_en": "Delivered to your door",
-                "value_he": "מסירה עד הבית"
-              }
-            ],
-            "stats_list": [
-              {
-                "value": 18,
-                "label_ar": "سوق تصدير",
-                "label_en": "Export Markets",
-                "label_he": "שווקי יצוא"
-              },
-              {
-                "value": 100,
-                "label_ar": "مطابقة للمواصفات",
-                "label_en": "Spec Matched",
-                "label_he": "התאמה למפרט"
-              }
-            ]
+            "spec_item_1": {
+              "label_ar": "الحالة",
+              "label_en": "Condition",
+              "label_he": "מצב",
+              "value_ar": "جديد ومعتمد مستعمل",
+              "value_en": "New & Certified Used",
+              "value_he": "חדש ומשומש מאושר"
+            },
+            "spec_item_2": {
+              "label_ar": "الفئة",
+              "label_en": "Class",
+              "label_he": "קטגוריה",
+              "value_ar": "فاخر تجاري",
+              "value_en": "Luxury Commercial",
+              "value_he": "יוקרה מסחרית"
+            },
+            "spec_item_3": {
+              "label_ar": "التسليم",
+              "label_en": "Handover",
+              "label_he": "מסירה",
+              "value_ar": "يُسلَّم لباب منزلك",
+              "value_en": "Delivered to your door",
+              "value_he": "מסירה עד הבית"
+            },
+            "spec_item_4": {},
+            "spec_item_5": {},
+            "stat_list_item_1": {
+              "value": 18,
+              "label_ar": "سوق تصدير",
+              "label_en": "Export Markets",
+              "label_he": "שווקי יצוא"
+            },
+            "stat_list_item_2": {
+              "value": 100,
+              "label_ar": "مطابقة للمواصفات",
+              "label_en": "Spec Matched",
+              "label_he": "התאמה למפרט"
+            },
+            "stat_list_item_3": {}
           },
           "scene_02": {
             "kicker_ar": "استيراد مباشر",
@@ -369,47 +364,46 @@
             "tracking_label_en": "Shipment Tracking",
             "tracking_label_he": "מעקב משלוח",
             "tracking_code": "ALIFLT-2026-0071",
-            "route_stops": [
-              {
-                "code": "02",
-                "label_ar": "ميناء المغادرة",
-                "label_en": "Port of Origin",
-                "label_he": "נמל יציאה",
-                "place_ar": "هامبورغ، ألمانيا",
-                "place_en": "Hamburg, DE",
-                "place_he": "המבורג, גרמניה",
-                "status": "done",
-                "meta_ar": "تم الشحن · 18 يناير",
-                "meta_en": "Loaded · Jan 18",
-                "meta_he": "נטען · 18 ינואר"
-              },
-              {
-                "code": "03",
-                "label_ar": "الجمارك",
-                "label_en": "Customs",
-                "label_he": "מכס",
-                "place_ar": "الإسكندرية، مصر",
-                "place_en": "Alexandria, EG",
-                "place_he": "אלכסנדריה, מצרים",
-                "status": "current",
-                "meta_ar": "جارٍ التخليص",
-                "meta_en": "Clearing now",
-                "meta_he": "בשחרור כעת"
-              },
-              {
-                "code": "04",
-                "label_ar": "أسطولك",
-                "label_en": "Your Fleet",
-                "label_he": "הצי שלכם",
-                "place_ar": "القاهرة، مصر",
-                "place_en": "Cairo, EG",
-                "place_he": "קהיר, מצרים",
-                "status": "pending",
-                "meta_ar": "وصول متوقع · 3 فبراير",
-                "meta_en": "ETA · Feb 03",
-                "meta_he": "הגעה משוערת · 3 פבר׳"
-              }
-            ]
+            "route_stop_1": {
+              "code": "02",
+              "label_ar": "ميناء المغادرة",
+              "label_en": "Port of Origin",
+              "label_he": "נמל יציאה",
+              "place_ar": "هامبورغ، ألمانيا",
+              "place_en": "Hamburg, DE",
+              "place_he": "המבורג, גרמניה",
+              "status": "done",
+              "meta_ar": "تم الشحن · 18 يناير",
+              "meta_en": "Loaded · Jan 18",
+              "meta_he": "נטען · 18 ינואר"
+            },
+            "route_stop_2": {
+              "code": "03",
+              "label_ar": "الجمارك",
+              "label_en": "Customs",
+              "label_he": "מכס",
+              "place_ar": "الإسكندرية، مصر",
+              "place_en": "Alexandria, EG",
+              "place_he": "אלכסנדריה, מצרים",
+              "status": "current",
+              "meta_ar": "جارٍ التخليص",
+              "meta_en": "Clearing now",
+              "meta_he": "בשחרור כעת"
+            },
+            "route_stop_3": {
+              "code": "04",
+              "label_ar": "أسطولك",
+              "label_en": "Your Fleet",
+              "label_he": "הצי שלכם",
+              "place_ar": "القاهرة، مصر",
+              "place_en": "Cairo, EG",
+              "place_he": "קהיר, מצרים",
+              "status": "pending",
+              "meta_ar": "وصول متوقع · 3 فبراير",
+              "meta_en": "ETA · Feb 03",
+              "meta_he": "הגעה משוערת · 3 פבר׳"
+            },
+            "route_stop_4": {}
           },
           "scene_03": {
             "kicker_ar": "قطع الغيار",
@@ -425,38 +419,38 @@
             "description_en": "Genuine spare parts for Sprinters and light trucks — sourced, verified, and dispatched express to keep your fleet moving.",
             "description_he": "חלפים מקוריים לסברינטר ולמשאיות קלות — מסופקים, מאומתים ומשוגרים במהירות כדי לשמור על הצי שלכם תנועה.",
             "bg_image": "/wp-content/uploads/images/scene-spare-parts.png",
-            "part_callouts": [
-              {
-                "label_ar": "فلاتر OEM",
-                "label_en": "OEM Filters",
-                "label_he": "פילטרים OEM",
-                "code": "ALF-FILT-002",
-                "top": "50%",
-                "inset_inline_end": "70%"
-              },
-              {
-                "label_ar": "أنظمة الفرامل",
-                "label_en": "Brake Systems",
-                "label_he": "מערכות בלמים",
-                "code": "ALF-BRAKE-003",
-                "top": "75%",
-                "inset_inline_end": "65%"
-              }
-            ],
-            "inventory_list": [
-              {
-                "name_ar": "نقل حركة الشاحنات الخفيفة",
-                "name_en": "Light Truck Drivetrain",
-                "name_he": "תמסורת משאיות קלות",
-                "level": 74
-              },
-              {
-                "name_ar": "الفلاتر وأطقم الصيانة",
-                "name_en": "Filters & Service Kits",
-                "name_he": "פילטרים וערכות שירות",
-                "level": 95
-              }
-            ]
+            "part_callout_1": {
+              "label_ar": "فلاتر OEM",
+              "label_en": "OEM Filters",
+              "label_he": "פילטרים OEM",
+              "code": "ALF-FILT-002",
+              "top": "50%",
+              "inset_inline_end": "70%"
+            },
+            "part_callout_2": {
+              "label_ar": "أنظمة الفرامل",
+              "label_en": "Brake Systems",
+              "label_he": "מערכות בלמים",
+              "code": "ALF-BRAKE-003",
+              "top": "75%",
+              "inset_inline_end": "65%"
+            },
+            "part_callout_3": {},
+            "part_callout_4": {},
+            "inventory_item_1": {
+              "name_ar": "نقل حركة الشاحنات الخفيفة",
+              "name_en": "Light Truck Drivetrain",
+              "name_he": "תמסורת משאיות קלות",
+              "level": 74
+            },
+            "inventory_item_2": {
+              "name_ar": "الفلاتر وأطقم الصيانة",
+              "name_en": "Filters & Service Kits",
+              "name_he": "פילטרים וערכות שירות",
+              "level": 95
+            },
+            "inventory_item_3": {},
+            "inventory_item_4": {}
           }
         },
         "cta_section": {
@@ -509,32 +503,31 @@
           "steps_title_ar": "أربع خطوات من الإعلان إلى لوحة الترخيص",
           "steps_title_en": "Four steps from listing to licence plate",
           "steps_title_he": "ארבעה שלבים מהמודעה ועד לוחית הרישוי",
-          "steps_list": [
-            {
-              "step_title_ar": "الفحص والعرض",
-              "step_title_en": "Inspection & offer",
-              "step_title_he": "בדיקה והצעה",
-              "step_description_ar": "نفحص السيارة على الأرض، ونرسل لك تقريرًا بالصور، ونعطيك سعرًا نهائيًا ثابتًا.",
-              "step_description_en": "We inspect the vehicle on the ground, send you a report with photos, and quote one fixed landed price.",
-              "step_description_he": "אנו בודקים את הרכב בשטח, שולחים דוח עם תמונות, ומציעים מחיר סופי קבוע עד הבית."
-            },
-            {
-              "step_title_ar": "الشحن والتخليص",
-              "step_title_en": "Shipping & customs",
-              "step_title_he": "שילוח ומכס",
-              "step_description_ar": "نحجز الشحن ونتولى أوراق التصدير والتخليص الجمركي والضرائب في ميناء الوصول.",
-              "step_description_en": "We book the freight, handle export papers, customs clearance and taxes at the destination port.",
-              "step_description_he": "אנו מזמינים את השילוח ומטפלים במסמכי היצוא, שחרור מהמכס והמיסים בנמל היעד."
-            },
-            {
-              "step_title_ar": "التسليم والترخيص",
-              "step_title_en": "Delivery & plates",
-              "step_title_he": "מסירה ורישוי",
-              "step_description_ar": "التسجيل والترخيص والتلميع النهائي — السيارة تصل جاهزة للقيادة.",
-              "step_description_en": "Registration, licensing and final detailing — the car arrives ready to drive.",
-              "step_description_he": "רישום, רישוי וניקוי סופי — הרכב מגיע מוכן לנסיעה."
-            }
-          ]
+          "step_item_1": {
+            "step_title_ar": "الفحص والعرض",
+            "step_title_en": "Inspection & offer",
+            "step_title_he": "בדיקה והצעה",
+            "step_description_ar": "نفحص السيارة على الأرض، ونرسل لك تقريرًا بالصور، ونعطيك سعرًا نهائيًا ثابتًا.",
+            "step_description_en": "We inspect the vehicle on the ground, send you a report with photos, and quote one fixed landed price.",
+            "step_description_he": "אנו בודקים את הרכב בשטח, שולחים דוח עם תמונות, ומציעים מחיר סופי קבוע עד הבית."
+          },
+          "step_item_2": {
+            "step_title_ar": "الشحن والتخليص",
+            "step_title_en": "Shipping & customs",
+            "step_title_he": "שילוח ומכס",
+            "step_description_ar": "نحجز الشحن ونتولى أوراق التصدير والتخليص الجمركي والضرائب في ميناء الوصول.",
+            "step_description_en": "We book the freight, handle export papers, customs clearance and taxes at the destination port.",
+            "step_description_he": "אנו מזמינים את השילוח ומטפלים במסמכי היצוא, שחרור מהמכס והמיסים בנמל היעד."
+          },
+          "step_item_3": {
+            "step_title_ar": "التسليم والترخيص",
+            "step_title_en": "Delivery & plates",
+            "step_title_he": "מסירה ורישוי",
+            "step_description_ar": "التسجيل والترخيص والتلميع النهائي — السيارة تصل جاهزة للقيادة.",
+            "step_description_en": "Registration, licensing and final detailing — the car arrives ready to drive.",
+            "step_description_he": "רישום, רישוי וניקוי סופי — הרכב מגיע מוכן לנסיעה."
+          },
+          "step_item_4": {}
         },
         "available_cars_header": {
           "list_eyebrow_ar": "متاح الآن",
@@ -703,45 +696,51 @@
         "price": 289000,
         "featured": true,
         "featured_image": "/images/import-sprinter.png",
-        "gallery": [
-          {
-            "image": "/images/import-inspection.png",
-            "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
-            "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
-            "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
-          },
-          {
-            "image": "/images/port-light.png",
-            "alt_text_ar": "ميناء شحن السيارات في ضوء النهار",
-            "alt_text_en": "Vehicle shipping port in daylight",
-            "alt_text_he": "נמל שילוח רכבים באור יום"
-          }
-        ],
+        "gallery_image_1": {
+          "image": "/images/import-inspection.png",
+          "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
+          "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
+          "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
+        },
+        "gallery_image_2": {
+          "image": "/images/port-light.png",
+          "alt_text_ar": "ميناء شحن السيارات في ضوء النهار",
+          "alt_text_en": "Vehicle shipping port in daylight",
+          "alt_text_he": "נמל שילוח רכבים באור יום"
+        },
+        "gallery_image_3": {},
+        "gallery_image_4": {},
+        "gallery_image_5": {},
+        "gallery_image_6": {},
+        "gallery_image_7": {},
+        "gallery_image_8": {},
         "description_ar": "فان تنفيذي مجهّز من الوكالة بمقاعد كابتن جلدية وإضاءة محيطة وعزل صوتي كامل. صيانة موثقة بالكامل من مركز خدمة معتمد في ألمانيا، وجاهز للفحص قبل الشحن.",
         "description_en": "Factory-fitted executive van with leather captain seats, ambient lighting and full acoustic insulation. Complete service history from an authorised German service centre, ready for a pre-shipment inspection.",
         "description_he": "ואן ניהולי עם מושבי קפטן מעור, תאורת אווירה ובידוד אקוסטי מלא. היסטוריית טיפולים מלאה ממרכז שירות מוסמך בגרמניה.",
-        "highlights": [
-          {
-            "item_ar": "مقاعد كابتن جلدية × 4",
-            "item_en": "4 leather captain seats",
-            "item_he": "4 מושבי קפטן מעור"
-          },
-          {
-            "item_ar": "تكييف خلفي مستقل",
-            "item_en": "Independent rear climate",
-            "item_he": "מיזוג אחורי עצמאי"
-          },
-          {
-            "item_ar": "كاميرا 360 درجة",
-            "item_en": "360° camera",
-            "item_he": "מצלמת 360°"
-          },
-          {
-            "item_ar": "صيانة موثقة بالكامل",
-            "item_en": "Full documented service history",
-            "item_he": "היסטוריית טיפולים מלאה"
-          }
-        ],
+        "highlight_1": {
+          "item_ar": "مقاعد كابتن جلدية × 4",
+          "item_en": "4 leather captain seats",
+          "item_he": "4 מושבי קפטן מעור"
+        },
+        "highlight_2": {
+          "item_ar": "تكييف خلفي مستقل",
+          "item_en": "Independent rear climate",
+          "item_he": "מיזוג אחורי עצמאי"
+        },
+        "highlight_3": {
+          "item_ar": "كاميرا 360 درجة",
+          "item_en": "360° camera",
+          "item_he": "מצלמת 360°"
+        },
+        "highlight_4": {
+          "item_ar": "صيانة موثقة بالكامل",
+          "item_en": "Full documented service history",
+          "item_he": "היסטוריית טיפולים מלאה"
+        },
+        "highlight_5": {},
+        "highlight_6": {},
+        "highlight_7": {},
+        "highlight_8": {},
         "specs": {
           "engine": "2.0 CDI · 190 hp",
           "transmission": "auto",
@@ -775,45 +774,51 @@
         "price": 465000,
         "featured": true,
         "featured_image": "/images/import-luxury-suv.png",
-        "gallery": [
-          {
-            "image": "/images/import-global.png",
-            "alt_text_ar": "سيارات مستوردة من أسواق عالمية",
-            "alt_text_en": "Vehicles imported from global markets",
-            "alt_text_he": "רכבים מיובאים משווקים גלובליים"
-          },
-          {
-            "image": "/images/import-inspection.png",
-            "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
-            "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
-            "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
-          }
-        ],
+        "gallery_image_1": {
+          "image": "/images/import-global.png",
+          "alt_text_ar": "سيارات مستوردة من أسواق عالمية",
+          "alt_text_en": "Vehicles imported from global markets",
+          "alt_text_he": "רכבים מיובאים משווקים גלובליים"
+        },
+        "gallery_image_2": {
+          "image": "/images/import-inspection.png",
+          "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
+          "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
+          "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
+        },
+        "gallery_image_3": {},
+        "gallery_image_4": {},
+        "gallery_image_5": {},
+        "gallery_image_6": {},
+        "gallery_image_7": {},
+        "gallery_image_8": {},
         "description_ar": "نسخة مجهزة بكل الإضافات: تعليق هوائي، نظام صوت فاخر، شاشة خلفية ترفيهية، وفتحة سقف بانورامية. مالك واحد وسجل خدمة كامل من الوكيل.",
         "description_en": "Every box ticked: air suspension, premium audio, rear entertainment screens and a panoramic roof. One owner with a complete main-dealer service record.",
         "description_he": "כל האפשרויות: מתלי אוויר, מערכת שמע פרימיום, מסכי בידור אחוריים וגג פנורמי. יד ראשונה עם רישום טיפולים מלא.",
-        "highlights": [
-          {
-            "item_ar": "تعليق هوائي متكيّف",
-            "item_en": "Adaptive air suspension",
-            "item_he": "מתלי אוויר אדפטיביים"
-          },
-          {
-            "item_ar": "سقف بانورامي",
-            "item_en": "Panoramic roof",
-            "item_he": "גג פנורמי"
-          },
-          {
-            "item_ar": "نظام صوت فاخر",
-            "item_en": "Premium surround audio",
-            "item_he": "מערכת שמע פרימיום"
-          },
-          {
-            "item_ar": "مالك واحد فقط",
-            "item_en": "Single owner",
-            "item_he": "יד ראשונה"
-          }
-        ],
+        "highlight_1": {
+          "item_ar": "تعليق هوائي متكيّف",
+          "item_en": "Adaptive air suspension",
+          "item_he": "מתלי אוויר אדפטיביים"
+        },
+        "highlight_2": {
+          "item_ar": "سقف بانورامي",
+          "item_en": "Panoramic roof",
+          "item_he": "גג פנורמי"
+        },
+        "highlight_3": {
+          "item_ar": "نظام صوت فاخر",
+          "item_en": "Premium surround audio",
+          "item_he": "מערכת שמע פרימיום"
+        },
+        "highlight_4": {
+          "item_ar": "مالك واحد فقط",
+          "item_en": "Single owner",
+          "item_he": "יד ראשונה"
+        },
+        "highlight_5": {},
+        "highlight_6": {},
+        "highlight_7": {},
+        "highlight_8": {},
         "specs": {
           "engine": "3.0 TwinPower · 380 hp",
           "transmission": "auto",
@@ -847,45 +852,51 @@
         "price": 398000,
         "featured": true,
         "featured_image": "/images/import-landcruiser.png",
-        "gallery": [
-          {
-            "image": "/images/port-light.png",
-            "alt_text_ar": "ميناء شحن السيارات في ضوء النهار",
-            "alt_text_en": "Vehicle shipping port in daylight",
-            "alt_text_he": "נמל שילוח רכבים באור יום"
-          },
-          {
-            "image": "/images/import-global.png",
-            "alt_text_ar": "سيارات مستوردة من أسواق عالمية",
-            "alt_text_en": "Vehicles imported from global markets",
-            "alt_text_he": "רכבים מיובאים משווקים גלובליים"
-          }
-        ],
+        "gallery_image_1": {
+          "image": "/images/port-light.png",
+          "alt_text_ar": "ميناء شحن السيارات في ضوء النهار",
+          "alt_text_en": "Vehicle shipping port in daylight",
+          "alt_text_he": "נמל שילוח רכבים באור יום"
+        },
+        "gallery_image_2": {
+          "image": "/images/import-global.png",
+          "alt_text_ar": "سيارات مستوردة من أسواق عالمية",
+          "alt_text_en": "Vehicles imported from global markets",
+          "alt_text_he": "רכבים מיובאים משווקים גלובליים"
+        },
+        "gallery_image_3": {},
+        "gallery_image_4": {},
+        "gallery_image_5": {},
+        "gallery_image_6": {},
+        "gallery_image_7": {},
+        "gallery_image_8": {},
         "description_ar": "مواصفات خليجية بتبريد معزّز وفلاتر غبار إضافية، مع نظام تعليق حركي متغير. حاليًا على الباخرة ووصولها المتوقع خلال أسبوعين.",
         "description_en": "Gulf specification with uprated cooling and extra dust filtration, plus the kinetic dynamic suspension system. Currently on the water with arrival expected within two weeks.",
         "description_he": "מפרט מפרץ עם קירור משופר וסינון אבק נוסף, כולל מערכת מתלים קינטית. כרגע בהפלגה, הגעה צפויה בתוך שבועיים.",
-        "highlights": [
-          {
-            "item_ar": "نظام تعليق حركي KDSS",
-            "item_en": "KDSS kinetic suspension",
-            "item_he": "מתלים קינטיים KDSS"
-          },
-          {
-            "item_ar": "تبريد معزّز للمناخ الحار",
-            "item_en": "Uprated hot-climate cooling",
-            "item_he": "קירור משופר לאקלים חם"
-          },
-          {
-            "item_ar": "قفل تفاضلي خلفي",
-            "item_en": "Rear differential lock",
-            "item_he": "נעילת דיפרנציאל אחורי"
-          },
-          {
-            "item_ar": "كاميرات محيطية للطرق الوعرة",
-            "item_en": "Multi-terrain camera suite",
-            "item_he": "מערך מצלמות שטח"
-          }
-        ],
+        "highlight_1": {
+          "item_ar": "نظام تعليق حركي KDSS",
+          "item_en": "KDSS kinetic suspension",
+          "item_he": "מתלים קינטיים KDSS"
+        },
+        "highlight_2": {
+          "item_ar": "تبريد معزّز للمناخ الحار",
+          "item_en": "Uprated hot-climate cooling",
+          "item_he": "קירור משופר לאקלים חם"
+        },
+        "highlight_3": {
+          "item_ar": "قفل تفاضلي خلفي",
+          "item_en": "Rear differential lock",
+          "item_he": "נעילת דיפרנציאל אחורי"
+        },
+        "highlight_4": {
+          "item_ar": "كاميرات محيطية للطرق الوعرة",
+          "item_en": "Multi-terrain camera suite",
+          "item_he": "מערך מצלמות שטח"
+        },
+        "highlight_5": {},
+        "highlight_6": {},
+        "highlight_7": {},
+        "highlight_8": {},
         "specs": {
           "engine": "3.5 V6 Twin-Turbo · 415 hp",
           "transmission": "auto",
@@ -919,45 +930,51 @@
         "price": 372000,
         "featured": false,
         "featured_image": "/images/import-pickup.png",
-        "gallery": [
-          {
-            "image": "/images/import-inspection.png",
-            "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
-            "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
-            "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
-          },
-          {
-            "image": "/images/import-global.png",
-            "alt_text_ar": "سيارات مستوردة من أسواق عالمية",
-            "alt_text_en": "Vehicles imported from global markets",
-            "alt_text_he": "רכבים מיובאים משווקים גלובליים"
-          }
-        ],
+        "gallery_image_1": {
+          "image": "/images/import-inspection.png",
+          "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
+          "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
+          "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
+        },
+        "gallery_image_2": {
+          "image": "/images/import-global.png",
+          "alt_text_ar": "سيارات مستوردة من أسواق عالمية",
+          "alt_text_en": "Vehicles imported from global markets",
+          "alt_text_he": "רכבים מיובאים משווקים גלובליים"
+        },
+        "gallery_image_3": {},
+        "gallery_image_4": {},
+        "gallery_image_5": {},
+        "gallery_image_6": {},
+        "gallery_image_7": {},
+        "gallery_image_8": {},
         "description_ar": "بيك أب كهربائي بمدى يصل إلى 515 كم وقدرة سحب عالية، مع نظام تغذية كهربائية للمواقع يحوّل السيارة إلى مولّد متنقل.",
         "description_en": "Electric pickup with up to 515 km of range, serious towing capacity, and an onboard power system that turns the truck into a mobile generator.",
         "description_he": "טנדר חשמלי עם טווח של עד 515 ק״מ, כושר גרירה גבוה ומערכת הספק שהופכת אותו לגנרטור נייד.",
-        "highlights": [
-          {
-            "item_ar": "مدى حتى 515 كم",
-            "item_en": "Up to 515 km range",
-            "item_he": "טווח עד 515 ק״מ"
-          },
-          {
-            "item_ar": "تغذية كهربائية 9.6 كيلوواط",
-            "item_en": "9.6 kW onboard power",
-            "item_he": "הספק 9.6 קילוואט"
-          },
-          {
-            "item_ar": "صندوق أمامي مبرّد",
-            "item_en": "Lockable front trunk",
-            "item_he": "תא מטען קדמי"
-          },
-          {
-            "item_ar": "قدرة سحب 4.5 طن",
-            "item_en": "4.5 t towing capacity",
-            "item_he": "כושר גרירה 4.5 טון"
-          }
-        ],
+        "highlight_1": {
+          "item_ar": "مدى حتى 515 كم",
+          "item_en": "Up to 515 km range",
+          "item_he": "טווח עד 515 ק״מ"
+        },
+        "highlight_2": {
+          "item_ar": "تغذية كهربائية 9.6 كيلوواط",
+          "item_en": "9.6 kW onboard power",
+          "item_he": "הספק 9.6 קילוואט"
+        },
+        "highlight_3": {
+          "item_ar": "صندوق أمامي مبرّد",
+          "item_en": "Lockable front trunk",
+          "item_he": "תא מטען קדמי"
+        },
+        "highlight_4": {
+          "item_ar": "قدرة سحب 4.5 طن",
+          "item_en": "4.5 t towing capacity",
+          "item_he": "כושר גרירה 4.5 טון"
+        },
+        "highlight_5": {},
+        "highlight_6": {},
+        "highlight_7": {},
+        "highlight_8": {},
         "specs": {
           "engine": "Dual motor · 580 hp",
           "transmission": "auto",
@@ -990,45 +1007,51 @@
         "mileage": 8500,
         "featured": false,
         "featured_image": "/images/import-vip-mpv.png",
-        "gallery": [
-          {
-            "image": "/images/import-global.png",
-            "alt_text_ar": "سيارات مستوردة من أسواق عالمية",
-            "alt_text_en": "Vehicles imported from global markets",
-            "alt_text_he": "רכבים מיובאים משווקים גלובליים"
-          },
-          {
-            "image": "/images/import-inspection.png",
-            "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
-            "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
-            "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
-          }
-        ],
+        "gallery_image_1": {
+          "image": "/images/import-global.png",
+          "alt_text_ar": "سيارات مستوردة من أسواق عالمية",
+          "alt_text_en": "Vehicles imported from global markets",
+          "alt_text_he": "רכבים מיובאים משווקים גלובליים"
+        },
+        "gallery_image_2": {
+          "image": "/images/import-inspection.png",
+          "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
+          "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
+          "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
+        },
+        "gallery_image_3": {},
+        "gallery_image_4": {},
+        "gallery_image_5": {},
+        "gallery_image_6": {},
+        "gallery_image_7": {},
+        "gallery_image_8": {},
         "description_ar": "أفخم ما يُنقل به الركاب: مقصورة خلفية مستقلة بشاشة 48 بوصة، مقاعد كهربائية بوضعية الاستلقاء، وحاجز زجاجي كهربائي بين المقصورتين.",
         "description_en": "The most refined way to move passengers: a separate rear cabin with a 48-inch screen, powered reclining seats and an electric glass partition.",
         "description_he": "הדרך המשובחת ביותר להסיע נוסעים: קבינה אחורית נפרדת עם מסך 48 אינץ׳, מושבים חשמליים נשכבים ומחיצת זכוכית חשמלית.",
-        "highlights": [
-          {
-            "item_ar": "شاشة 48 بوصة للمقصورة الخلفية",
-            "item_en": "48-inch rear cabin screen",
-            "item_he": "מסך 48 אינץ׳ מאחור"
-          },
-          {
-            "item_ar": "حاجز زجاجي كهربائي",
-            "item_en": "Electric glass partition",
-            "item_he": "מחיצת זכוכית חשמלית"
-          },
-          {
-            "item_ar": "مقاعد مساج كهربائية",
-            "item_en": "Powered massage seats",
-            "item_he": "מושבי מסאז׳ חשמליים"
-          },
-          {
-            "item_ar": "عزل صوتي مزدوج الزجاج",
-            "item_en": "Double-glazed acoustic glass",
-            "item_he": "זכוכית אקוסטית כפולה"
-          }
-        ],
+        "highlight_1": {
+          "item_ar": "شاشة 48 بوصة للمقصورة الخلفية",
+          "item_en": "48-inch rear cabin screen",
+          "item_he": "מסך 48 אינץ׳ מאחור"
+        },
+        "highlight_2": {
+          "item_ar": "حاجز زجاجي كهربائي",
+          "item_en": "Electric glass partition",
+          "item_he": "מחיצת זכוכית חשמלית"
+        },
+        "highlight_3": {
+          "item_ar": "مقاعد مساج كهربائية",
+          "item_en": "Powered massage seats",
+          "item_he": "מושבי מסאז׳ חשמליים"
+        },
+        "highlight_4": {
+          "item_ar": "عزل صوتي مزدوج الزجاج",
+          "item_en": "Double-glazed acoustic glass",
+          "item_he": "זכוכית אקוסטית כפולה"
+        },
+        "highlight_5": {},
+        "highlight_6": {},
+        "highlight_7": {},
+        "highlight_8": {},
         "specs": {
           "engine": "2.5 Hybrid · 250 hp",
           "transmission": "auto",
@@ -1062,45 +1085,51 @@
         "price": 520000,
         "featured": false,
         "featured_image": "/images/import-heavy-truck.png",
-        "gallery": [
-          {
-            "image": "/images/port-light.png",
-            "alt_text_ar": "ميناء شحن السيارات في ضوء النهار",
-            "alt_text_en": "Vehicle shipping port in daylight",
-            "alt_text_he": "נמל שילוח רכבים באור יום"
-          },
-          {
-            "image": "/images/import-inspection.png",
-            "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
-            "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
-            "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
-          }
-        ],
+        "gallery_image_1": {
+          "image": "/images/port-light.png",
+          "alt_text_ar": "ميناء شحن السيارات في ضوء النهار",
+          "alt_text_en": "Vehicle shipping port in daylight",
+          "alt_text_he": "נמל שילוח רכבים באור יום"
+        },
+        "gallery_image_2": {
+          "image": "/images/import-inspection.png",
+          "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
+          "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
+          "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
+        },
+        "gallery_image_3": {},
+        "gallery_image_4": {},
+        "gallery_image_5": {},
+        "gallery_image_6": {},
+        "gallery_image_7": {},
+        "gallery_image_8": {},
         "description_ar": "رأس قاطرة بقوة 750 حصانًا وناقل حركة آلي 12 سرعة، كابينة Globetrotter بسريرين ومطبخ صغير. جاهز لخطوط النقل الطويلة من أول يوم.",
         "description_en": "750 hp tractor unit with a 12-speed automated gearbox and a Globetrotter cab featuring twin bunks and a galley. Ready for long-haul routes from day one.",
         "description_he": "ראש טרקטור 750 כ״ס עם תמסורת אוטומטית 12 הילוכים וקבינת Globetrotter עם שתי דרגשים ומטבחון.",
-        "highlights": [
-          {
-            "item_ar": "محرك 750 حصان",
-            "item_en": "750 hp engine",
-            "item_he": "מנוע 750 כ״ס"
-          },
-          {
-            "item_ar": "ناقل حركة آلي 12 سرعة",
-            "item_en": "12-speed automated gearbox",
-            "item_he": "תמסורת אוטומטית 12 הילוכים"
-          },
-          {
-            "item_ar": "كابينة نوم بسريرين",
-            "item_en": "Twin-bunk sleeper cab",
-            "item_he": "קבינת שינה כפולה"
-          },
-          {
-            "item_ar": "معيار انبعاثات Euro 6",
-            "item_en": "Euro 6 emissions",
-            "item_he": "תקן זיהום Euro 6"
-          }
-        ],
+        "highlight_1": {
+          "item_ar": "محرك 750 حصان",
+          "item_en": "750 hp engine",
+          "item_he": "מנוע 750 כ״ס"
+        },
+        "highlight_2": {
+          "item_ar": "ناقل حركة آلي 12 سرعة",
+          "item_en": "12-speed automated gearbox",
+          "item_he": "תמסורת אוטומטית 12 הילוכים"
+        },
+        "highlight_3": {
+          "item_ar": "كابينة نوم بسريرين",
+          "item_en": "Twin-bunk sleeper cab",
+          "item_he": "קבינת שינה כפולה"
+        },
+        "highlight_4": {
+          "item_ar": "معيار انبعاثات Euro 6",
+          "item_en": "Euro 6 emissions",
+          "item_he": "תקן זיהום Euro 6"
+        },
+        "highlight_5": {},
+        "highlight_6": {},
+        "highlight_7": {},
+        "highlight_8": {},
         "specs": {
           "engine": "D16K · 750 hp",
           "transmission": "auto",
@@ -1134,45 +1163,51 @@
         "price": 198000,
         "featured": false,
         "featured_image": "/images/import-people-van.png",
-        "gallery": [
-          {
-            "image": "/images/import-inspection.png",
-            "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
-            "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
-            "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
-          },
-          {
-            "image": "/images/port-light.png",
-            "alt_text_ar": "ميناء شحن السيارات في ضوء النهار",
-            "alt_text_en": "Vehicle shipping port in daylight",
-            "alt_text_he": "נמל שילוח רכבים באור יום"
-          }
-        ],
+        "gallery_image_1": {
+          "image": "/images/import-inspection.png",
+          "alt_text_ar": "فحص فني للسيارة على رافعة في ورشة نظيفة",
+          "alt_text_en": "Technical inspection of a vehicle on a workshop lift",
+          "alt_text_he": "בדיקה טכנית של רכב על מגבה במוסך"
+        },
+        "gallery_image_2": {
+          "image": "/images/port-light.png",
+          "alt_text_ar": "ميناء شحن السيارات في ضوء النهار",
+          "alt_text_en": "Vehicle shipping port in daylight",
+          "alt_text_he": "נמל שילוח רכבים באור יום"
+        },
+        "gallery_image_3": {},
+        "gallery_image_4": {},
+        "gallery_image_5": {},
+        "gallery_image_6": {},
+        "gallery_image_7": {},
+        "gallery_image_8": {},
         "description_ar": "خيار اقتصادي وموثوق لخدمات النقل السياحي وشركات الفنادق: تسعة مقاعد بمساحة أرجل واسعة، تكييف ثلاثي المناطق، وباب جانبي كهربائي.",
         "description_en": "A dependable, economical choice for shuttle and hotel transfer work: nine seats with generous legroom, tri-zone climate and a powered sliding door.",
         "description_he": "בחירה אמינה וחסכונית להסעות ולמלונות: תשעה מושבים עם מרווח רגליים נדיב, מיזוג תלת-אזורי ודלת הזזה חשמלית.",
-        "highlights": [
-          {
-            "item_ar": "تسعة مقاعد كاملة",
-            "item_en": "Full nine seats",
-            "item_he": "תשעה מושבים מלאים"
-          },
-          {
-            "item_ar": "باب جانبي كهربائي",
-            "item_en": "Powered sliding door",
-            "item_he": "דלת הזזה חשמלית"
-          },
-          {
-            "item_ar": "تكييف ثلاثي المناطق",
-            "item_en": "Tri-zone climate control",
-            "item_he": "מיזוג תלת-אזורי"
-          },
-          {
-            "item_ar": "حزمة مساعدات السلامة",
-            "item_en": "Full driver-assist package",
-            "item_he": "חבילת עזרי בטיחות"
-          }
-        ],
+        "highlight_1": {
+          "item_ar": "تسعة مقاعد كاملة",
+          "item_en": "Full nine seats",
+          "item_he": "תשעה מושבים מלאים"
+        },
+        "highlight_2": {
+          "item_ar": "باب جانبي كهربائي",
+          "item_en": "Powered sliding door",
+          "item_he": "דלת הזזה חשמלית"
+        },
+        "highlight_3": {
+          "item_ar": "تكييف ثلاثي المناطق",
+          "item_en": "Tri-zone climate control",
+          "item_he": "מיזוג תלת-אזורי"
+        },
+        "highlight_4": {
+          "item_ar": "حزمة مساعدات السلامة",
+          "item_en": "Full driver-assist package",
+          "item_he": "חבילת עזרי בטיחות"
+        },
+        "highlight_5": {},
+        "highlight_6": {},
+        "highlight_7": {},
+        "highlight_8": {},
         "specs": {
           "engine": "2.2 CRDi · 177 hp",
           "transmission": "auto",
@@ -1222,62 +1257,67 @@
         "description_ar": "أقراص فرامل مهوّاة عالية الأداء لمقاومة الحرارة على المنحدرات والأحمال الثقيلة. تصنيع من الحديد الزهر المرن مع طلاء مضاد للصدأ يحافظ على المظهر والأداء لفترة أطول.",
         "description_en": "High-performance ventilated discs engineered to resist heat fade on long descents and heavy loads. Cast from high-carbon iron with an anti-corrosion coating that keeps both looks and stopping power for longer.",
         "description_he": "דיסקים מאווררים בעלי ביצועים גבוהים שתוכננו לעמוד בהתחממות בירידות ארוכות ובעומסים כבדים. יצוקים מברזל עתיר פחמן עם ציפוי נגד קורוזיה.",
-        "specs": [
-          {
-            "label_ar": "القطر",
-            "label_en": "Diameter",
-            "label_he": "קוטר",
-            "value_ar": "330 mm",
-            "value_en": "330 mm",
-            "value_he": "330 mm"
-          },
-          {
-            "label_ar": "المادة",
-            "label_en": "Material",
-            "label_he": "חומר",
-            "value_ar": "حديد زهر عالي الكربون",
-            "value_en": "High-carbon cast iron",
-            "value_he": "ברזל יצוק עתיר פחמן"
-          },
-          {
-            "label_ar": "الموضع",
-            "label_en": "Position",
-            "label_he": "מיקום",
-            "value_ar": "أمامي",
-            "value_en": "Front axle",
-            "value_he": "סרן קדמי"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "24 شهرًا",
-            "value_en": "24 months",
-            "value_he": "24 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "إيطاليا",
-            "value_en": "Italy",
-            "value_he": "איטליה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "Sprinter 907"
-          },
-          {
-            "model_name": "Crafter 2E"
-          },
-          {
-            "model_name": "Transit V363"
-          },
-          {
-            "model_name": "Daily 35S"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "القطر",
+          "label_en": "Diameter",
+          "label_he": "קוטר",
+          "value_ar": "330 mm",
+          "value_en": "330 mm",
+          "value_he": "330 mm"
+        },
+        "spec_2": {
+          "label_ar": "المادة",
+          "label_en": "Material",
+          "label_he": "חומר",
+          "value_ar": "حديد زهر عالي الكربون",
+          "value_en": "High-carbon cast iron",
+          "value_he": "ברזל יצוק עתיר פחמן"
+        },
+        "spec_3": {
+          "label_ar": "الموضع",
+          "label_en": "Position",
+          "label_he": "מיקום",
+          "value_ar": "أمامي",
+          "value_en": "Front axle",
+          "value_he": "סרן קדמי"
+        },
+        "spec_4": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "24 شهرًا",
+          "value_en": "24 months",
+          "value_he": "24 חודשים"
+        },
+        "spec_5": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "إيطاليا",
+          "value_en": "Italy",
+          "value_he": "איטליה"
+        },
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "Sprinter 907"
+        },
+        "compat_model_2": {
+          "model_name": "Crafter 2E"
+        },
+        "compat_model_3": {
+          "model_name": "Transit V363"
+        },
+        "compat_model_4": {
+          "model_name": "Daily 35S"
+        },
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1312,51 +1352,58 @@
         "description_ar": "خلطة احتكاك منخفضة الغبار وهادئة الصوت مع صفائح دعم مضادة للصرير، مخصصة للمركبات التجارية التي تعمل بحمولة كاملة يوميًا.",
         "description_en": "Low-dust, low-noise friction compound with anti-squeal backing shims, developed for commercial vehicles running at full payload every day.",
         "description_he": "תרכובת חיכוך שקטה ודלת אבק עם שימים נגד חריקות, שפותחה לרכבים מסחריים בעומס מלא.",
-        "specs": [
-          {
-            "label_ar": "محتوى العلبة",
-            "label_en": "Kit contents",
-            "label_he": "תכולת הערכה",
-            "value_ar": "4 قطع + مسامير تثبيت",
-            "value_en": "4 pads + fitting hardware",
-            "value_he": "4 רפידות + חומרת התקנה"
-          },
-          {
-            "label_ar": "الموضع",
-            "label_en": "Position",
-            "label_he": "מיקום",
-            "value_ar": "أمامي",
-            "value_en": "Front axle",
-            "value_he": "סרן קדמי"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "12 شهرًا",
-            "value_en": "12 months",
-            "value_he": "12 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "Sprinter 907"
-          },
-          {
-            "model_name": "Transit V363"
-          },
-          {
-            "model_name": "Master III"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "محتوى العلبة",
+          "label_en": "Kit contents",
+          "label_he": "תכולת הערכה",
+          "value_ar": "4 قطع + مسامير تثبيت",
+          "value_en": "4 pads + fitting hardware",
+          "value_he": "4 רפידות + חומרת התקנה"
+        },
+        "spec_2": {
+          "label_ar": "الموضع",
+          "label_en": "Position",
+          "label_he": "מיקום",
+          "value_ar": "أمامي",
+          "value_en": "Front axle",
+          "value_he": "סרן קדמי"
+        },
+        "spec_3": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "12 شهرًا",
+          "value_en": "12 months",
+          "value_he": "12 חודשים"
+        },
+        "spec_4": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_5": {},
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "Sprinter 907"
+        },
+        "compat_model_2": {
+          "model_name": "Transit V363"
+        },
+        "compat_model_3": {
+          "model_name": "Master III"
+        },
+        "compat_model_4": {},
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1391,62 +1438,67 @@
         "description_ar": "وحدة توربو أصلية بهندسة ريش متغيرة تعطي عزمًا مبكرًا واستجابة فورية. تأتي متوازنة ومختبرة على منصة قياس قبل الشحن.",
         "description_en": "Genuine variable-vane turbo unit delivering low-end torque and instant response. Every unit is balanced and flow-tested on a rig before it ships.",
         "description_he": "יחידת טורבו מקורית עם מדפים משתנים המספקת מומנט בסבבים נמוכים ותגובה מיידית. כל יחידה מאוזנת ונבדקת לפני המשלוח.",
-        "specs": [
-          {
-            "label_ar": "ضغط الشحن",
-            "label_en": "Boost pressure",
-            "label_he": "לחץ הזנה",
-            "value_ar": "1.8 bar",
-            "value_en": "1.8 bar",
-            "value_he": "1.8 bar"
-          },
-          {
-            "label_ar": "المادة",
-            "label_en": "Material",
-            "label_he": "חומר",
-            "value_ar": "سبيكة إنكونيل",
-            "value_en": "Inconel alloy",
-            "value_he": "סגסוגת אינקונל"
-          },
-          {
-            "label_ar": "الوزن",
-            "label_en": "Weight",
-            "label_he": "משקל",
-            "value_ar": "9.4 kg",
-            "value_en": "9.4 kg",
-            "value_he": "9.4 kg"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "24 شهرًا",
-            "value_en": "24 months",
-            "value_he": "24 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "OM651"
-          },
-          {
-            "model_name": "OM642"
-          },
-          {
-            "model_name": "2.0 EcoBlue"
-          },
-          {
-            "model_name": "2.3 dCi"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "ضغط الشحن",
+          "label_en": "Boost pressure",
+          "label_he": "לחץ הזנה",
+          "value_ar": "1.8 bar",
+          "value_en": "1.8 bar",
+          "value_he": "1.8 bar"
+        },
+        "spec_2": {
+          "label_ar": "المادة",
+          "label_en": "Material",
+          "label_he": "חומר",
+          "value_ar": "سبيكة إنكونيل",
+          "value_en": "Inconel alloy",
+          "value_he": "סגסוגת אינקונל"
+        },
+        "spec_3": {
+          "label_ar": "الوزن",
+          "label_en": "Weight",
+          "label_he": "משקל",
+          "value_ar": "9.4 kg",
+          "value_en": "9.4 kg",
+          "value_he": "9.4 kg"
+        },
+        "spec_4": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "24 شهرًا",
+          "value_en": "24 months",
+          "value_he": "24 חודשים"
+        },
+        "spec_5": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "OM651"
+        },
+        "compat_model_2": {
+          "model_name": "OM642"
+        },
+        "compat_model_3": {
+          "model_name": "2.0 EcoBlue"
+        },
+        "compat_model_4": {
+          "model_name": "2.3 dCi"
+        },
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1481,51 +1533,58 @@
         "description_ar": "طقم عمرة كامل بمقاسات مصنعية دقيقة، مع بساتم مطلية بالجرافيت لتقليل الاحتكاك في أول ساعات التشغيل.",
         "description_en": "Complete overhaul kit machined to factory tolerances, with graphite-coated pistons that cut friction during the critical break-in hours.",
         "description_he": "ערכת שיפוץ מלאה בסבילות מקוריות, עם בוכנות מצופות גרפיט להפחתת חיכוך בשעות ההרצה.",
-        "specs": [
-          {
-            "label_ar": "محتوى العلبة",
-            "label_en": "Kit contents",
-            "label_he": "תכולת הערכה",
-            "value_ar": "6 بساتم + حلقات + مسامير",
-            "value_en": "6 pistons + rings + pins",
-            "value_he": "6 בוכנות + טבעות + פינים"
-          },
-          {
-            "label_ar": "القطر",
-            "label_en": "Diameter",
-            "label_he": "קוטר",
-            "value_ar": "83 mm",
-            "value_en": "83 mm",
-            "value_he": "83 mm"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "12 شهرًا",
-            "value_en": "12 months",
-            "value_he": "12 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "OM651"
-          },
-          {
-            "model_name": "D4CB"
-          },
-          {
-            "model_name": "2.2 TDCi"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "محتوى العلبة",
+          "label_en": "Kit contents",
+          "label_he": "תכולת הערכה",
+          "value_ar": "6 بساتم + حلقات + مسامير",
+          "value_en": "6 pistons + rings + pins",
+          "value_he": "6 בוכנות + טבעות + פינים"
+        },
+        "spec_2": {
+          "label_ar": "القطر",
+          "label_en": "Diameter",
+          "label_he": "קוטר",
+          "value_ar": "83 mm",
+          "value_en": "83 mm",
+          "value_he": "83 mm"
+        },
+        "spec_3": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "12 شهرًا",
+          "value_en": "12 months",
+          "value_he": "12 חודשים"
+        },
+        "spec_4": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_5": {},
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "OM651"
+        },
+        "compat_model_2": {
+          "model_name": "D4CB"
+        },
+        "compat_model_3": {
+          "model_name": "2.2 TDCi"
+        },
+        "compat_model_4": {},
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1560,62 +1619,67 @@
         "description_ar": "وحدة إضاءة كاملة بتقنية المصفوفة وإضاءة نهارية متكاملة، محكمة الغلق ضد الغبار والماء بمعيار IP68.",
         "description_en": "Complete matrix headlight with integrated daytime running light, sealed to IP68 against dust and water ingress.",
         "description_he": "פנס מטריצה מלא עם תאורת יום משולבת, אטום בתקן IP68 מפני אבק ומים.",
-        "specs": [
-          {
-            "label_ar": "شدة الإضاءة",
-            "label_en": "Light output",
-            "label_he": "עוצמת אור",
-            "value_ar": "4 200 lm",
-            "value_en": "4 200 lm",
-            "value_he": "4 200 lm"
-          },
-          {
-            "label_ar": "الجهد",
-            "label_en": "Voltage",
-            "label_he": "מתח",
-            "value_ar": "12 / 24 V",
-            "value_en": "12 / 24 V",
-            "value_he": "12 / 24 V"
-          },
-          {
-            "label_ar": "الموضع",
-            "label_en": "Position",
-            "label_he": "מיקום",
-            "value_ar": "أمامي يسار / يمين",
-            "value_en": "Front left / right",
-            "value_he": "קדמי שמאל / ימין"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "24 شهرًا",
-            "value_en": "24 months",
-            "value_he": "24 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "Sprinter 907"
-          },
-          {
-            "model_name": "Actros MP5"
-          },
-          {
-            "model_name": "FH16"
-          },
-          {
-            "model_name": "Transit V363"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "شدة الإضاءة",
+          "label_en": "Light output",
+          "label_he": "עוצמת אור",
+          "value_ar": "4 200 lm",
+          "value_en": "4 200 lm",
+          "value_he": "4 200 lm"
+        },
+        "spec_2": {
+          "label_ar": "الجهد",
+          "label_en": "Voltage",
+          "label_he": "מתח",
+          "value_ar": "12 / 24 V",
+          "value_en": "12 / 24 V",
+          "value_he": "12 / 24 V"
+        },
+        "spec_3": {
+          "label_ar": "الموضع",
+          "label_en": "Position",
+          "label_he": "מיקום",
+          "value_ar": "أمامي يسار / يمين",
+          "value_en": "Front left / right",
+          "value_he": "קדמי שמאל / ימין"
+        },
+        "spec_4": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "24 شهرًا",
+          "value_en": "24 months",
+          "value_he": "24 חודשים"
+        },
+        "spec_5": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "Sprinter 907"
+        },
+        "compat_model_2": {
+          "model_name": "Actros MP5"
+        },
+        "compat_model_3": {
+          "model_name": "FH16"
+        },
+        "compat_model_4": {
+          "model_name": "Transit V363"
+        },
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1650,59 +1714,65 @@
         "description_ar": "جنط مطروق خفيف الوزن بتشطيب ماسي مصقول، يقلل الوزن غير المعلق ويحسن الاستجابة والتبريد للفرامل.",
         "description_en": "Lightweight forged wheel with a diamond-cut finish. Less unsprung mass means sharper handling and better brake cooling.",
         "description_he": "חישוק מחושל קל משקל בגימור יהלום. פחות מסה בלתי מומטת — אחיזה חדה וקירור בלמים טוב יותר.",
-        "specs": [
-          {
-            "label_ar": "المقاس",
-            "label_en": "Size",
-            "label_he": "מידה",
-            "value_ar": "22\" × 9.5J",
-            "value_en": "22\" × 9.5J",
-            "value_he": "22\" × 9.5J"
-          },
-          {
-            "label_ar": "المادة",
-            "label_en": "Material",
-            "label_he": "חומר",
-            "value_ar": "ألمنيوم مطروق",
-            "value_en": "Forged aluminium",
-            "value_he": "אלומיניום מחושל"
-          },
-          {
-            "label_ar": "الوزن",
-            "label_en": "Weight",
-            "label_he": "משקל",
-            "value_ar": "11.2 kg",
-            "value_en": "11.2 kg",
-            "value_he": "11.2 kg"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "24 شهرًا",
-            "value_en": "24 months",
-            "value_he": "24 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "X7 G07"
-          },
-          {
-            "model_name": "Land Cruiser 300"
-          },
-          {
-            "model_name": "GLS X167"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "المقاس",
+          "label_en": "Size",
+          "label_he": "מידה",
+          "value_ar": "22\" × 9.5J",
+          "value_en": "22\" × 9.5J",
+          "value_he": "22\" × 9.5J"
+        },
+        "spec_2": {
+          "label_ar": "المادة",
+          "label_en": "Material",
+          "label_he": "חומר",
+          "value_ar": "ألمنيوم مطروق",
+          "value_en": "Forged aluminium",
+          "value_he": "אלומיניום מחושל"
+        },
+        "spec_3": {
+          "label_ar": "الوزن",
+          "label_en": "Weight",
+          "label_he": "משקל",
+          "value_ar": "11.2 kg",
+          "value_en": "11.2 kg",
+          "value_he": "11.2 kg"
+        },
+        "spec_4": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "24 شهرًا",
+          "value_en": "24 months",
+          "value_he": "24 חודשים"
+        },
+        "spec_5": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "X7 G07"
+        },
+        "compat_model_2": {
+          "model_name": "Land Cruiser 300"
+        },
+        "compat_model_3": {
+          "model_name": "GLS X167"
+        },
+        "compat_model_4": {},
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1737,51 +1807,58 @@
         "description_ar": "تروس مقواة ومزامنات جديدة لإعادة تأهيل ناقل الحركة اليدوي، تنهي مشاكل صعوبة الغيار والقفز من التروس العالية.",
         "description_en": "Hardened gears and fresh synchro rings to rebuild a manual gearbox — the fix for crunchy shifts and jumping out of the high gears.",
         "description_he": "גלגלי שיניים מוקשים וטבעות סינכרון חדשות לשיפוץ תמסורת ידנית — הפתרון להעברות קשות וניתוק הילוכים.",
-        "specs": [
-          {
-            "label_ar": "عزم التحمل",
-            "label_en": "Torque rating",
-            "label_he": "דירוג מומנט",
-            "value_ar": "2 300 Nm",
-            "value_en": "2 300 Nm",
-            "value_he": "2 300 Nm"
-          },
-          {
-            "label_ar": "محتوى العلبة",
-            "label_en": "Kit contents",
-            "label_he": "תכולת הערכה",
-            "value_ar": "12 سرعة كاملة",
-            "value_en": "Full 12-speed set",
-            "value_he": "סט מלא 12 הילוכים"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "12 شهرًا",
-            "value_en": "12 months",
-            "value_he": "12 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "ZF 12TX"
-          },
-          {
-            "model_name": "Actros MP4"
-          },
-          {
-            "model_name": "FH13"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "عزم التحمل",
+          "label_en": "Torque rating",
+          "label_he": "דירוג מומנט",
+          "value_ar": "2 300 Nm",
+          "value_en": "2 300 Nm",
+          "value_he": "2 300 Nm"
+        },
+        "spec_2": {
+          "label_ar": "محتوى العلبة",
+          "label_en": "Kit contents",
+          "label_he": "תכולת הערכה",
+          "value_ar": "12 سرعة كاملة",
+          "value_en": "Full 12-speed set",
+          "value_he": "סט מלא 12 הילוכים"
+        },
+        "spec_3": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "12 شهرًا",
+          "value_en": "12 months",
+          "value_he": "12 חודשים"
+        },
+        "spec_4": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_5": {},
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "ZF 12TX"
+        },
+        "compat_model_2": {
+          "model_name": "Actros MP4"
+        },
+        "compat_model_3": {
+          "model_name": "FH13"
+        },
+        "compat_model_4": {},
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1816,54 +1893,60 @@
         "description_ar": "وسط ترشيح صناعي متعدد الطبقات يحبس الجزيئات حتى 15 ميكرون، مع صمام مانع للرجوع يحافظ على ضغط الزيت عند التشغيل البارد.",
         "description_en": "Multi-layer synthetic media that traps particles down to 15 microns, with an anti-drainback valve that keeps oil pressure ready on cold starts.",
         "description_he": "מדיה סינתטית רבת-שכבות הלוכדת חלקיקים עד 15 מיקרון, עם שסתום אל-חוזר לשמירת לחץ שמן בהתנעה קרה.",
-        "specs": [
-          {
-            "label_ar": "كفاءة الترشيح",
-            "label_en": "Filtration",
-            "label_he": "סינון",
-            "value_ar": "15 µm",
-            "value_en": "15 µm",
-            "value_he": "15 µm"
-          },
-          {
-            "label_ar": "القطر",
-            "label_en": "Diameter",
-            "label_he": "קוטר",
-            "value_ar": "93 mm",
-            "value_en": "93 mm",
-            "value_he": "93 mm"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "12 شهرًا",
-            "value_en": "12 months",
-            "value_he": "12 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "OM651"
-          },
-          {
-            "model_name": "OM642"
-          },
-          {
-            "model_name": "D4CB"
-          },
-          {
-            "model_name": "2.0 EcoBlue"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "كفاءة الترشيح",
+          "label_en": "Filtration",
+          "label_he": "סינון",
+          "value_ar": "15 µm",
+          "value_en": "15 µm",
+          "value_he": "15 µm"
+        },
+        "spec_2": {
+          "label_ar": "القطر",
+          "label_en": "Diameter",
+          "label_he": "קוטר",
+          "value_ar": "93 mm",
+          "value_en": "93 mm",
+          "value_he": "93 mm"
+        },
+        "spec_3": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "12 شهرًا",
+          "value_en": "12 months",
+          "value_he": "12 חודשים"
+        },
+        "spec_4": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_5": {},
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "OM651"
+        },
+        "compat_model_2": {
+          "model_name": "OM642"
+        },
+        "compat_model_3": {
+          "model_name": "D4CB"
+        },
+        "compat_model_4": {
+          "model_name": "2.0 EcoBlue"
+        },
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1898,51 +1981,58 @@
         "description_ar": "عنصر ترشيح هواء بمساحة سطح كبيرة للعمل في البيئات المتربة والمواقع الترابية، يحمي التوربو والمحرك من التآكل.",
         "description_en": "High surface-area element built for dusty sites and unpaved routes, protecting the turbo and cylinders from abrasive wear.",
         "description_he": "אלמנט בעל שטח פנים גדול לאזורים מאובקים ודרכי עפר, מגן על הטורבו והמנוע משחיקה.",
-        "specs": [
-          {
-            "label_ar": "كفاءة الترشيح",
-            "label_en": "Filtration",
-            "label_he": "סינון",
-            "value_ar": "99.9 % @ 5 µm",
-            "value_en": "99.9 % @ 5 µm",
-            "value_he": "99.9 % @ 5 µm"
-          },
-          {
-            "label_ar": "المقاس",
-            "label_en": "Size",
-            "label_he": "מידה",
-            "value_ar": "320 × 145 mm",
-            "value_en": "320 × 145 mm",
-            "value_he": "320 × 145 mm"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "12 شهرًا",
-            "value_en": "12 months",
-            "value_he": "12 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "الولايات المتحدة",
-            "value_en": "USA",
-            "value_he": "ארה״ב"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "Actros MP5"
-          },
-          {
-            "model_name": "FH16"
-          },
-          {
-            "model_name": "Daily 70C"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "كفاءة الترشيح",
+          "label_en": "Filtration",
+          "label_he": "סינון",
+          "value_ar": "99.9 % @ 5 µm",
+          "value_en": "99.9 % @ 5 µm",
+          "value_he": "99.9 % @ 5 µm"
+        },
+        "spec_2": {
+          "label_ar": "المقاس",
+          "label_en": "Size",
+          "label_he": "מידה",
+          "value_ar": "320 × 145 mm",
+          "value_en": "320 × 145 mm",
+          "value_he": "320 × 145 mm"
+        },
+        "spec_3": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "12 شهرًا",
+          "value_en": "12 months",
+          "value_he": "12 חודשים"
+        },
+        "spec_4": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "الولايات المتحدة",
+          "value_en": "USA",
+          "value_he": "ארה״ב"
+        },
+        "spec_5": {},
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "Actros MP5"
+        },
+        "compat_model_2": {
+          "model_name": "FH16"
+        },
+        "compat_model_3": {
+          "model_name": "Daily 70C"
+        },
+        "compat_model_4": {},
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -1977,51 +2067,58 @@
         "description_ar": "مساعد بتقنية الغاز أحادي الأنبوب يمنع تكوّن الرغوة في الزيت، فيحفظ ثبات المركبة حتى بعد ساعات طويلة على الطرق الوعرة.",
         "description_en": "Gas-pressurised monotube design that resists oil foaming, so damping stays consistent hour after hour on rough roads.",
         "description_he": "תכנון חד-צינורי בלחץ גז שמונע הקצפת שמן, כך שהריסון נשאר עקבי גם בדרכים משובשות.",
-        "specs": [
-          {
-            "label_ar": "شوط الامتصاص",
-            "label_en": "Stroke",
-            "label_he": "מהלך",
-            "value_ar": "185 mm",
-            "value_en": "185 mm",
-            "value_he": "185 mm"
-          },
-          {
-            "label_ar": "الموضع",
-            "label_en": "Position",
-            "label_he": "מיקום",
-            "value_ar": "أمامي",
-            "value_en": "Front axle",
-            "value_he": "סרן קדמי"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "24 شهرًا",
-            "value_en": "24 months",
-            "value_he": "24 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "Sprinter 907"
-          },
-          {
-            "model_name": "Land Cruiser 300"
-          },
-          {
-            "model_name": "Hilux GUN126"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "شوط الامتصاص",
+          "label_en": "Stroke",
+          "label_he": "מהלך",
+          "value_ar": "185 mm",
+          "value_en": "185 mm",
+          "value_he": "185 mm"
+        },
+        "spec_2": {
+          "label_ar": "الموضع",
+          "label_en": "Position",
+          "label_he": "מיקום",
+          "value_ar": "أمامي",
+          "value_en": "Front axle",
+          "value_he": "סרן קדמי"
+        },
+        "spec_3": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "24 شهرًا",
+          "value_en": "24 months",
+          "value_he": "24 חודשים"
+        },
+        "spec_4": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_5": {},
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "Sprinter 907"
+        },
+        "compat_model_2": {
+          "model_name": "Land Cruiser 300"
+        },
+        "compat_model_3": {
+          "model_name": "Hilux GUN126"
+        },
+        "compat_model_4": {},
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -2056,59 +2153,65 @@
         "description_ar": "دينامو مبرد بالهواء لأحمال كهربائية عالية مثل التبريد والرفع الهيدروليكي، مع منظم جهد ذكي يحمي البطاريات.",
         "description_en": "Air-cooled alternator sized for high electrical loads such as refrigeration and hydraulic lifts, with a smart regulator that protects the batteries.",
         "description_he": "אלטרנטור מקורר אוויר לעומסים חשמליים גבוהים כמו קירור ומעליות הידרוליות, עם מווסת חכם המגן על המצברים.",
-        "specs": [
-          {
-            "label_ar": "الجهد",
-            "label_en": "Voltage",
-            "label_he": "מתח",
-            "value_ar": "24 V",
-            "value_en": "24 V",
-            "value_he": "24 V"
-          },
-          {
-            "label_ar": "القدرة",
-            "label_en": "Output",
-            "label_he": "הספק",
-            "value_ar": "150 A",
-            "value_en": "150 A",
-            "value_he": "150 A"
-          },
-          {
-            "label_ar": "الوزن",
-            "label_en": "Weight",
-            "label_he": "משקל",
-            "value_ar": "8.1 kg",
-            "value_en": "8.1 kg",
-            "value_he": "8.1 kg"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "24 شهرًا",
-            "value_en": "24 months",
-            "value_he": "24 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "Actros MP5"
-          },
-          {
-            "model_name": "FH16"
-          },
-          {
-            "model_name": "Daily 70C"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "الجهد",
+          "label_en": "Voltage",
+          "label_he": "מתח",
+          "value_ar": "24 V",
+          "value_en": "24 V",
+          "value_he": "24 V"
+        },
+        "spec_2": {
+          "label_ar": "القدرة",
+          "label_en": "Output",
+          "label_he": "הספק",
+          "value_ar": "150 A",
+          "value_en": "150 A",
+          "value_he": "150 A"
+        },
+        "spec_3": {
+          "label_ar": "الوزن",
+          "label_en": "Weight",
+          "label_he": "משקל",
+          "value_ar": "8.1 kg",
+          "value_en": "8.1 kg",
+          "value_he": "8.1 kg"
+        },
+        "spec_4": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "24 شهرًا",
+          "value_en": "24 months",
+          "value_he": "24 חודשים"
+        },
+        "spec_5": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "Actros MP5"
+        },
+        "compat_model_2": {
+          "model_name": "FH16"
+        },
+        "compat_model_3": {
+          "model_name": "Daily 70C"
+        },
+        "compat_model_4": {},
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     },
     {
@@ -2143,59 +2246,65 @@
         "description_ar": "طقم كامل يشمل القاعدة والقرص ورمان بلي الفصل، بمعامل احتكاك ثابت يتحمل الانطلاق المتكرر بحمولة كاملة.",
         "description_en": "Complete kit with pressure plate, friction disc and release bearing — a stable friction coefficient that survives repeated fully-laden pull-aways.",
         "description_he": "ערכה מלאה הכוללת צלחת לחיצה, דיסק חיכוך ומסב שחרור — מקדם חיכוך יציב שעומד בזינוקים חוזרים בעומס מלא.",
-        "specs": [
-          {
-            "label_ar": "القطر",
-            "label_en": "Diameter",
-            "label_he": "קוטר",
-            "value_ar": "430 mm",
-            "value_en": "430 mm",
-            "value_he": "430 mm"
-          },
-          {
-            "label_ar": "عزم التحمل",
-            "label_en": "Torque rating",
-            "label_he": "דירוג מומנט",
-            "value_ar": "2 100 Nm",
-            "value_en": "2 100 Nm",
-            "value_he": "2 100 Nm"
-          },
-          {
-            "label_ar": "محتوى العلبة",
-            "label_en": "Kit contents",
-            "label_he": "תכולת הערכה",
-            "value_ar": "3 قطع",
-            "value_en": "3-piece kit",
-            "value_he": "ערכת 3 חלקים"
-          },
-          {
-            "label_ar": "الضمان",
-            "label_en": "Warranty",
-            "label_he": "אחריות",
-            "value_ar": "12 شهرًا",
-            "value_en": "12 months",
-            "value_he": "12 חודשים"
-          },
-          {
-            "label_ar": "بلد المنشأ",
-            "label_en": "Origin",
-            "label_he": "ארץ מקור",
-            "value_ar": "ألمانيا",
-            "value_en": "Germany",
-            "value_he": "גרמניה"
-          }
-        ],
-        "compatibility": [
-          {
-            "model_name": "Actros MP4"
-          },
-          {
-            "model_name": "FH13"
-          },
-          {
-            "model_name": "Stralis AS440"
-          }
-        ]
+        "spec_1": {
+          "label_ar": "القطر",
+          "label_en": "Diameter",
+          "label_he": "קוטר",
+          "value_ar": "430 mm",
+          "value_en": "430 mm",
+          "value_he": "430 mm"
+        },
+        "spec_2": {
+          "label_ar": "عزم التحمل",
+          "label_en": "Torque rating",
+          "label_he": "דירוג מומנט",
+          "value_ar": "2 100 Nm",
+          "value_en": "2 100 Nm",
+          "value_he": "2 100 Nm"
+        },
+        "spec_3": {
+          "label_ar": "محتوى العلبة",
+          "label_en": "Kit contents",
+          "label_he": "תכולת הערכה",
+          "value_ar": "3 قطع",
+          "value_en": "3-piece kit",
+          "value_he": "ערכת 3 חלקים"
+        },
+        "spec_4": {
+          "label_ar": "الضمان",
+          "label_en": "Warranty",
+          "label_he": "אחריות",
+          "value_ar": "12 شهرًا",
+          "value_en": "12 months",
+          "value_he": "12 חודשים"
+        },
+        "spec_5": {
+          "label_ar": "بلد المنشأ",
+          "label_en": "Origin",
+          "label_he": "ארץ מקור",
+          "value_ar": "ألمانيا",
+          "value_en": "Germany",
+          "value_he": "גרמניה"
+        },
+        "spec_6": {},
+        "spec_7": {},
+        "spec_8": {},
+        "compat_model_1": {
+          "model_name": "Actros MP4"
+        },
+        "compat_model_2": {
+          "model_name": "FH13"
+        },
+        "compat_model_3": {
+          "model_name": "Stralis AS440"
+        },
+        "compat_model_4": {},
+        "compat_model_5": {},
+        "compat_model_6": {},
+        "compat_model_7": {},
+        "compat_model_8": {},
+        "compat_model_9": {},
+        "compat_model_10": {}
       }
     }
   ],
