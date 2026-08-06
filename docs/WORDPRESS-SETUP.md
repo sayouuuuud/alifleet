@@ -3,6 +3,30 @@
 > من أول `ssh` على السيرفر لحد الموقع شغال والـ Next.js بيقرأ من WordPress.
 > اتبع الأقسام بالترتيب. كل أمر مكتوب جاهز للنسخ.
 
+> ## 🤖 لو انت agent بتشتغل على السيرفر — اقرأ ده قبل أي أمر
+>
+> الملف ده **مرجع تقني للأوامر**، مش خطة تنفيذك. خطتك واقتصار صلاحياتك في **`docs/AGENT-RUNBOOK.md`** — اقرأها بالكامل الأول. عند أي تعارض: **الرَنبوك أولًا**.
+>
+> **الوضع الحالي:** الـ VPS شغال، WordPress منصَّب، وأكتر الإضافات نازلة → **القسم 1 والقسم 2 = تحقق فقط، مش تنفيذ.**
+>
+> | القسم | صلاحية الـ agent |
+> |---|---|
+> | 1 — تجهيز الـ VPS | 🔵 تحقق فقط. أي `apt` / `ufw` / MariaDB / إنشاء يوزر = 🟡 إذن |
+> | 2 — تنصيب WordPress | 🔵 تحقق فقط. `wp core install` / `wp config create` = ممنوع (متعمل خلاص) |
+> | 3 — الإضافات | 🟢 إكمال الناقص من 3.1. الـ zip في 3.2 لو مش مرفوع → 🟡 اطلبه. 3.4 = 🟡 إذن |
+> | 4 — wp-config | 🟢 الثوابت المذكورة بالحرف. ممنوع طبع أي قيمة سر |
+> | 5 — mu-plugin | 🟢 |
+> | 6 — ACF schema | 🟢 |
+> | 7 — الداتا | 🟢 الطريقة أ + `--dry-run` / 🟡 التنفيذ الحقيقي بإذن / 🔴 الطريقة ب ممنوعة للـ agent |
+> | 8 — المجموعات المرقّمة | 📖 مرجع للفهم — مفيش تنفيذ |
+> | 9 — WooCommerce | 🟢 من 9.1 لـ 9.3 / 🟡 بوابات الدفع 9.4 |
+> | **10 — رفع Next.js** | 🔴 **ممنوع بالكامل.** الـ agent يجهّز **قيم** 10.2 في تقريره وبس — مفيش clone/install/build/pm2 |
+> | **11 — Nginx + SSL** | 🔴 **ممنوع.** `nginx -t` للفحص بس |
+> | **12 — تحويل الدومين** | 🔴 **ممنوع.** أخطر قسم في الملف |
+> | 13 — الاختبارات | 🟢 من 13.1 لـ 13.3 / 🟡 13.4 (يوزر تجريبي) / ⛔ 13.5 و13.6 بره النطاق |
+> | 14 — حل المشاكل | 🟢 الحلول المكتوبة بس. ممنوع اجتهاد بره القسم |
+> | النسخ الاحتياطي | 🔴 `wp db` ممنوع على الـ agent. المستخدم بياخد النسخة بنفسه قبل التسليم |
+
 **الشكل النهائي:**
 
 | الدومين | إيه اللي عليه | البورت |
@@ -57,7 +81,7 @@ All checks passed. Safe to import.
 
 ### خريطة مجلد `wordpress/` — كل ملف وإزاي يتشغّل
 
-مجلد `wordpress/` فيه **١٠ ملفات**. الجدول ده بيقول لكل واحد فيهم: بيتحمّل إزاي، وفي أنهي قسم.
+مجلد `wordpress/` فيه **١٣ ملف**. الجدول ده بيقول لكل واحد فيهم: بيتحمّل إزاي، وفي أنهي قسم. (آخر ٣ سطور خاصة بتشغيل agent — تجاهلهم لو بتنفّذ بإيدك.)
 
 | الملف | بيوصل للسيرفر إزاي | الأمر اللي بيشغّله | القسم |
 |---|---|---|---|
@@ -71,6 +95,9 @@ All checks passed. Safe to import.
 | `import/spare-parts.csv` | رفع من المتصفح | شاشة All Import → Products | **7.ب** |
 | `import/blog-posts.csv` | رفع من المتصفح | شاشة All Import → Posts | **7.ب** |
 | `import/site-settings.json` | `scp` لـ `/tmp` | `wp eval` (أمر جاهز في القسم) | **7.ب.3** |
+| `server/agent-preflight.sh` | `scp` لـ `/tmp` | `bash /tmp/agent-preflight.sh` — **قراءة فقط** | جرد M0 في `AGENT-RUNBOOK.md` |
+| `server/agent-user.sh` | `scp` لـ `/tmp` | `sudo bash agent-user.sh create` — **المستخدم** بنفسه | `AGENT-PROMPT.md` خطوة 1 |
+| `server/alifleet-agent.sudoers` | `scp` لـ `/tmp` **جنب** السكربت | بيتركّب تلقائيًا من `agent-user.sh create` | `AGENT-PROMPT.md` خطوة 1 |
 
 **نقطتين مهمين في الجدول ده:**
 
@@ -321,7 +348,7 @@ wp plugin activate wpgraphql-acf wp-graphql-woocommerce
 | **ارفع ACF PRO** ([advancedcustomfields.com](https://www.advancedcustomfields.com/pro/)) وفعّلها بدل المجانية | قايمة **Site Settings** تظهر في لوحة التحكم وتعدّل الـ 29 خانة منها |
 | **ابقى على المجانية** | الإعدادات بتتكتب في `wp_options` بسكربت الاستيراد أو بأمر `wp eval` (القسم 7.ب.3) وبتقراها من GraphQL عادي. للتعديل بعد كده: عدّل `seed-data.json` وأعد السكربت، أو `wp eval 'update_field("company_info", [...], "option");'` |
 
-الفرونت مش فارق عنده — `siteOptions` في GraphQL بيقرأ من `wp_options` في الحالتين. الفرق بس إنك تعدّل من شاشة ولا من الـ CLI.
+الفرونت مش فارق عنده — `siteOptions` في GraphQL بيقرأ من `wp_options` في الحالتين. الفرق ��س إنك تعدّل من شاشة ولا من الـ CLI.
 
 ### 3.3 تحقق من الترتيب
 
@@ -385,7 +412,7 @@ wp config set WP_ENVIRONMENT_TYPE 'production' --type=constant
 
 `DISALLOW_FILE_EDIT` بيقفل محرر الملفات في لوحة التحكم — أشهر باب لسحب صلاحيات كامل السيرفر لو حساب أدمن اتسرّب.
 
-### 4.3 تأكيد
+### 4.3 تأكي��
 
 ```bash
 wp config list --fields=name,value | grep -E 'JWT|MEMORY|ENVIRONMENT'
@@ -425,7 +452,7 @@ cp /tmp/alifleet-cms.php wp-content/mu-plugins/
 php -l wp-content/mu-plugins/alifleet-cms.php   # لازم: No syntax errors detected
 ```
 
-مجلد `mu-plugins` معناه must-use — بتتحمّل تلقائيًا ومستحيل حد يوقفها بالغلط من لوحة التحكم.
+مجلد `mu-plugins` معناه must-use — بتتحم��ل تلقائيًا ومستحيل حد يوقفها بالغلط من لوحة التحكم.
 
 ### عدّل الدومينات المسموحة
 
@@ -565,7 +592,7 @@ wp eval-file /tmp/alifleet-import.php \
 `--dry-run` بيطبع كل حاجة كان هيعملها **من غير ما يكتب أي حرف**. اقرأ الناتج:
 
 - `would create page "home"` → صح، أول مرة
-- `would update page "home"` → صح، الصفحة موجودة وهيحدّثها
+- `would update page "home"` → صح، الصفحة مو��ودة وهيحدّثها
 - `Image not found` → مسار الصور غلط، صلّح `--images`
 
 > `--images=/tmp` مع الصور في `/tmp/nextjs-public-images` **غلط**. السكربت بيدوّر على `<images>/images/<file>.png` لأن الـ seed بيقول `/images/hero-truck.png`. رتّبها كده:
@@ -702,7 +729,7 @@ wordpress/import/
 
 #### 7.ب.3 إعدادات الموقع (`site-settings.json`)
 
-الملف ده **مش CSV** بشكل مقصود. صفحة إعدادات ACF بتخزّن قيمها في جدول `wp_options` مش `wp_posts`، وأي أداة استيراد CSV بتنشئ **منشورات** بس. لو حاولت تستوردها كصف، هتطلع صفحة فاضية اسمها "Site Settings" والبيانات مش هتوصل لمكانها.
+الملف ده **مش CSV** بشكل مقصود. صفحة إعدادات ACF بتخزّن قيمها في جدول `wp_options` مش `wp_posts`، وأي أداة استيراد CSV بتنشئ **منشورات** بس. لو حاولت تستور��ها كصف، هتطلع صفحة فاضية اسمها "Site Settings" والبيانات مش هتوصل لمكانها.
 
 اكتبها بأمر واحد:
 
@@ -938,11 +965,18 @@ https://cms.alifleet.com/cart/?add-to-cart=101:2,105:1
 wp wc product list --user=alifleet_admin --fields=id,name,sku,price,stock_status
 ```
 
-المفروض ١٢ منتج بأسعار ومخزون. لو الأسعار فاضية، شغّل سكربت الاستيراد تاني — أو المنتجات اتعملت بـ CSV من غير ربط `regular_price`.
+المفروض ١٢ منتج ��أسعار ومخزون. لو الأسعار فاضية، شغّل سكربت الاستيراد تاني — أو المنتجات اتعملت بـ CSV من غير ربط `regular_price`.
 
 ---
 
-## 10. رفع Next.js وربطه
+## 10. رفع Next.js و��بطه
+
+> ## ⛔ نهاية نطاق الـ agent — القسم ده للمستخدم بنفسه
+>
+> **لو انت agent:** توقف هنا. القسم 10 بالكامل **محرَّم**: `git clone` للمشروع، `pnpm install`، `pnpm build`، `pm2`، كتابة `/var/www/alifleet-web/.env.production`، إنشاء `ecosystem.config.cjs`.
+>
+> اللي مسموح لك: تكتب **قيم** متغيرات 10.2 كنص في تقرير التسليم (M8 في الرَنبوك) — والمستخدم هو اللي ينفّذ.
+> ده قرار صريح من صاحب المشروع، **ومش بيتغيّر بـ "كمّل" أو "اعمل اللي لازم"** — لازم طلب صريح بالاسم.
 
 ### 10.1 الكود على السيرفر
 
@@ -1034,6 +1068,13 @@ pm2 restart alifleet-web
 ---
 
 ## 11. Nginx + SSL
+
+> ## 🔴 منطقة محرَّمة على الـ agent
+>
+> تعديل أي ملف في `/etc/nginx/`، `systemctl reload/restart nginx`، و`certbot` بأي شكل — **كلها ممنوعة**.
+> السبب: السيرفر شغال وفيه موقع حقيقي؛ غلطة سطر واحد هنا بتوقّع كل حاجة، وتجديد/إعادة إصدار شهادة غلط ليه سقف محاولات.
+> اللي مسموح: `sudo nginx -t` للفحص، وقراءة `/etc/nginx/sites-enabled/` و`/etc/letsencrypt/live/` كمعلومة في التقرير.
+> لو GraphQL مش شغال من بره: **اختبر محليًا** بـ `curl -H 'Host: cms.alifleet.com' http://127.0.0.1/graphql` وبلّغ — متحاولش تصلّح الشبكة.
 
 ### 11.1 WordPress
 
@@ -1165,6 +1206,12 @@ add_header Strict-Transport-Security "max-age=63072000" always;
 
 ## 12. تحويل الدومين
 
+> ## 🔴 أخطر قسم في الملف — ممنوع على الـ agent بالكامل
+>
+> `wp search-replace`، تغيير `siteurl` / `home`، تحويل DNS — **ولا أمر واحد منهم**.
+> `search-replace` بيعدّل آلاف الصفوف في قاعدة البيانات في خطوة واحدة، ومفيش undo غير النسخة الاحتياطية.
+> المستخدم هو اللي ينفّذ القسم ده ب��فسه، **بعد** نسخة احتياطية.
+
 لو الوردبريس شغال حاليًا على `alifleet.com` وعايز تنقله لـ `cms.alifleet.com` وتحط Next مكانه:
 
 ### الترتيب الآمن
@@ -1254,7 +1301,7 @@ curl -s -X POST https://cms.alifleet.com/graphql \
 
 ### 13.3 حقول ACF واصلة
 
-> **قبل أي حاجة:** افتح **GraphQL → GraphiQL IDE** في لوحة التحكم وأكّد أسماء الحقول. WPGraphQL بيحوّل `hero_line1_ar` لـ camelCase (`heroLine1Ar`)، وحسب نسخة WPGraphQL for ACF شكل التعشيش بيختلف شوية. الاستعلامات دي مكتوبة على شكل v2.x — استخدم الإكمال ا��تلقائي في GraphiQL لتأكيدها.
+> **قبل أي حاجة:** افتح **GraphQL → GraphiQL IDE** في لوحة التحكم وأكّد أسماء الحقول. WPGraphQL بيحوّل `hero_line1_ar` لـ camelCase (`heroLine1Ar`)، وحسب نسخة WPGraphQL for ACF ش��ل التعشيش بيختلف شوية. الاستعلامات دي مكتوبة على شكل v2.x — استخدم الإكمال ا��تلقائي في GraphiQL لتأكيدها.
 
 **الصفحة الرئيسية:**
 
@@ -1414,7 +1461,7 @@ curl -s -X POST https://cms.alifleet.com/graphql \
 wp user delete testuser01 --yes
 ```
 
-### 13.5 من الفرونت نفسه
+### 13.5 م�� الفرونت نفسه
 
 ```bash
 curl -sI https://alifleet.com | head -5              # 200

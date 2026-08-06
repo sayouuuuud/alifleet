@@ -1,0 +1,90 @@
+# ============================================================================
+#  قايمة sudo محدودة لليوزر المؤقت بتاع الـ agent
+#  ALI FLEET — sudo whitelist for the temporary agent user
+# ----------------------------------------------------------------------------
+#  التركيب:
+#    sudo cp alifleet-agent.sudoers /etc/sudoers.d/alifleet-agent
+#    sudo chmod 0440 /etc/sudoers.d/alifleet-agent
+#    sudo visudo -c                # لازم يطلع: parsed OK
+#
+#  الإزالة بعد ما الـ agent يخلّص:
+#    sudo rm /etc/sudoers.d/alifleet-agent
+#    sudo deluser --remove-home afagent
+#
+#  ⚠️ غيّر afagent لاسم اليوزر الفعلي، و8.2 لنسخة PHP الفعلية لو مختلفة.
+#  ⚠️ الملف ده الطبقة التانية للحماية. الطبقة الأولى هي docs/AGENT-RUNBOOK.md.
+#     أي أمر عدّى من هنا ومخالف للرَنبوك = مخالفة، مش تصريح.
+# ============================================================================
+
+# اسم اليوزر — عدّله لو مختلف
+User_Alias  AFAGENT = afagent
+
+# --- المسارات المسموحة (عدّل لو WordPress في مكان تاني) ---
+# ملحوظة: sudoers مبيفهمش متغيرات، فالمسار مكتوب كامل في كل سطر.
+
+# 1) قراءة حالة الخدمات — قراءة فقط، مفيش start/stop/restart/reload
+Cmnd_Alias AF_STATUS = /usr/bin/systemctl status, \
+                       /usr/bin/systemctl status *, \
+                       /usr/bin/systemctl is-active *, \
+                       /usr/bin/systemctl list-units --type=service*
+
+# 2) فحص إعدادات nginx — فحص فقط. ممنوع reload/restart وممنوع تعديل /etc/nginx
+Cmnd_Alias AF_NGINX_RO = /usr/sbin/nginx -t, \
+                         /usr/sbin/nginx -T, \
+                         /usr/sbin/nginx -v
+
+# 3) قراءة اللوجات — للتشخيص
+Cmnd_Alias AF_LOGS = /usr/bin/tail /var/log/nginx/*, \
+                     /usr/bin/tail -n [0-9]* /var/log/nginx/*, \
+                     /usr/bin/journalctl -u php8.2-fpm*, \
+                     /usr/bin/journalctl -u nginx*
+
+# 4) صلاحيات ملفات ووردبريس — جوه مسار الموقع بس (القسم 2 والقسم 5 في الدليل)
+Cmnd_Alias AF_WP_FILES = /usr/bin/mkdir -p /var/www/cms.alifleet.com/wp-content/mu-plugins, \
+                         /usr/bin/chown deploy\:www-data /var/www/cms.alifleet.com/wp-content/mu-plugins/*, \
+                         /usr/bin/chown -R deploy\:www-data /var/www/cms.alifleet.com/wp-content/mu-plugins, \
+                         /usr/bin/chown -R deploy\:www-data /var/www/cms.alifleet.com/wp-content/plugins, \
+                         /usr/bin/chown -R deploy\:www-data /var/www/cms.alifleet.com/wp-content/uploads, \
+                         /bin/chmod 644 /var/www/cms.alifleet.com/wp-content/mu-plugins/*, \
+                         /bin/chmod -R 775 /var/www/cms.alifleet.com/wp-content/uploads
+
+# 5) إعادة تحميل PHP-FPM — بعد تركيب mu-plugin أو تغيير الثوابت.
+#    reload بس، مش restart، ومفيش stop/disable
+Cmnd_Alias AF_PHP_RELOAD = /usr/bin/systemctl reload php8.2-fpm
+
+# ============================================================================
+#  المنح
+# ============================================================================
+AFAGENT ALL=(root) NOPASSWD: AF_STATUS, AF_NGINX_RO, AF_LOGS, AF_WP_FILES, AF_PHP_RELOAD
+
+# ============================================================================
+#  ممنوع صريح — أي حاجة تحت مش ممنوحة أصلًا فوق، والسطور دي حزام أمان إضافي
+#  ضد أي منح واسع اتحط بالغلط في ملف sudoers تاني.
+# ============================================================================
+AFAGENT ALL=(ALL) !/bin/su, !/usr/bin/su, !/usr/bin/sudo, !/usr/sbin/visudo
+AFAGENT ALL=(ALL) !/bin/bash, !/bin/sh, !/bin/dash, !/usr/bin/zsh, !/usr/bin/env
+AFAGENT ALL=(ALL) !/bin/rm, !/bin/rm *, !/usr/bin/rm, !/usr/bin/rm *
+AFAGENT ALL=(ALL) !/usr/bin/mysql*, !/usr/bin/mariadb*, !/usr/bin/mysqldump*
+AFAGENT ALL=(ALL) !/usr/bin/certbot, !/usr/bin/certbot *, !/snap/bin/certbot*
+AFAGENT ALL=(ALL) !/usr/bin/apt, !/usr/bin/apt-get, !/usr/bin/dpkg, !/usr/bin/snap
+AFAGENT ALL=(ALL) !/usr/sbin/ufw, !/usr/sbin/iptables
+AFAGENT ALL=(ALL) !/usr/sbin/adduser, !/usr/sbin/useradd, !/usr/bin/passwd, !/usr/bin/chpasswd
+AFAGENT ALL=(ALL) !/usr/bin/systemctl restart nginx, !/usr/bin/systemctl reload nginx, \
+                  !/usr/bin/systemctl stop *, !/usr/bin/systemctl disable *
+AFAGENT ALL=(ALL) !/usr/bin/nano /etc/*, !/usr/bin/vi /etc/*, !/usr/bin/vim /etc/*, \
+                  !/usr/bin/tee /etc/*, !/usr/bin/sed -i /etc/*
+
+# ============================================================================
+#  ملاحظات لازم تفهمها قبل ما تعتمد على الملف ده
+# ----------------------------------------------------------------------------
+#  1) الـ negation في sudoers (!) مش حماية محكمة — بتتلف بطرق كتير (مسارات
+#     بديلة، سكربتات وسيطة). الحماية الحقيقية إننا **مش** بندي أي منح واسع
+#     أصلًا: القايمة فوق منح صريح ضيق، والسطور دي احتياط بس.
+#  2) الـ agent **مش** محتاج sudo لمعظم شغله: مجلد ووردبريس مملوك لليوزر
+#     deploy، فأوامر wp-* و unzip و cp بتشتغل من غير sudo. لو الـ agent طلب
+#     sudo لأمر مش في القايمة → دي إشارة إنه خرج عن حدوده.
+#  3) ممنوع تضيف ALL=(ALL) NOPASSWD: ALL "مؤقتًا عشان يخلّص". لو خطوة محتاجة
+#     كده — نفّذها بنفسك.
+#  4) النسخة الاحتياطية مسؤوليتك أنت قبل ما تسلّم التيرمينال. الـ agent ممنوع
+#     من wp db بالكامل.
+# ============================================================================
