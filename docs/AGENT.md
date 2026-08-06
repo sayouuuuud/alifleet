@@ -127,7 +127,7 @@ sudo bash /tmp/agent-user.sh backup
 | **مسار WordPress** | `/var/www/html` **جوه الكونتينر**. `/var/www` على الهوست فاضي — ده طبيعي |
 | **ملفات المشروع** | موجودة local على جهاز المستخدم وانت شايفها. النقل **خطوتين**: `scp` للهوست ثم `sudo wp-agent put` للكونتينر |
 
-### 🔴 السيرفر مشترك — أهم قيد في الملف
+### �� السيرفر مشترك — أهم قيد في الملف
 
 عليه **16 كونتينر**، منهم إنتاج مش تابع للمشروع ده: `usesend`، تطبيقين تانيين،
 4 قواعد PostgreSQL، Redis، وطبقة Coolify نفسها.
@@ -239,13 +239,24 @@ doctor` بيجيبهم كلهم. **ممنوع أي أمر كتابة قبل ما
 | البند | الوضع |
 |---|---|
 | مجموعة `sudo` | ❌ **مش** فيها. صلاحياتك من `/etc/sudoers.d/alifleet-agent` بس |
-| أوامر sudo المتاحة | `systemctl status`, `nginx -t/-T/-v`, `tail` للوجات, `chown/chmod` جوه `wp-content`, `systemctl reload php8.2-fpm`. **بس.** |
-| كتابة الملفات | `plugins` + `mu-plugins` + `uploads` (عبر مجموعة `www-data`). **مفيش** كتابة على ملفات الـ core |
-| `wp-config.php` | 664 — تقدر تعدّل ثوابت M2. **ممنوع تطبع محتواه أو تستخدم بيانات DB اللي جواه** |
+| مجموعة `docker` | ❌ **مش** فيها، وده مقصود — `docker` = root على هوست فيه إنتاج غيرك |
+| بابك الوحيد للكونتينر | `sudo /usr/local/bin/wp-agent` — اسم الكونتينر مثبَّت جواه ومش بيتمرَّر منك |
+| أوامر sudo التانية | `systemctl status`, `tail` للوجات, `df -h`. **بس.** |
+| `wp-agent` نفسه | `root:root 0755` — تقدر تقراه، **مش** تقدر تعدّله |
+| كتابة الملفات جوه الكونتينر | `plugins` + `mu-plugins` + `uploads` عبر `wp-agent put` بس. **مفيش** كتابة على ملفات الـ core |
+| `wp-config.php` | تعدّل ثوابت M2 بـ `wp-agent wp config set`. **ممنوع تطبع محتواه أو `wp config get` على أي سر** |
+| على الهوست | `/tmp` بس |
 | انتهاء الحساب | تلقائي بعد 3 أيام |
-| المراقبة | كل أمر `sudo` بيتسجّل في `/var/log/auth.log` والمستخدم شايفه لحظيًا وبيقدر يقطعك في أي لحظة |
+| المراقبة | `/var/log/auth.log` لكل `sudo`, و `/var/log/wp-agent.log` لكل استدعاء على الكونتينر **بما فيها المرفوض**. المستخدم شايفهم لحظيًا وبيقدر يقطعك في أي لحظة |
 
-**معظم شغلك مش محتاج `sudo` أصلًا** — `wp-*` و `unzip` و `cp` و `php -l` كلها بتشتغل من غيره. **لو احتجت `sudo` لأمر مش في القايمة → دي إشارة إنك خرجت عن نطاقك. قف واسأل، متدوّرش على طريقة تلف بيها.**
+**لو احتجت `sudo` لأمر مش في القايمة، أو احتجت `docker` → دي إشارة إنك خرجت عن
+نطاقك. قف واسأل، متدوّرش على طريقة تلف بيها.**
+
+> **صدق مع نفسك في حدود الحماية:** `wp eval` و `wp eval-file` مسموحين (M5 محتاجهم)،
+> ودول تنفيذ PHP حر جوه الكونتينر — يعني تقدر تقنيًا توصل للداتابيز وتقرا الأسرار
+> رغم إن `wp db` و `wp config get DB_PASSWORD` مرفوضين. قايمة الرفض بتمنع **الغلط
+> العابر**، والحصر جوه الكونتينر هو اللي بيحمي الهوست وباقي التطبيقات. الفرق بين
+> "ممنوع" و"مستحيل" فرق حقيقي، والمستخدم واثق فيك على أساسه — **متستغلّهوش.**
 
 ---
 
@@ -253,8 +264,9 @@ doctor` بيجيبهم كلهم. **ممنوع أي أمر كتابة قبل ما
 
 1. **أمر واحد له غرض واحد.** ممنوع سلاسل `&&` طويلة تخبّي خطوة خطرة في وسطها.
 2. **قبل أي أمر كتابة:** قول المهمة (`[M4]`) + الأمر + الناتج المتوقع. بعده: الناتج الفعلي.
-3. **ممنوع `--force` و `--allow-root` و `--skip-*`** — أصلًا، مش بس عند الفشل.
-4. **ممنوع الافتراض.** المسار مختلف؟ PHP مش 8.2؟ → بلّغ واستنى.
+3. **ممنوع `--force` و `--allow-root` و `--skip-*`** — أصلًا، مش بس عند الفشل. (`wp-agent` بيرفضهم، فمحاولتك هتظهر في اللوج كمحاولة تجاوز.)
+4. **ممنوع الافتراض.** الكونتينر مش لاقيه؟ `wp-cli` مش موجود؟ → بلّغ واستنى.
+5. **في أول كل جلسة:** `sudo wp-agent doctor`. لو Coolify عمل rebuild، `wp-cli` بيروح والثوابت اللي مش في volume بتترجع لأصلها — **اتحقق، متفترضش إن اللي عملته لسه موجود**.
 5. **سجّل:** كل أمر كتابة `>> ~/alifleet-agent.log` مع التاريخ. السجل مفيهوش أسرار.
 6. **الملفات المؤقتة تفضل في `/tmp`** — سيبها، متنضّفش بـ `rm`.
 7. **لو سر ظهر في ناتج أمر بالغلط:** قول "الناتج فيه سر — محجوب" وكمّل.
@@ -300,22 +312,43 @@ scp wordpress/server/agent-preflight.sh afagent@SERVER_IP:/tmp/
 ssh afagent@SERVER_IP 'bash /tmp/agent-preflight.sh'
 ```
 
+`wp-cli` **مش منصّب** في الكونتينر. السكربت بيقولك كده، والحل:
+
+```bash
+sudo wp-agent bootstrap    # بينزّل wp-cli جوه الكونتينر — أول أمر كتابة مسموح في M0
+sudo wp-agent doctor       # الجرد الكامل بعد ما wp-cli يبقى موجود
+```
+
+> `bootstrap` بينزّل من `raw.githubusercontent.com` **جوه الكونتينر بس** وبيتحقق
+> من الملف بـ `wp --info` قبل ما يثبّته. وبيروح مع أي rebuild من Coolify — **ده
+> طبيعي، مش خلل**. لو المستخدم عايز يبقى دائم، ده بيتعمل من الصورة في Coolify وهو
+> اللي يعمله.
+
 سلّم التقرير ده وقف:
 
 | بند | المطلوب |
 |---|---|
-| مسار WordPress | المسار الفعلي |
-| إصدارات | WP / PHP / MariaDB / WP-CLI |
-| الإضافات | قايمة كاملة + إيه الناقص من الستة |
+| الكونتينر | الاسم + الصورة + `docker.sock` مش متمرَّر ✓ |
+| إصدارات | WP / PHP / MySQL / WP-CLI |
+| **الـ volume** | `/var/www/html` كامل ولا `wp-content` بس؟ **(أهم بند في التقرير)** |
+| **متغيرات البيئة** | أسماء `WORDPRESS_*` بدون قيم + `WP_HOME`/`siteurl` + دومين Traefik. متطابقين؟ |
+| **الإضافات** | قايمة كاملة فعلية + إيه الناقص من الستة |
+| **mu-plugins** | المجلد موجود؟ فيه إيه؟ داخل الـ volume؟ |
 | ACF | مجموعات موجودة؟ العدد؟ |
 | CPT | `import_car` موجود؟ |
 | الداتا | عدد الصفحات / `import_car` / `product` / `post` |
 | ثوابت | `GRAPHQL_JWT_AUTH_SECRET_KEY` موجود؟ (اكتب **موجود/مش موجود** — متطبعش القيمة) |
-| nginx / SSL / DNS | الحالة **للعلم بس** |
+| Traefik / SSL / DNS | الحالة **للعلم بس** |
 | المدقّق المحلي | ناتج `validate-content.mjs` |
 | مخاطر | أي حاجة مخالفة للمتوقع |
 
-**بوابة:** أي `FAIL` من `validate-content.mjs` → **قف**. لقيت داتا مستوردة قبل كده → **قف واسأل**.
+**بوابات الوقوف:**
+
+- أي `FAIL` من `validate-content.mjs` → **قف**.
+- لقيت داتا مستوردة قبل كده → **قف واسأل**.
+- **الـ volume بيغطي `wp-content` بس** → ⏸ قف. M2 كله (`wp config set`) هيروح مع أول rebuild، والثوابت لازم تتحوّل لمتغيرات بيئة في Coolify — **والمستخدم هو اللي يعملها**.
+- **`mu-plugins` بره الـ volume** → ⏸ قف. M3 و M4 مبنيين عليها.
+- **`siteurl` مش مطابق لدومين Traefik** → ⏸ قف وبلّغ بس. تصحيحه = تحويل دومين = 🔴 ممنوع.
 
 ---
 
@@ -324,31 +357,30 @@ ssh afagent@SERVER_IP 'bash /tmp/agent-preflight.sh'
 **متعملش install لحاجة موجودة.** كمّل الناقص بس.
 
 ```bash
-cd /var/www/cms.alifleet.com
-
 # الناقص من دول بس (🟢)
-wp plugin install woocommerce --activate
-wp plugin install wp-graphql --activate
-wp plugin install wp-graphql-jwt-authentication --activate
-wp plugin install advanced-custom-fields --activate
+sudo wp-agent wp plugin install woocommerce --activate
+sudo wp-agent wp plugin install wp-graphql --activate
+sudo wp-agent wp plugin install wp-graphql-jwt-authentication --activate
+sudo wp-agent wp plugin install advanced-custom-fields --activate
 ```
 
 **التنين دول مش في مستودع ووردبريس** (`wpgraphql-acf` + `wp-graphql-woocommerce`). لو الـ zip **مش** في `/tmp` → ⏸ **قف واطلب من المستخدم يرفعهم**. ممنوع تجيبهم من أي مصدر تاني أو `curl` من GitHub بدون إذن.
 
 ```bash
-cd /var/www/cms.alifleet.com/wp-content/plugins
-unzip /tmp/wpgraphql-acf.zip
-unzip /tmp/wp-graphql-woocommerce.zip
-cd /var/www/cms.alifleet.com
-wp plugin activate wpgraphql-acf wp-graphql-woocommerce
+sudo wp-agent unzip /tmp/wpgraphql-acf.zip
+sudo wp-agent unzip /tmp/wp-graphql-woocommerce.zip
+sudo wp-agent wp plugin activate wpgraphql-acf wp-graphql-woocommerce
 ```
+
+`wp-agent unzip` بينقل الـ zip للكونتينر وبيفكّه في `wp-content/plugins` جواه.
+المصدر لازم يكون في `/tmp` على الهوست.
 
 **ترتيب التنشيط إلزامي:** `wpgraphql-acf` **بعد** WPGraphQL و ACF. لو كانت مفعّلة قبلهم → ⏸ اسأل قبل `deactivate && activate`.
 
 **تحقق — لازم الستة:**
 
 ```bash
-wp plugin list --status=active --field=name
+sudo wp-agent wp plugin list --status=active --field=name
 ```
 
 `advanced-custom-fields` (أو `-pro`) / `woocommerce` / `wp-graphql` / `wp-graphql-jwt-authentication` / `wp-graphql-woocommerce` / `wpgraphql-acf`
@@ -363,29 +395,40 @@ wp plugin list --status=active --field=name
 
 **`GRAPHQL_JWT_AUTH_SECRET_KEY` موجود؟ متلمسوش** — تغييره بيلغي كل الجلسات المفتوحة. لو ناقص، نفّذ كده — من غير طبع القيمة:
 
+> ### ⏸ بوابة قبل M2 — نتيجة الـ volume من M0
+>
+> لو الـ volume بيغطي **`wp-content` بس**، فـ `wp-config.php` جوه طبقة الكونتينر
+> المؤقتة و **كل الأوامر اللي تحت هتتمسح مع أول rebuild من Coolify**. في الحالة
+> دي: **قف**، وبلّغ المستخدم إن الثوابت دي لازم تتحط كمتغيرات بيئة في Coolify
+> (`WORDPRESS_CONFIG_EXTRA` أو متغيرات مفردة) — **وهو اللي يعملها، مش انت**.
+>
+> كمّل بالأوامر دي **بس** لو الـ volume بيغطي `/var/www/html` كامل.
+
 ```bash
-cd /var/www/cms.alifleet.com
-wp config set GRAPHQL_JWT_AUTH_SECRET_KEY "$(openssl rand -base64 64 | tr -d '\n')" --type=constant
+sudo wp-agent wp config set GRAPHQL_JWT_AUTH_SECRET_KEY "$(openssl rand -base64 64 | tr -d '\n')" --type=constant
 ```
 
 باقي الثوابت بالحرف — **زيادة ولا نقصان ممنوع**:
 
 ```bash
-wp config set WP_MEMORY_LIMIT '512M' --type=constant
-wp config set WP_MAX_MEMORY_LIMIT '512M' --type=constant
-wp config set DISALLOW_FILE_EDIT true --raw --type=constant
-wp config set WP_AUTO_UPDATE_CORE 'minor' --type=constant
-wp config set WP_ENVIRONMENT_TYPE 'production' --type=constant
+sudo wp-agent wp config set WP_MEMORY_LIMIT '512M' --type=constant
+sudo wp-agent wp config set WP_MAX_MEMORY_LIMIT '512M' --type=constant
+sudo wp-agent wp config set DISALLOW_FILE_EDIT true --raw --type=constant
+sudo wp-agent wp config set WP_AUTO_UPDATE_CORE 'minor' --type=constant
+sudo wp-agent wp config set WP_ENVIRONMENT_TYPE 'production' --type=constant
 ```
 
 **تحقق:**
 
 ```bash
-wp eval 'echo defined("GRAPHQL_JWT_AUTH_SECRET_KEY") ? "JWT key OK\n" : "JWT KEY MISSING\n";'
-wp config list --fields=name | grep -E 'MEMORY|ENVIRONMENT|DISALLOW'
+sudo wp-agent wp config has GRAPHQL_JWT_AUTH_SECRET_KEY
+sudo wp-agent wp config list --fields=name | grep -E 'MEMORY|ENVIRONMENT|DISALLOW'
 ```
 
-> ⚠️ استخدم `--fields=name` **بس**. `--fields=name,value` بيطبع الأسرار = مخالفة. لو المستخدم عايز نسخة من المفتاح، هو يجيبها بنفسه.
+> ⚠️ `--fields=name` **بس** — `wp-agent` بيرفض `--fields=name,value` تلقائيًا لأنه
+> بيطبع الأسرار. وبيرفض كمان `wp config get` على أي سر (`DB_PASSWORD`, مفتاح الـ
+> JWT, الـ salts) — للتحقق من الوجود استخدم `wp config has` زي ما فوق. لو المستخدم
+> عايز نسخة من المفتاح، هو يجيبها بنفسه.
 
 ---
 
@@ -393,23 +436,33 @@ wp config list --fields=name | grep -E 'MEMORY|ENVIRONMENT|DISALLOW'
 
 **إلزامي قبل M4.** لو ACF اتستوردت قبله، 9 مجموعات من 10 هتضيّع قواعد موقعها.
 
+**النقل خطوتين** — `scp` للهوست، وبعدين `wp-agent put` للكونتينر:
+
 ```bash
+# على جهاز المستخدم — عدّل ALIFLEET_ALLOWED_ORIGINS قبل الرفع
 scp wordpress/mu-plugin/alifleet-cms.php afagent@SERVER_IP:/tmp/
+
 # على السيرفر
-cd /var/www/cms.alifleet.com && mkdir -p wp-content/mu-plugins
-cp /tmp/alifleet-cms.php wp-content/mu-plugins/
-php -l wp-content/mu-plugins/alifleet-cms.php    # لازم: No syntax errors detected
+sudo wp-agent put /tmp/alifleet-cms.php mu-plugins/alifleet-cms.php
+sudo wp-agent lint mu-plugins/alifleet-cms.php   # لازم: No syntax errors detected
 ```
 
-عدّل `ALIFLEET_ALLOWED_ORIGINS` للدومينات الحقيقية. **ممنوع `*`** — بيكسر تسجيل الدخول بالكوكيز.
+`put` بيعمل المجلد لو مش موجود وبيظبط الملكية لـ `www-data` لوحده.
+
+عدّل `ALIFLEET_ALLOWED_ORIGINS` للدومينات الحقيقية **على جهازك قبل `scp`**. **ممنوع
+`*`** — بيكسر تسجيل الدخول بالكوكيز.
 
 **تحقق:**
 
 ```bash
-wp eval 'echo post_type_exists("import_car") ? "CPT OK\n" : "CPT MISSING\n";'
+sudo wp-agent wp eval 'echo post_type_exists("import_car") ? "CPT OK\n" : "CPT MISSING\n";'
 ```
 
 `CPT MISSING` → **قف**. الملف مش بيتحمّل (صلاحيات/مسار/خطأ PHP)، و M4 هتضيع لو كمّلت.
+
+> **لو M0 قال إن `mu-plugins` بره الـ volume:** الملف ده هيروح مع أول rebuild
+> ومعاه كل CPTs و ACF. ⏸ **قف** وبلّغ — الحل إن `wp-content` كله يبقى في volume،
+> والمستخدم هو اللي يعمله من Coolify.
 
 ---
 
@@ -417,9 +470,9 @@ wp eval 'echo post_type_exists("import_car") ? "CPT OK\n" : "CPT MISSING\n";'
 
 ```bash
 scp wordpress/acf/alifleet-acf-schema.json afagent@SERVER_IP:/tmp/
-# على السيرفر
-cd /var/www/cms.alifleet.com
-wp acf import --json_file=/tmp/alifleet-acf-schema.json
+# على السيرفر — لازم ينتقل جوه الكونتينر الأول
+sudo wp-agent stage /tmp/alifleet-acf-schema.json
+sudo wp-agent wp acf import --json_file=/tmp/alifleet-stage/alifleet-acf-schema.json
 ```
 
 **تحقق:** لازم **10 مجموعات** وكلها `show_in_graphql`.
@@ -432,18 +485,29 @@ wp acf import --json_file=/tmp/alifleet-acf-schema.json
 **5.1 الرفع + ترتيب الصور** (الترتيب ده إلزامي وإلا كل الصور هتفشل):
 
 ```bash
+# 1) للهوست
 scp wordpress/scripts/alifleet-import.php afagent@SERVER_IP:/tmp/
 scp wordpress/scripts/seed-data.json      afagent@SERVER_IP:/tmp/
 scp -r public/images                      afagent@SERVER_IP:/tmp/nextjs-public-images
-# على السيرفر
+
+# 2) على السيرفر — رتّب الصور جوه مجلد اسمه images
 mkdir -p /tmp/nextpublic && mv /tmp/nextjs-public-images /tmp/nextpublic/images
+
+# 3) انقل التلاتة جوه الكونتينر
+sudo wp-agent stage /tmp/alifleet-import.php
+sudo wp-agent stage /tmp/seed-data.json
+sudo wp-agent stage /tmp/nextpublic
 ```
 
-**5.2 dry-run** (🟢):
+الترتيب في خطوة 2 إلزامي — السكربت بيدوّر على `<images>/images/...`، فلو المجلد
+اسمه غير كده كل الصور هتفشل.
+
+**5.2 dry-run** (🟢) — كل المسارات بقت جوه الكونتينر:
 
 ```bash
-cd /var/www/cms.alifleet.com
-wp eval-file /tmp/alifleet-import.php --seed=/tmp/seed-data.json --images=/tmp/nextpublic --dry-run
+sudo wp-agent wp eval-file /tmp/alifleet-stage/alifleet-import.php \
+  --seed=/tmp/alifleet-stage/seed-data.json \
+  --images=/tmp/alifleet-stage/nextpublic --dry-run
 ```
 
 **5.3 🚪 بوابة:** اعرض ملخص الجاف (كام create / كام update / كام `Image not found`) واستنى موافقة.
@@ -455,13 +519,13 @@ wp eval-file /tmp/alifleet-import.php --seed=/tmp/seed-data.json --images=/tmp/n
 **5.5 تحقق:**
 
 ```bash
-wp post list --post_type=page       --fields=ID,post_name,post_status
-wp post list --post_type=import_car --format=count   # 7
-wp post list --post_type=product    --format=count   # 12
-wp post list --post_type=post       --format=count   # 6
+sudo wp-agent wp post list --post_type=page       --fields=ID,post_name,post_status
+sudo wp-agent wp post list --post_type=import_car --format=count   # 7
+sudo wp-agent wp post list --post_type=product    --format=count   # 12
+sudo wp-agent wp post list --post_type=post       --format=count   # 6
 
 # حقول الهوم
-wp eval '
+sudo wp-agent wp eval '
 $id = (int) get_option("page_on_front");
 $hero = get_field("hero_section", $id);
 echo "front page: $id\n";
@@ -471,14 +535,14 @@ for ($i = 1; $i <= 5; $i++) { if (!empty($hero["hero_slide_$i"]["slide_label_en"
 echo "slides filled: $filled / 5\n";'
 
 # إعدادات الموقع
-wp eval '
+sudo wp-agent wp eval '
 $c = get_field("company_info","option");
 $lines = 0;
 for ($i = 1; $i <= 3; $i++) { if (!empty($c["address_line_$i"]["line_en"])) $lines++; }
 echo ($c["company_name_en"] ?? "EMPTY") . " | address lines: $lines / 3\n";'
 
 # أسماء المنتجات بالـ3 لغات — لازم مفيش ولا EMPTY
-wp eval '
+sudo wp-agent wp eval '
 foreach (get_posts(["post_type" => "product", "numberposts" => -1]) as $p) {
   printf("%-34s ar:%-3s en:%-3s he:%-3s\n", $p->post_name,
     get_field("name_ar", $p->ID) ? "ok" : "EMPTY",
@@ -492,28 +556,35 @@ foreach (get_posts(["post_type" => "product", "numberposts" => -1]) as $p) {
 > السكربت idempotent وبيحمي `post_content`، فالإعادة آمنة — ومع ذلك تفضل 🟡 ASK.
 > **ممنوع** تستخدم طريقة CSV / WP All Import. المسار ده بس.
 
+> ⚠️ **`eval-file` = تنفيذ PHP حر جوه الكونتينر.** ده أوسع صلاحية عندك في
+> المشروع كله، ومسموحة **لأن M5 محتاجاها بالتحديد** — مش رخصة عامة. شغّل ملف
+> `alifleet-import.php` زي ما هو من المستودع، **بدون تعديل**، ومتكتبش سكربت PHP
+> من عندك تشغّله بيه. لو الاستيراد فشل → قف وبلّغ بالخطأ، متكتبش بديل.
+
+> **لو الكونتينر اتعمله restart بين خطوة 5.1 و 5.4:** محتويات
+> `/tmp/alifleet-stage` بتروح. أعِد الـ `stage` وأعِد الـ dry-run — **متكمّلش
+> على التنفيذ الحقيقي بافتراض إن الملفات لسه موجودة**.
+
 ---
 
 ### M6 — WooCommerce
 
 ```bash
-cd /var/www/cms.alifleet.com
+sudo wp-agent wp option update woocommerce_store_address "Industrial Zone, Building 12"
+sudo wp-agent wp option update woocommerce_store_city "Haifa"
+sudo wp-agent wp option update woocommerce_default_country "IL"
+sudo wp-agent wp option update woocommerce_currency "ILS"
+sudo wp-agent wp option update woocommerce_currency_pos "right"
+sudo wp-agent wp option update woocommerce_price_decimal_sep "."
+sudo wp-agent wp option update woocommerce_price_thousand_sep ","
+sudo wp-agent wp option update woocommerce_price_num_decimals 2
+sudo wp-agent wp option update woocommerce_weight_unit "kg"
+sudo wp-agent wp option update woocommerce_dimension_unit "cm"
 
-wp option update woocommerce_store_address "Industrial Zone, Building 12"
-wp option update woocommerce_store_city "Haifa"
-wp option update woocommerce_default_country "IL"
-wp option update woocommerce_currency "ILS"
-wp option update woocommerce_currency_pos "right"
-wp option update woocommerce_price_decimal_sep "."
-wp option update woocommerce_price_thousand_sep ","
-wp option update woocommerce_price_num_decimals 2
-wp option update woocommerce_weight_unit "kg"
-wp option update woocommerce_dimension_unit "cm"
-
-wp option update woocommerce_enable_guest_checkout "yes"
-wp option update woocommerce_enable_checkout_login_reminder "yes"
-wp option update woocommerce_enable_myaccount_registration "yes"
-wp option update woocommerce_registration_generate_password "no"
+sudo wp-agent wp option update woocommerce_enable_guest_checkout "yes"
+sudo wp-agent wp option update woocommerce_enable_checkout_login_reminder "yes"
+sudo wp-agent wp option update woocommerce_enable_myaccount_registration "yes"
+sudo wp-agent wp option update woocommerce_registration_generate_password "no"
 ```
 
 `ILS` لازم تطابق `₪` في `commerce_settings.currency_symbol` — لو مختلفين، بطاقة القطعة هتعرض رمز والسلة رمز تاني.
@@ -523,8 +594,8 @@ wp option update woocommerce_registration_generate_password "no"
 **تحقق:**
 
 ```bash
-wp option get woocommerce_currency          # ILS
-wp post list --post_type=page --fields=post_name | grep -E 'cart|checkout|account'
+sudo wp-agent wp option get woocommerce_currency          # ILS
+sudo wp-agent wp post list --post_type=page --fields=post_name | grep -E 'cart|checkout|account'
 ```
 
 ---
@@ -551,34 +622,49 @@ curl -s -X POST https://cms.alifleet.com/graphql -H 'Content-Type: application/j
 | حقول ACF بترجّع `null` | `wpgraphql-acf` مش مفعّلة أو ترتيبها غلط → M1 |
 | أسماء حقول مختلفة | WPGraphQL بيحوّل لـ camelCase وشكل التعشيش يختلف بحسب النسخة. **أكّد الأسماء من GraphiQL IDE في لوحة التحكم** قبل ما تقول فشل |
 
-**لو SSL/DNS لسه مش جاهزين:** اختبر محليًا:
+**استخدم الدومين الفعلي اللي طلع من `doctor`** (من Traefik labels) — مش `cms.alifleet.com`
+مفترضًا. لو مختلف: بلّغ بالفرق ولا تصلّح حاجة.
+
+**لو SSL/DNS لسه مش جاهزين:** اختبر عبر Traefik محليًا بترويسة `Host`:
 
 ```bash
-curl -s -X POST http://127.0.0.1/graphql -H 'Host: cms.alifleet.com' -H 'Content-Type: application/json' \
-  -d '{"query":"{ generalSettings { title } }"}'
+curl -s -X POST http://127.0.0.1/graphql -H 'Host: <الدومين-من-doctor>' \
+  -H 'Content-Type: application/json' -d '{"query":"{ generalSettings { title } }"}'
 ```
 
-**ممنوع** تلمس nginx أو certbot عشان تخلّي الاختبار يمشي. الفشل من بره = بلّغ وبس.
+**ممنوع** تلمس Traefik أو Coolify أو الشهادات عشان تخلّي الاختبار يمشي. الفشل من
+بره = بلّغ وبس، والمستخدم يحلّها من اللوحة.
 
-اختبار المصادقة محتاج يوزر تجريبي → 🟡 **إذن**. لو اتوافق: الاسم يبدأ بـ `agenttest_`، والحذف بعدها إذن تاني.
+اختبار المصادقة محتاج يوزر تجريبي، و`wp user create` **مرفوض من `wp-agent`** — يعني
+🟡 اسأل المستخدم **ينشئه هو**. لو عمله: الاسم يبدأ بـ `agenttest_`، والحذف بعدها هو
+كمان اللي يعمله. **ممنوع** تعمله بـ `wp eval` — ده لف حول الرفض.
 اختبار الفرونت → **مش شغلك** (الفرونت مش مرفوع بقرار).
 
 ---
 
-### M8 — التسليم ⛔ وقوف نهائي
+### M8 — التسليم ⛔ وقوف ��هائي
 
 سلّم ده وقف. **متعملش ولا خطوة من رفع Next.js.**
 
 ```
 ✅ اكتمل: M1 … M7
 📋 قيم متغيرات البيئة (للمستخدم ينفّذها بنفسه):
-   WORDPRESS_GRAPHQL_ENDPOINT=https://cms.alifleet.com/graphql
+   WORDPRESS_GRAPHQL_ENDPOINT=https://<الدومين-من-doctor>/graphql
    NEXT_PUBLIC_SITE_URL=https://alifleet.com
-⛔ خارج نطاقي بقرار منك: رفع/بناء Next.js — nginx — SSL — تحويل الدومين
-🔍 حالة nginx/SSL/DNS كما رصدتها: <معلومة فقط>
-📌 محتاج لوحة تحكم: مناطق الشحن في WooCommerce
+⛔ خارج نطاقي بقرار منك: رفع/بناء Next.js — docker — Coolify — Traefik/SSL — تحويل الدومين
+🔍 حالة Traefik/SSL/DNS كما رصدتها: <معلومة فقط>
+
+🐳 ملاحظات البيئة (Docker/Coolify) — مهمة للاستمرارية:
+   • نطاق الـ volume: <root / wp-content فقط>
+   • wp-cli: منصَّب يدويًا في الكونتينر — **بيروح مع أي rebuild من Coolify**
+   • اللي بيستمر بعد rebuild: <…>   واللي بيروح: <…>
+   • لو الثوابت مش في volume → لازم تتحوّل لمتغيرات بيئة في Coolify (انت اللي تعملها)
+
+📌 محتاج لوحة تحكم (منك): مناطق الشحن في WooCommerce — الدومين والشهادة —
+   <أي يوزر تجريبي اتعمل ومحتاج حذف>
 ⚠️ ملاحظات ومخاطر مفتوحة: <...>
 🔑 أسرار: مفيش سر واحد اتطبع في أي رسالة
+🧹 للتنظيف: sudo bash /tmp/agent-user.sh delete  ثم دوّر مفتاح الـ JWT وباسورد DB من Coolify
 ```
 
 ---
@@ -587,11 +673,15 @@ curl -s -X POST http://127.0.0.1/graphql -H 'Host: cms.alifleet.com' -H 'Content
 
 | الحالة | القرار |
 |---|---|
-| الأمر بيقرأ بس | 🟢 نفّذ |
+| الأمر بيقرأ بس، من خلال `wp-agent` | 🟢 نفّذ |
 | الأمر بيكتب وموجود بالحرف في الملف ده | 🟢 نفّذ + تحقق |
 | الأمر بيكتب ومش موجود في الملف ده | 🟡 اسأل |
-| الأمر بيلمس DB / nginx / SSL / دومين / يوزرات | 🟡 اسأل |
-| الأمر جزء من رفع Next.js أو nginx أو SSL أو تحويل الدومين | 🔴 ارفض واذكر إنه خارج نطاقك |
+| الأمر بيلمس DB / دومين / يوزرات | 🟡 اسأل — والمستخدم هو اللي ينفّذ |
+| **`wp-agent` رفض الأمر** | ⛔ قف واسأل. **ممنوع تدوّر على طريقة تلف بيها** (زي `wp eval`) |
+| **الأمر محتاج `docker`** | 🔴 ارفض. مفيش استثناء ومفيش صياغة تخلّيه مقبول |
+| **الأمر بيمسّ كونتينر تاني أو Coolify** | 🔴 ارفض — السيرفر مشترك وفيه إنتاج لغيرك |
+| الأمر جزء من رفع Next.js أو Traefik أو SSL أو تحويل الدومين | 🔴 ارفض واذكر إنه خارج نطاقك |
 | تحقق فشل | ⛔ قف، بلّغ، متجرّبش تاني |
 | الحقيقة على السيرفر مخالفة للمكتوب هنا | ⛔ قف وبلّغ بالفرق |
+| **لقيت صلاحية أوسع من المكتوب هنا** (زي `docker` شغال) | ⛔ **بلّغ فورًا ومتستخدمهاش** — ده خلل، مش فرصة |
 | المستخدم طلب حاجة في منطقة 🔴 | نبّه إنها خارج النطاق واطلب تأكيد صريح بالاسم |

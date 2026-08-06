@@ -237,6 +237,37 @@ cmd_unzip() {
 }
 
 # ---------------------------------------------------------------------------
+#  stage — نقل ملف أو مجلد من /tmp على الهوست لـ /tmp/alifleet-stage جوه الكونتينر
+#
+#  ليه محتاجينه: M5 بيشغّل `wp eval-file /tmp/alifleet-import.php`، والمسار ده
+#  لازم يكون **جوه الكونتينر** مش على الهوست. و`put` مسموح لـ wp-content بس،
+#  والسكربت وملف الـ seed ومجلد الصور مش من wp-content — دول مدخلات مؤقتة.
+#
+#  الهدف مثبَّت في /tmp/alifleet-stage جوه الكونتينر: مش داتا، وبيروح مع أي
+#  restart — وده مقصود.
+# ---------------------------------------------------------------------------
+STAGE_DIR="/tmp/alifleet-stage"
+
+cmd_stage() {
+  local src="${1:-}"
+  [[ -n "$src" ]] || die "استخدام: wp-agent stage /tmp/alifleet-import.php"
+  [[ "$src" == /tmp/* ]] || die "المصدر لازم يكون جوه /tmp على الهوست — اتلقى: $src"
+  [[ "$src" != *..* ]]   || die "'..' ممنوعة."
+  [[ -e "$src" ]] || die "مش موجود: $src"
+
+  require_container
+  log_call stage "$src"
+
+  local base; base="$(basename "$src")"
+  "$DOCKER" exec -u root "$WP_CONTAINER" mkdir -p "$STAGE_DIR"
+  "$DOCKER" cp "$src" "$WP_CONTAINER:$STAGE_DIR/$base"
+  # الاستيراد بيشتغل كـ www-data، فلازم يقدر يقرا اللي اتنقل.
+  "$DOCKER" exec -u root "$WP_CONTAINER" chown -R www-data:www-data "$STAGE_DIR"
+  ok "اتنقل لـ $STAGE_DIR/$base جوه الكونتينر"
+  inf "استخدمه في الأمر كده: $STAGE_DIR/$base"
+}
+
+# ---------------------------------------------------------------------------
 #  lint — php -l على ملف جوه wp-content
 # ---------------------------------------------------------------------------
 cmd_lint() {
@@ -391,6 +422,8 @@ wp-agent — الباب الوحيد للـ agent على كونتينر WordPres
   bootstrap           تنصيب wp-cli جوه الكونتينر (بيروح مع أي rebuild)
   wp <args...>        تشغيل WP-CLI جوه الكونتينر كـ www-data
   put <src> <dest>    نسخ ملف من /tmp لجوه wp-content/{plugins,mu-plugins,uploads}
+  stage <src>         نقل ملف/مجلد من /tmp للهوست ⟶ $STAGE_DIR جوه الكونتينر
+                      (لمدخلات M5: سكربت الاستيراد + seed-data.json + الصور)
   unzip <zip>         فك إضافة .zip من /tmp جوه wp-content/plugins
   lint <rel>          php -l على ملف جوه wp-content
   ls [rel]            سرد محتوى مجلد جوه wp-content
@@ -410,6 +443,7 @@ case "${1:-}" in
   bootstrap) shift; cmd_bootstrap "$@" ;;
   wp)        shift; cmd_wp "$@" ;;
   put)       shift; cmd_put "$@" ;;
+  stage)     shift; cmd_stage "$@" ;;
   unzip)     shift; cmd_unzip "$@" ;;
   lint)      shift; cmd_lint "$@" ;;
   ls)        shift; cmd_ls "$@" ;;
