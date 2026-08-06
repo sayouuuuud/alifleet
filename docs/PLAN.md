@@ -7,8 +7,8 @@
 >
 > | لو انت… | ابدأ من |
 > |---|---|
-> | 🤖 **agent** بياخد تيرمينال على السيرفر | **`AGENT-RUNBOOK.md`** ← الملف الحاكم. اقرأه بالكامل قبل أي أمر |
-> | 👤 المستخدم وعايز تشغّل agent | **`AGENT-PROMPT.md`** ← انسخ البرومبت وركّب `wordpress/server/alifleet-agent.sudoers` |
+> | 🤖 **agent** بياخد تيرمينال على السيرفر | **`AGENT.md`** ← الجزء ب. الملف الوحيد اللي بيقرأه — كل الأوامر جواه |
+> | 👤 المستخدم وعايز تشغّل agent | **`AGENT.md`** ← الجزء أ. 4 خطوات وخلاص |
 > | 👤 المستخدم وبتنفّذ بإيدك | **`WORDPRESS-SETUP.md`** ← الدليل الكامل بالأوامر |
 > | 🔍 عايز تفهم ليه الـ schema بالشكل ده | الملف ده + `ACF-FREE-CONVERSION-PLAN.md` |
 > | 🔌 عايز تربط الكود بـ ACF (بعد ما ووردبريس يشتغل) | `ACF-WIRING-PLAN.md` ← **مرحلة تانية، مش على السيرفر** |
@@ -202,8 +202,7 @@ wordpress/scripts/
 
 | الملف | دوره |
 |---|---|
-| `docs/AGENT-RUNBOOK.md` | **الخطة المركزية الحاكمة**: 9 مهام مرقّمة (M0→M8) + جدول ALLOW/ASK/DENY + بوابات تحقق إلزامية + نموذج تقرير |
-| `docs/AGENT-PROMPT.md` | البرومبت الجاهز للنسخ + خطوات ما قبل التسليم + علامات الخروج عن الحدود |
+| `docs/AGENT.md` | **الملف الوحيد.** الجزء أ = 4 خطوات للمستخدم. الجزء ب = خطة الـ agent: 9 مهام (M0→M8) بالأوامر كاملة inline + جدول ALLOW/ASK/DENY + بوابات تحقق |
 | `wordpress/server/alifleet-agent.sudoers` | قايمة sudo محدودة لليوزر المؤقت (5 مجموعات أوامر بس) |
 | `wordpress/server/agent-preflight.sh` | سكربت جرد M0 — **قراءة فقط**، مفيش أمر كتابة واحد فيه |
 
@@ -288,4 +287,4 @@ node wordpress/scripts/validate-content.mjs
 
 ---
 
-*آخر تحديث: إضافة طبقة تشغيل الـ agent — ابدأ من `docs/AGENT-RUNBOOK.md` لو agent، أو `docs/WORDPRESS-SETUP.md` لو بتنفّذ بإيدك.*
+*آخر تحديث: إضافة طبقة تشغيل الـ agent — ابدأ من `docs/AGENT.md` لو agent، أو `docs/WORDPRESS-SETUP.md` لو بتنفّذ بإيدك.*

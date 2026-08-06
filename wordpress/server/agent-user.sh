@@ -160,7 +160,7 @@ do_create() {
   2) نسخة احتياطية لـ wp-config:
        cp $WP_PATH/wp-config.php ~/wp-config.php.bak
 
-  3) انسخ البرومبت من docs/AGENT-PROMPT.md وإداهله.
+  3) انسخ البرومبت من docs/AGENT.md وإداهله.
 
   4) خلّي عينك على اللي بيعمله:
        sudo journalctl -f _COMM=sudo
