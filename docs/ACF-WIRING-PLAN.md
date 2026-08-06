@@ -340,7 +340,7 @@ query Parts($first: Int = 100) {
 | `wooId` | `databaseId` | لازم يكون رقم المنتج الحقيقي، وإلا الكارت بيوديك لمنتج غلط |
 | `price` | `price(format: RAW)` | ووكومرس هو صاحب السعر — عروض وضرايب وكله |
 | `inStock` | `stockStatus == IN_STOCK` | بيتحدّث تلقائي مع كل بيعة |
-| `image` / `alt` | `image` | الـ featured image بتاعت المنتج |
+| `image` / `alt` | `image` | الـ featured image بتاعت ��لمنتج |
 | `name` | ACF `nameAr/nameEn/nameHe` | ✅ **اتحدد — الاختيار (أ)**، شوف تحت |
 | `sku`, `brand`, `category`, `specs`, `compatibility`, `description` | ACF | مش موجودين في ووكومرس بالشكل اللي نحتاجه |
 
@@ -359,7 +359,7 @@ query Parts($first: Int = 100) {
 | الملف | التغيير |
 |---|---|
 | `wordpress/acf/alifleet-acf-schema.json` | 3 حقول `required` في أول `group_spare_part_fields`: `name_ar` / `name_en` / `name_he` (المفاتيح `field_part_name_*`) |
-| `wordpress/import/spare-parts.csv` | 3 أعمدة جديدة قبل `sku` — 54 عمود بدل 51 |
+| `wordpress/import/spare-parts.csv` | 3 أعمدة جديدة قبل `sku` (العدد الحالي 52 عمود بعد تحويل الـ repeaters لمجموعات مرقّمة) |
 | `wordpress/scripts/seed-data.json` | `acf.name_ar/en/he` في الـ12 قطعة، مأخوذة من `names` الموجودة أصلًا |
 
 الحقول الـ3 عليها `instructions` بتقول للمحرّر صريح: **عدّل الاسم من ACF، لا من عنوان المنتج في ووكومرس.** ده أهم سطر في القرار ده — لأن العيب الوحيد في الاختيار (أ) هو إن حد يعدّل العنوان في لوحة ووكومرس ويستغرب إن الموقع مش بيتغير.
@@ -372,19 +372,23 @@ query Parts($first: Int = 100) {
 
 الجدول ده هو "خريطة العمل" — لما نيجي ننفّذ، ده اللي هنمشي عليه.
 
-الأرقام دي مولّدة من الـ schema نفسه (بتشمل حقول المجموعات والـ repeaters نفسها، مش الأوراق بس) — المجموع **453 حقل** في **10 groups**.
+الأرقام دي مولّدة من الـ schema نفسه (بتشمل حقول المجموعات نفسها، مش الأوراق بس) — المجموع **906 حقل** في **10 groups**.
+
+> الأرقام كبرت بعد تحويل الـ repeaters لمجموعات مرقّمة ثابتة (`hero_slide_1` … `hero_slide_5` بدل repeater واحد) عشان ACF المجانية متعرفش الـ `repeater`. كل خانة بقت حقول حقيقية في الـ schema، فالعدّ طلع أكبر مع إن المحتوى هو هو. التفاصيل في القسم 8 في `WORDPRESS-SETUP.md`.
+>
+> يعني كمان: `lib/wp/content.ts` هيقرأ القوائم بلفّ على خانات مرقّمة وتصفية الفاضي، مش بمصفوفة جاهزة من الـ repeater — مثال: `[1,2,3,4,5].map(i => hero[`hero_slide_${i}`]).filter(s => s?.slide_image)`.
 
 | ACF group | حقول | المستهلك الأساسي | الكمبوننتس المتأثرة | fallback |
 |---|---|---|---|---|
-| `siteOptionsFields` | 28 | `lib/site-config.ts` | `site-footer`, `site-header`, `contact-details`, `add-to-cart-button`, `cart-view` | `siteConfig` + `footer` في dictionaries |
-| `homePageFields` | 220 | `app/page.tsx` | `hero`, `stats-strip`, `fleet-showcase`, `marquee-strip`, `global-reach`, `services`, `cta-section` | `dict.home` |
-| `importPageFields` | 56 | `app/import/page.tsx` | `import-hero`, `import-steps`, `import-browser`, `import-custom-cta` | `dict.import` |
+| `siteOptionsFields` | 36 | `lib/site-config.ts` | `site-footer`, `site-header`, `contact-details`, `add-to-cart-button`, `cart-view` | `siteConfig` + `footer` في dictionaries |
+| `homePageFields` | 497 | `app/page.tsx` | `hero`, `stats-strip`, `fleet-showcase`, `marquee-strip`, `global-reach`, `services`, `cta-section` | `dict.home` |
+| `importPageFields` | 86 | `app/import/page.tsx` | `import-hero`, `import-steps`, `import-browser`, `import-custom-cta` | `dict.import` |
 | `sparePartsPageFields` | 23 | `app/products/page.tsx` | `page-hero`, `products-browser` | `dict.products` |
 | `blogPageFields` | 20 | `app/blog/page.tsx` | `blog-hero`, `blog-browser` | `dict.blog` |
 | `cartPageFields` | 24 | `app/cart/page.tsx` | `cart-view` | `dict.cart` |
 | `contactPageFields` | 23 | `app/contact/page.tsx` | `page-hero`, `contact-form`, `contact-section` | `dict.contact` |
-| `importCarFields` | 37 | `lib/wp/content.ts` | `import-car-card`, `import-car-detail`, `import-browser` | `lib/data/import-cars.ts` |
-| `sparePartFields` | 16 + Woo | `lib/wp/content.ts` | `product-card`, `product-detail`, `products-browser` | `lib/data/parts.ts` |
+| `importCarFields` | 100 | `lib/wp/content.ts` | `import-car-card`, `import-car-detail`, `import-browser` | `lib/data/import-cars.ts` |
+| `sparePartFields` | 86 + Woo | `lib/wp/content.ts` | `product-card`, `product-detail`, `products-browser` | `lib/data/parts.ts` |
 | `blogPostFields` | 11 | `lib/wp/content.ts` | `blog-card`, `blog-article`, `blog-browser` | `lib/data/blog.ts` |
 
 ### اللي **مش** بيتربط بـ ACF ولا مرة (متفق عليه)
@@ -451,7 +455,7 @@ wordpress/scripts/compare-content.mjs
 قبل أي مرحلة تتعدّي:
 
 - [ ] `compare-content.mjs` مفيش فروق
-- [ ] الـ 3 لغات معروضة صح (ar / en / he) والاتجاه RTL سليم
+- [ ] الـ 3 لغات معروضة صح (ar / en / he) و��لاتجاه RTL سليم
 - [ ] كل الصور بتحمّل (مفيش 404 على `sourceUrl`)
 - [ ] بإطفاء الوردبريس تمامًا: الصفحة لسه بتفتح بالـ fallback
 - [ ] بإفراغ حقل واحد في ACF: الصفحة بترجع للقيمة الافتراضية مش نص فاضي

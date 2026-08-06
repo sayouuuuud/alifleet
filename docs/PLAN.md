@@ -108,10 +108,14 @@ WordPress بيخزن `post_title` و `post_excerpt` بلغة **واحدة** بس
 
 **الحل:** أفصلهم — ملف لكل نوع.
 
-### 1.7 الـ repeaters محتاجة إضافة مدفوعة لو استوردنا بـ CSV
-حقول زي `gallery`, `highlights`, `specs`, `compatibility`, `address_lines`, `steps_list` كلها **repeaters**. استيرادها من CSV محتاج **WP All Import Pro + ACF Add-on** (مدفوع).
+### 1.7 الـ repeaters محتاجة ACF PRO من الأصل
+حقول زي `gallery`, `highlights`, `specs`, `compatibility`, `address_lines`, `steps_list` كانت كلها **repeaters** — ونوع الـ `repeater` **مش موجود في ACF المجانية**، وكمان استيراده من CSV محتاج **WP All Import Pro + ACF Add-on** (مدفوع).
 
-**الحل:** هعمل **سكربت PHP مجاني** (WP-CLI) بيقرأ JSON ويكتب كل الحقول والـ repeaters صح. والـ CSV هيبقى بديل للاستيراد اليدوي البسيط. هشرح الطريقتين في الدليل.
+**الحل:** كل repeater اتحوّل لـ **عدد ثابت من المجموعات المرقّمة** (`hero_slide_1` … `hero_slide_5`)، والـ `group` متاح في ACF المجانية. الـ schema بقت **مفيهاش ولا repeater** — يعني مفيش ACF PRO ولا WP All Import Pro. التفاصيل والمقايضات في **قسم 8** في `WORDPRESS-SETUP.md`.
+
+> فاضل استخدام واحد لـ PRO مش متعلق بالحقول: `acf_add_options_page` لشاشة **Site Settings**. على المجانية القيم بتتكتب وتتقرأ من `wp_options` عادي، بس التعديل بيبقى من WP-CLI مش من شاشة (القسم 3.2).
+
+وسكربت الـ WP-CLI بيفضل هو الطريقة الموصى بها — بيكتب كل المجموعات من JSON في مرة واحدة، والـ CSV بديل يدوي.
 
 ---
 
@@ -142,7 +146,7 @@ wordpress/import/
 ### ج) سكربت الاستيراد المجاني (الطريقة الموصى بها)
 ```
 wordpress/scripts/
-├── alifleet-import.php    سكربت WP-CLI — يقرأ JSON ويكتب ACF + repeaters
+├── alifleet-import.php    سكربت WP-CLI — يقرأ JSON ويكتب كل مجموعات ACF
 └── seed-data.json         كل الداتا (صفحات + عربيات + قطع + مقالات + إعدادات)
 ```
 
@@ -165,7 +169,7 @@ wordpress/scripts/
 5. استيراد ACF schema (خطوة بخطوة بالصور الوصفية)
 6. تسجيل CPT + Options Page
 7. استيراد الداتا (الطريقتين: WP-CLI و CSV)
-8. **شرح تركيب الـ repeaters جوه ACF بالتفصيل** (زي ما طلبت)
+8. **شرح تركيب المجموعات المرقّمة جوه ACF بالتفصيل** (اللي بدّلت الـ repeaters)
 9. إعداد WooCommerce (عملة، شحن، دفع، صلاحيات)
 10. ربط Next.js — كل متغير بيئة وقيمته
 11. Nginx + SSL للاتنين
@@ -199,7 +203,7 @@ wordpress/scripts/
 
 | # | المخرج | الحالة |
 |---|---|---|
-| 1 | `wordpress/acf/alifleet-acf-schema.json` — 10 groups / 456 حقل | ✅ |
+| 1 | `wordpress/acf/alifleet-acf-schema.json` — 10 groups / 906 حقل، صفر repeater | ✅ |
 | 2 | `wordpress/mu-plugin/alifleet-cms.php` — CPT + Options Page + GraphQL + CORS | ✅ |
 | 3 | `wordpress/scripts/seed-data.json` — كل الداتا مستخرجة من الكود | ✅ |
 | 4 | `wordpress/scripts/alifleet-import.php` — سكربت WP-CLI | ✅ |
@@ -209,7 +213,7 @@ wordpress/scripts/
 | 8 | `wordpress/scripts/validate-content.mjs` — سكربت التحقق | ✅ |
 | 9 | تنضيف `.v0/acf/` | ✅ |
 
-**سكربت التحقق (خطوة 8)** بيتأكد إن كل عمود في كل CSV له حقل مطابق في الـ schema، وإن مفيش مفتاح `field_*` مكرر، وإن كل repeater له عمود العدّاد بتاعه، وإن الـ seed data متطابقة مع الـ CSV. شغّله بـ:
+**سكربت التحقق (خطوة 8)** بيتأكد إن كل عمود في كل CSV له حقل مطابق في الـ schema، وإن مفيش مفتاح `field_*` مكرر، وإن مفيش نوع حقل بيحتاج ACF PRO (`repeater` / `flexible_content` / `clone` / `gallery`)، وإن مفيش داتا بتتعدّى سقف المجموعات المرقّمة، وإن الـ seed data متطابقة مع الـ CSV. شغّله بـ:
 
 ```bash
 node wordpress/scripts/validate-content.mjs
