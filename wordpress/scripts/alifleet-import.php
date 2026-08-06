@@ -98,10 +98,29 @@ if ( isset( $assoc['seed'] ) ) {
 		WP_CLI::error( 'Could not locate seed-data.json; pass it explicitly, e.g. seed=/tmp/alifleet-stage/seed-data.json' );
 	}
 }
-$images_dir  = isset( $assoc['images'] ) ? rtrim( (string) $assoc['images'], '/' ) : '';
-$dry_run        = ! empty( $assoc['dry-run'] );
-$force_media    = ! empty( $assoc['force-media'] );
-$set_front_page = ! empty( $assoc['set-front-page'] );
+/*
+ * CRITICAL: these must live in $GLOBALS, not just in the top-level scope.
+ *
+ * `wp eval-file` eval()s this file from inside a method, so the "top level"
+ * here is NOT the global scope. A plain `$dry_run = true;` would therefore be
+ * invisible to the `global $dry_run;` statements inside the functions below --
+ * they would read NULL, which is falsy, and every single safety check would
+ * silently turn itself off. That is exactly how a --dry-run once written 27
+ * posts to a live database.
+ *
+ * Writing into $GLOBALS explicitly and then binding the local name to it by
+ * reference keeps both views of the variable pointing at one value, so this
+ * file behaves identically under `wp eval-file`, `wp shell` and plain `php`.
+ */
+$GLOBALS['images_dir']     = isset( $assoc['images'] ) ? rtrim( (string) $assoc['images'], '/' ) : '';
+$GLOBALS['dry_run']        = ! empty( $assoc['dry-run'] );
+$GLOBALS['force_media']    = ! empty( $assoc['force-media'] );
+$GLOBALS['set_front_page'] = ! empty( $assoc['set-front-page'] );
+
+$images_dir     = &$GLOBALS['images_dir'];
+$dry_run        = &$GLOBALS['dry_run'];
+$force_media    = &$GLOBALS['force_media'];
+$set_front_page = &$GLOBALS['set_front_page'];
 
 if ( ! is_readable( $seed_path ) ) {
 	WP_CLI::error( "Cannot read seed file: {$seed_path}" );
@@ -138,7 +157,10 @@ require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
 
-$stats = [ 'created' => 0, 'updated' => 0, 'media' => 0, 'skipped' => 0 ];
+// Same $GLOBALS binding as above: the counters are incremented from inside
+// functions via `global $stats`, and read back at the very end of this file.
+$GLOBALS['stats'] = [ 'created' => 0, 'updated' => 0, 'media' => 0, 'skipped' => 0 ];
+$stats            = &$GLOBALS['stats'];
 
 /* ------------------------------------------------------------------ media -- */
 
