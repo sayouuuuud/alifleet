@@ -38,7 +38,19 @@
  *   WooCommerce products with correct prices and stock status.
  */
 
-declare( strict_types = 1 );
+/*
+ * NOTE: no `declare( strict_types = 1 )` here on purpose.
+ *
+ * `wp eval-file` strips the opening `<?php` and runs the rest through eval().
+ * PHP forbids a strict_types declaration inside eval()'d code, so the file
+ * would die with a fatal error before a single line executed:
+ *
+ *   PHP Fatal error: strict_types declaration must be the very first
+ *   statement in the script
+ *
+ * All casts below are therefore written explicitly ( (int), (string), (float) )
+ * so behaviour does not depend on the declaration being present.
+ */
 
 if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 	fwrite( STDERR, "This script must be run through WP-CLI: wp eval-file ...\n" );
@@ -47,19 +59,68 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) {
 
 /* ---------------------------------------------------------------- options -- */
 
+/*
+ * Options are read positionally out of $args, and the leading dashes are
+ * OPTIONAL:
+ *
+ *   wp eval-file import.php dry-run seed=/path/seed.json     <-- preferred
+ *   wp eval-file import.php -- --dry-run --seed=/path/seed.json
+ *
+ * The dash-less form exists because `wp eval-file` hands anything that looks
+ * like `--flag` to WP-CLI's own option parser first, which rejects it with
+ * "Error: Parameter errors: unknown --seed parameter". The documented escape
+ * hatch (WP_CLI_STRICT_ARGS_MODE=1) cannot be used here because the wp-agent
+ * wrapper runs `docker exec` without forwarding environment variables.
+ */
 $assoc = [];
 foreach ( $args ?? [] as $arg ) {
-	if ( preg_match( '/^--([a-z-]+)(?:=(.*))?$/', (string) $arg, $m ) ) {
+	if ( preg_match( '/^-{0,2}([a-z-]+)(?:=(.*))?$/', (string) $arg, $m ) ) {
 		$assoc[ $m[1] ] = $m[2] ?? true;
 	}
 }
 
-$seed_path = isset( $assoc['seed'] )
-	? (string) $assoc['seed']
-	: __DIR__ . '/seed-data.json';
-$images_dir  = isset( $assoc['images'] ) ? rtrim( (string) $assoc['images'], '/' ) : '';
-$dry_run     = ! empty( $assoc['dry-run'] );
-$force_media = ! empty( $assoc['force-media'] );
+/*
+ * __DIR__ is NOT the script's directory under `wp eval-file` (eval()'d code
+ * inherits the directory of WP-CLI's EvalFile_Command.php), so fall back to the
+ * working directory as well before giving up.
+ */
+$seed_path = '';
+if ( isset( $assoc['seed'] ) ) {
+	$seed_path = (string) $assoc['seed'];
+} else {
+	foreach ( [ __DIR__ . '/seed-data.json', getcwd() . '/seed-data.json' ] as $candidate ) {
+		if ( is_readable( $candidate ) ) {
+			$seed_path = $candidate;
+			break;
+		}
+	}
+	if ( '' === $seed_path ) {
+		WP_CLI::error( 'Could not locate seed-data.json; pass it explicitly, e.g. seed=/tmp/alifleet-stage/seed-data.json' );
+	}
+}
+/*
+ * CRITICAL: these must live in $GLOBALS, not just in the top-level scope.
+ *
+ * `wp eval-file` eval()s this file from inside a method, so the "top level"
+ * here is NOT the global scope. A plain `$dry_run = true;` would therefore be
+ * invisible to the `global $dry_run;` statements inside the functions below --
+ * they would read NULL, which is falsy, and every single safety check would
+ * silently turn itself off. That is exactly how a --dry-run once written 27
+ * posts to a live database.
+ *
+ * Writing into $GLOBALS explicitly and then binding the local name to it by
+ * reference keeps both views of the variable pointing at one value, so this
+ * file behaves identically under `wp eval-file`, `wp shell` and plain `php`.
+ */
+$GLOBALS['images_dir']     = isset( $assoc['images'] ) ? rtrim( (string) $assoc['images'], '/' ) : '';
+$GLOBALS['dry_run']        = ! empty( $assoc['dry-run'] );
+$GLOBALS['force_media']    = ! empty( $assoc['force-media'] );
+$GLOBALS['set_front_page'] = ! empty( $assoc['set-front-page'] );
+
+$images_dir     = &$GLOBALS['images_dir'];
+$dry_run        = &$GLOBALS['dry_run'];
+$force_media    = &$GLOBALS['force_media'];
+$set_front_page = &$GLOBALS['set_front_page'];
 
 if ( ! is_readable( $seed_path ) ) {
 	WP_CLI::error( "Cannot read seed file: {$seed_path}" );
@@ -96,7 +157,10 @@ require_once ABSPATH . 'wp-admin/includes/file.php';
 require_once ABSPATH . 'wp-admin/includes/media.php';
 require_once ABSPATH . 'wp-admin/includes/image.php';
 
-$stats = [ 'created' => 0, 'updated' => 0, 'media' => 0, 'skipped' => 0 ];
+// Same $GLOBALS binding as above: the counters are incremented from inside
+// functions via `global $stats`, and read back at the very end of this file.
+$GLOBALS['stats'] = [ 'created' => 0, 'updated' => 0, 'media' => 0, 'skipped' => 0 ];
+$stats            = &$GLOBALS['stats'];
 
 /* ------------------------------------------------------------------ media -- */
 
@@ -111,6 +175,18 @@ function alifleet_attachment_id( string $rel ): int {
 	static $cache = [];
 
 	$rel = trim( $rel );
+
+	/*
+	 * Some seed entries store the path as it will look once WordPress serves it
+	 * ( /wp-content/uploads/images/foo.png ) instead of the source path inside
+	 * the Next.js public directory ( /images/foo.png ). Both point at the same
+	 * source file, so strip the uploads prefix before resolving.
+	 *
+	 * Normalising here also means the two spellings share one cache entry and
+	 * one _alifleet_source value, so the same file is never uploaded twice.
+	 */
+	$rel = (string) preg_replace( '#^/?wp-content/uploads/#', '/', $rel );
+
 	if ( '' === $rel || '' === $images_dir ) {
 		return 0;
 	}
@@ -307,13 +383,29 @@ foreach ( $seed['pages'] ?? [] as $page ) {
 	alifleet_write_acf( $id, (array) ( $page['acf'] ?? [] ) );
 	WP_CLI::log( "  {$slug} -> {$id}" );
 
-	if ( ! empty( $page['isFrontPage'] ) && ! $dry_run ) {
+	if ( ! empty( $page['isFrontPage'] ) ) {
 		// group_home_page is located on page_type == front_page, so the home page
 		// only shows its fields once WordPress is actually serving it as the front
 		// page.
-		update_option( 'show_on_front', 'page' );
-		update_option( 'page_on_front', $id );
-		WP_CLI::log( "  set as front page" );
+		//
+		// Repointing the front page is destructive on a site that already serves
+		// real content from another page, so it is opt-in: pass `set-front-page`
+		// to actually move it. Without the flag we only report what would change.
+		$current_front = (int) get_option( 'page_on_front' );
+
+		if ( $current_front === $id ) {
+			WP_CLI::log( '  already the front page' );
+		} elseif ( ! $set_front_page ) {
+			$existing = $current_front ? get_post( $current_front ) : null;
+			$label    = $existing ? "#{$current_front} \"{$existing->post_title}\"" : 'none';
+			WP_CLI::warning( "  front page left untouched (currently {$label}); pass set-front-page to change it" );
+		} elseif ( ! $dry_run ) {
+			update_option( 'show_on_front', 'page' );
+			update_option( 'page_on_front', $id );
+			WP_CLI::log( "  set as front page (was {$current_front})" );
+		} else {
+			WP_CLI::log( "  would set as front page (was {$current_front})" );
+		}
 	}
 }
 
