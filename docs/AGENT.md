@@ -10,12 +10,38 @@
 
 # الجزء أ — للمستخدم (4 خطوات)
 
+> ### ⚠️ اقرأ ده الأول — البيئة مش اللي الدليل كان مبني عليه
+>
+> السيرفر بيشغّل WordPress **جوه Docker تحت إدارة Coolify**، مش تنصيب مباشر:
+>
+> | البند | الواقع |
+> |---|---|
+> | WordPress | كونتينر `wordpress-yo985p014jyz554zjo2oo6w7` (صورة `wordpress:latest`) |
+> | `/var/www` على الهوست | **فاضي تمامًا** |
+> | قاعدة البيانات | MySQL 8 في كونتينر `mysql-yo985p014jyz554zjo2oo6w7` |
+> | ويب سيرفر | **Traefik v3.6** ماسك 80/443. `nginx` / `php8.2-fpm` / `mariadb` كلهم inactive |
+> | الإدارة | **Coolify 4.1.2** — لوحة على بورت 8000 |
+> | `wp-cli` | **مش منصّب** لا على الهوست ولا جوه الكونتينر |
+> | السيرفر | **مشترك** — 16 كونتينر، منهم 6 تطبيقات إنتاج مش تابعة للمشروع ده |
+>
+> **ونتيجة لكده اتغيّر نموذج الأمان:** أي وصول لأمر `docker` = root كامل على
+> الهوست (`docker run -v /:/host … chroot /host`). فمفيش حاجة اسمها "docker
+> محدود". الـ agent **مياخدش** docker ولا مجموعة docker — ياخد سكربت root واحد
+> اسمه `wp-agent` واسم الكونتينر مثبَّت جواه.
+>
+> **وكمان:** القسم 11 في `docs/WORDPRESS-SETUP.md` (nginx + certbot) **ملغي** —
+> مش محرَّم بس، هو غير قابل للتنفيذ لأن مفيش nginx شغال. الدومين والشهادة من
+> لوحة Coolify، **وانت اللي تعملها**.
+
 ## 1) اعمل اليوزر المؤقت
 
-من جهازك:
+من جهازك — **تلات ملفات، مش اتنين**:
 
 ```bash
-scp wordpress/server/agent-user.sh wordpress/server/alifleet-agent.sudoers deploy@YOUR_SERVER_IP:/tmp/
+scp wordpress/server/agent-user.sh \
+    wordpress/server/alifleet-agent.sudoers \
+    wordpress/server/wp-agent \
+    deploy@YOUR_SERVER_IP:/tmp/
 ```
 
 على السيرفر:
@@ -23,9 +49,18 @@ scp wordpress/server/agent-user.sh wordpress/server/alifleet-agent.sudoers deplo
 ```bash
 ssh deploy@YOUR_SERVER_IP
 cd /tmp
-sed -i 's/\r$//' agent-user.sh alifleet-agent.sudoers   # لو رفعت من ويندوز
+sed -i 's/\r$//' agent-user.sh alifleet-agent.sudoers wp-agent   # لو رفعت من ويندوز
 sudo bash agent-user.sh create
 ```
+
+السكربت بيتأكد الأول إن الكونتينر شغال، وإن `docker.sock` **مش** متمرَّر جواه،
+وإنه مش `privileged` — لأن الحماية كلها مبنية على الحصر جوه الكونتينر. لو أي
+واحدة من التلاتة مكسورة، بيوقف ومبيعملش اليوزر.
+
+**لو اسم الكونتينر مختلف** (Coolify بيغيّره لو عملت redeploy بـ resource ID
+جديد): هاته بـ `docker ps --format '{{.Names}}\t{{.Image}}' | grep -i wordpress`
+وعدّل `WP_CONTAINER` في أول `wp-agent`. **الـ agent مش بيقدر يعدّله** — الملف
+مملوك `root:root 0755`.
 
 هيطبعلك في الآخر `ssh afagent@IP` + الباسورد. **انسخهم فورًا** — الباسورد بيتعرض مرة واحدة بس.
 
@@ -33,13 +68,22 @@ sudo bash agent-user.sh create
 
 **لو ظهر `$'\r': command not found`:** سطر `sed` فوق هو الحل — ويندوز حوّل نهايات السطور لـ CRLF. لازم تنضّف ملف الـ `.sudoers` هو كمان، لأن `\r` جواه بيفشّل `visudo -c`. (ملف `.gitattributes` في المستودع بيمنع المشكلة دي في أي checkout جديد.)
 
-## 2) خُد نسخة احتياطية
+## 2) خُد نسخة احتياطية — **إلزامية، مش خيار**
+
+`wp db export` مش متاح (مفيش wp-cli، والـ agent ممنوع من `wp db`). البديل:
 
 ```bash
-cd /var/www/cms.alifleet.com
-wp db export ~/backup-$(date +%F).sql
-cp wp-config.php ~/wp-config.php.bak
+sudo bash /tmp/agent-user.sh backup
 ```
+
+بياخد التلاتة: قاعدة البيانات بـ `mysqldump` من كونتينر MySQL، و `wp-config.php`،
+و `wp-content` كامل. النواتج في `/root/alifleet-backups` بصلاحية 600 — **انقلها
+بره السيرفر**.
+
+> **ليه "إلزامية" مش "مستحسنة":** استيراد الداتا (M5) مبني على `wp eval-file`،
+> وده تنفيذ PHP حر جوه الكونتينر. يعني الـ agent بيوصل لقاعدة البيانات بغض
+> النظر عن إن `wp db` مرفوض. **الحد الحقيقي عليه هو الحصر جوه الكونتينر، مش
+> قايمة الأوامر** — وقايمة الرفض بتمنع الغلط العابر، مش فاعل مصمِّم على الخروج.
 
 ## 3) دي اللي تقولها للـ agent
 
@@ -53,10 +97,18 @@ cp wp-config.php ~/wp-config.php.bak
 | عايز | الأمر |
 |---|---|
 | تشوف بيعمل إيه | `sudo bash /tmp/agent-user.sh status` |
+| **كل استدعاء على الكونتينر (حتى المرفوض)** | `sudo tail -f /var/log/wp-agent.log` |
+| كل أمر sudo | `sudo tail -f /var/log/auth.log` |
 | **تقطعه فورًا** | `sudo bash /tmp/agent-user.sh revoke` |
 | تمسحه لما يخلّص | `sudo bash /tmp/agent-user.sh delete` |
 
-**بعد `delete`:** غيّر باسورد قاعدة البيانات — الـ agent كان شايف `wp-config.php`.
+`revoke` بيشيل `/usr/local/bin/wp-agent` **الأول** — يعني الباب على الكونتينر
+بيتقفل قبل الحساب نفسه.
+
+**بعد `delete`:** الـ agent كان بيشغّل PHP جوه الكونتينر، فكان بيقدر يقرأ بيانات
+الاتصال بقاعدة البيانات. لو عايز تكون 100% مطمّن: غيّر `WORDPRESS_DB_PASSWORD`
+ودوّر `GRAPHQL_JWT_AUTH_SECRET_KEY` **من لوحة Coolify** (الاتنين محتاجين redeploy،
+وتدوير مفتاح الـ JWT بيلغي كل الجلسات المفتوحة).
 
 ---
 ---
@@ -69,21 +121,43 @@ cp wp-config.php ~/wp-config.php.bak
 |---|---|
 | **هدفك** | WordPress على `cms.alifleet.com` يبقى: الإضافات مفعّلة + ثوابت `wp-config` + mu-plugin + ACF (10 مجموعات) + الداتا مستوردة + WooCommerce مضبوط + GraphQL بيرجّع كل الحقول |
 | **آخر حاجة مسموحة** | التحقق من GraphQL (M7) + كتابة قيم متغيرات البيئة في تقريرك (M8) |
-| **الخط الأحمر** | ❌ ممنوع رفع/بناء/تشغيل مشروع Next.js على السيرفر — ❌ ممنوع nginx — ❌ ممنوع SSL/certbot — ❌ ممنوع تحويل الدومين |
+| **الخط الأحمر** | ❌ ممنوع رفع/بناء/تشغيل مشروع Next.js على السيرفر — ❌ ممنوع `docker` بأي شكل — ❌ ممنوع Coolify — ❌ ممنوع Traefik/SSL — ❌ ممنوع تحويل الدومين |
 | **مبدأك** | انت **بتنفّذ**، مش **بتخترع**. أي انحراف عن المكتوب هنا = وقوف وسؤال |
-| **مسار العمل** | `/var/www/cms.alifleet.com` — لو مختلف: **قف وبلّغ**، متتصرّفش |
-| **ملفات المشروع** | موجودة local على جهاز المستخدم وانت شايفها. الرفع للسيرفر بـ `scp` |
+| **نطاق عملك** | كونتينر واحد: `wordpress-yo985p014jyz554zjo2oo6w7`، من خلال `sudo wp-agent` بس |
+| **مسار WordPress** | `/var/www/html` **جوه الكونتينر**. `/var/www` على الهوست فاضي — ده طبيعي |
+| **ملفات المشروع** | موجودة local على جهاز المستخدم وانت شايفها. النقل **خطوتين**: `scp` للهوست ثم `sudo wp-agent put` للكونتينر |
+
+### 🔴 السيرفر مشترك — أهم قيد في الملف
+
+عليه **16 كونتينر**، منهم إنتاج مش تابع للمشروع ده: `usesend`، تطبيقين تانيين،
+4 قواعد PostgreSQL، Redis، وطبقة Coolify نفسها.
+
+**أي حاجة بره كونتينر `wordpress-yo985p014jyz554zjo2oo6w7` = مخالفة**، مهما كانت
+مبرَّرة، لأن الضرر بيوصل لتطبيقات إنتاج لغير المشروع. ومفيش داعي تفكر في الأمر
+أصلًا: `sudo wp-agent` مش بياخد اسم كونتينر منك، و `docker` مرفوض في الـ sudoers.
 
 ### الوضع الحالي المؤكَّد (مش افتراض)
 
 | البند | الحالة | معناه ليك |
 |---|---|---|
-| VPS | ✅ شغال | متعملش `apt` / `ufw` / mysql / php — تحقق بس |
-| WordPress | ✅ منصَّب | متعملش `wp core install` ولا `wp config create` |
-| الإضافات | ⚠️ أكترها نازلة | M1 = جرد + إكمال الناقص، **مش** تنصيب من الصفر |
-| قاعدة البيانات | ✅ فيها داتا | أي أمر يلمسها = محتاج إذن |
-| ACF / الداتا | ❓ مجهول | تحقق في M0 قبل أي استيراد |
-| nginx / SSL / الدومين | ❓ مجهول | **مش شغلك.** بلّغ بالحالة وبس |
+| البيئة | ✅ Docker + Coolify 4.1.2 | كل أوامر WP من خلال `sudo wp-agent` — مفيش `wp` على الهوست |
+| WordPress | ✅ منصَّب في كونتينر | متعملش `wp core install` ولا `wp config create` |
+| `wp-cli` | ⚠️ **مش منصّب** | أول خطوة في M0: `sudo wp-agent bootstrap`. وبيروح مع أي rebuild من Coolify — اتحقق من وجوده في أول كل جلسة |
+| قاعدة البيانات | ✅ MySQL 8 في كونتينر منفصل | ممنوع تلمس كونتينر الداتابيز. `wp db` مرفوض من `wp-agent` |
+| Traefik / الدومين / SSL | ✅ شغال، وبيتدار من Coolify | **مش شغلك.** بلّغ بالحالة وبس |
+| `nginx` / `php-fpm` / `mariadb` على الهوست | ✅ inactive (مقصود) | متحاولش تشغّلهم. القسم 11 في دليل التشغيل ملغي |
+
+### ❓ 4 حقائق مجهولة — بوابة إلزامية في M0
+
+الجدول اللي فوق مؤكَّد من `docker ps`. الأربعة دي **لسه مجهولة**، و `wp-agent
+doctor` بيجيبهم كلهم. **ممنوع أي أمر كتابة قبل ما تبلّغ بيهم وتاخد موافقة:**
+
+| # | الحقيقة | ليه بتوقف عندها |
+|---|---|---|
+| 1 | متغيرات بيئة الكونتينر + الدومين من Traefik labels | لو `WP_HOME`/`siteurl` مختلفين عن الدومين المربوط → تصحيحهم = تحويل دومين = 🔴 |
+| 2 | الإضافات النازلة **فعلًا** | الجدول القديم كان بيقول "أكترها نازلة" — ده كان افتراض من قبل ما نعرف إنها Docker. M1 بيتحدد على الناتج الحقيقي |
+| 3 | `mu-plugins` موجودة والـ volume بيغطيها؟ | لو مش مغطّاة، M3 بيروح مع أول rebuild و M4 بتضيع معاه |
+| 4 | نطاق الـ volume — `/var/www/html` كامل ولا `wp-content` بس؟ | لو `wp-content` بس → `wp config set` في M2 **مؤقت**، والثوابت لازم تبقى متغيرات بيئة في Coolify. ⏸ اسأل |
 
 ---
 
@@ -93,31 +167,43 @@ cp wp-config.php ~/wp-config.php.bak
 
 ### 🟢 ALLOW — نفّذ لوحدك
 
-- **قراءة WP-CLI:** `wp plugin list`, `wp option get`, `wp post list`, `wp user list`, `wp config list --fields=name`, `wp core version`, `wp post-type list`
-- **قراءة النظام:** `ls`, `cat`, `grep`, `tail`, `df -h`, `php -v`, `php -l`, `node -v`, `nginx -t`, `systemctl status *`, `curl` على localhost
-- **الإضافات:** `wp plugin install` / `activate` **للقايمة في M1 بس** + `unzip` للـ zip اللي المستخدم رفعه
-- **الثوابت:** `wp config set` **للثوابت في M2 بالحرف بس**
-- **mu-plugin:** `cp` لـ `wp-content/mu-plugins/`
-- **ACF:** `wp acf import`
-- **الاستيراد الجاف:** `wp eval-file ... --dry-run`
-- **WooCommerce:** `wp option update woocommerce_*` **للمذكور في M6 بس**
-- **التحقق:** `wp eval` **بكود قراءة فقط** (`get_field` / `get_option` / `echo`) + `curl` لـ GraphQL
-- **الملفات:** `scp` لـ `/tmp`, `mkdir -p`, `chmod` جوه مسار العمل
+**كل أمر WP-CLI بيبدأ بـ `sudo wp-agent wp`.** مفيش `cd /var/www/...` ومفيش `wp`
+لوحده — الاتنين مش موجودين على السيرفر ده.
+
+- **قراءة WP-CLI:** `sudo wp-agent wp plugin list`, `… wp option get`, `… wp post list`, `… wp user list`, `… wp config list --fields=name`, `… wp core version`, `… wp post-type list`
+- **جرد الكونتينر:** `sudo wp-agent doctor`, `sudo wp-agent ls`, `sudo wp-agent bootstrap`
+- **قراءة الهوست:** `ls`, `cat`, `grep`, `tail`, `df -h`, `systemctl status *`, `curl` على localhost
+- **الإضافات:** `sudo wp-agent wp plugin install` / `activate` **للقايمة في M1 بس** + `sudo wp-agent unzip` للـ zip اللي المستخدم رفعه
+- **الثوابت:** `sudo wp-agent wp config set` **للثوابت في M2 بالحرف بس**
+- **الملفات للكونتينر:** `sudo wp-agent put /tmp/... mu-plugins/...` (المصدر من `/tmp` بس، والهدف جوه `plugins/` أو `mu-plugins/` أو `uploads/`)
+- **فحص PHP:** `sudo wp-agent lint mu-plugins/alifleet-cms.php`
+- **ACF:** `sudo wp-agent wp acf import`
+- **الاستيراد الجاف:** `sudo wp-agent wp eval-file ... --dry-run`
+- **WooCommerce:** `sudo wp-agent wp option update woocommerce_*` **للمذكور في M6 بس**
+- **التحقق:** `sudo wp-agent wp eval` **بكود قراءة فقط** (`get_field` / `get_option` / `echo`) + `curl` لـ GraphQL
+- **الملفات على الهوست:** `scp` لـ `/tmp` بس
 
 ### 🟡 ASK — قف واستنى موافقة
 
 | الحاجة | ليه |
 |---|---|
 | **الاستيراد الحقيقي** (`eval-file` بدون `--dry-run`) | أول كتابة جماعية في DB |
-| **أي `wp db *`** (`export`/`import`/`query`/`cli`) | لمس مباشر لقاعدة البيانات |
 | **أي `wp eval` فيه كتابة** (`update_field`, `update_option`, `wp_insert_post`) | كتابة غير موثّقة |
-| `apt install` / `apt upgrade` | تغيير بيئة شغالة |
-| `wp core update` / `wp plugin update` / `delete` / `wp theme *` | ممكن يكسر توافق WPGraphQL |
-| `wp user create` / `delete` / تغيير باسورد | حسابات وصلاحيات |
-| `chown` / `chmod -R` بره مسار العمل | خروج عن النطاق |
+| **`wp config set` لو الـ volume مش بيغطي `/var/www/html`** | التعديل بيروح مع أول rebuild — لازم يبقى متغير بيئة في Coolify |
+| `apt install` جوه الكونتينر | بيروح مع أول rebuild — الحل تعديل الصورة من Coolify |
 | أي إضافة مش في قايمة M1 | مفيش إضافات باجتهاد شخصي |
 | بوابات دفع WooCommerce أو أي مفتاح دفع | فلوس حقيقية |
 | **أي حاجة انت مش متأكد منها 100%** | القاعدة الافتراضية |
+
+**الحاجات دي `wp-agent` بيرفضها بنفسه — متحاولش:** `wp db *`, `wp search-replace`,
+`wp option update siteurl|home`, `wp user create/update/delete`, `wp core update`,
+`wp theme *`, `wp plugin delete/deactivate/update`, `wp config set` على `DB_*` أو
+`WP_HOME`/`WP_SITEURL`, `wp config list` بقيم, وكل flags: `--path --ssh --http
+--url --require --exec --allow-root --force --skip-*`.
+
+لو احتجت واحدة منهم فعلًا → ⏸ اسأل المستخدم **ينفّذها هو**. **ممنوع تدوّر على
+طريقة تلف بيها** (زي `wp eval` بكود يعمل نفس الحاجة) — ده أخطر من الأمر نفسه لأنه
+بيعدّي من غير ما يظهر في اللوج بشكل مفهوم.
 
 **اسأل بالشكل ده بالحرف:**
 
@@ -133,18 +219,20 @@ cp wp-config.php ~/wp-config.php.bak
 
 **"كمّل" أو "اعمل اللي لازم" مش إذن هنا.** لازم المستخدم يقول اسم الحاجة صريح.
 
-1. ❌ **رفع مشروع Next.js:** `git clone` للمشروع على السيرفر، `pnpm install`, `pnpm build`, `pm2`, كتابة `.env.production`, `ecosystem.config.cjs`. **انت بتكتب القيم في التقرير وخلاص.**
-2. ❌ **nginx:** تعديل أي ملف في `/etc/nginx/`, `systemctl reload/restart nginx`. (`nginx -t` للفحص مسموح.)
-3. ❌ **SSL:** `certbot` بأي شكل.
-4. ❌ **تحويل الدومين:** `wp search-replace`, تغيير `siteurl` / `home`, أي حاجة في DNS. أخطر خطوة في المشروع كله.
-5. ❌ `rm -rf` بأي شكل، و`rm` على أي حاجة بره `/tmp`.
-6. ❌ `mysql` / `mysqldump` / `mariadb` مباشر، وأي `DROP` / `TRUNCATE` / `DELETE`.
-7. ❌ `sudo su`, `su -`, `visudo`, تعديل `/etc/sudoers*`, إضافة يوزر, `authorized_keys`, `ufw`.
-8. ❌ **تسريب أسرار:** `cat wp-config.php`, `wp config list --fields=name,value`, طبع `GRAPHQL_JWT_AUTH_SECRET_KEY` أو باسورد DB أو أي مفتاح. الأسرار تتولّد وتتحط في **نفس الأمر** من غير `echo`.
-9. ❌ `git commit` / `git push`, أو تعديل `app/` أو `lib/` أو `components/` — الربط بالكود مرحلة تانية بتتعمل في v0، مش هنا.
-10. ❌ تعديل `wordpress/acf/alifleet-acf-schema.json` أو `seed-data.json` أو أي ملف `docs/*.md`. لقيت غلط؟ **بلّغ وقف.**
-11. ❌ حذف أو تعطيل إضافة شغالة. وممنوع أي إضافة كاش صفحات.
-12. ❌ **الاستمرار بعد فشل تحقق.** الفشل = وقوف، مش محاولة تانية بأمر أقوى.
+1. ❌ **`docker` بأي شكل:** `docker ps`, `docker exec`, `docker inspect`, `docker-compose`, الانضمام لمجموعة `docker`. **السبب:** `docker` = root كامل على الهوست، والهوست عليه 6 تطبيقات إنتاج تانية. لو لقيت `docker` متاح لك → **ده خلل أمني، بلّغ فورًا ومتستخدموش.** كل شغلك من `sudo wp-agent`.
+2. ❌ **أي كونتينر غير كونتينر WordPress:** كونتينر MySQL, `usesend`, قواعد PostgreSQL, Redis, كونتينرات Coolify. مش نطاقك ومش مشروعك.
+3. ❌ **Coolify:** `/data/coolify/*`, متغيرات بيئة اللوحة, إعادة النشر, تعديل أي resource. الدومين والشهادة وربط Traefik **من اللوحة والمستخدم هو اللي يعملها**.
+4. ❌ **رفع مشروع Next.js:** `git clone` للمشروع على السيرفر، `pnpm install`, `pnpm build`, `pm2`, كتابة `.env.production`, `ecosystem.config.cjs`. **انت بتكتب القيم في التقرير وخلاص.**
+5. ❌ **Traefik / SSL:** أي تعديل على توجيه أو شهادات. (`nginx` و `certbot` مش موجودين شغالين أصلًا — القسم 11 في دليل التشغيل ملغي.)
+6. ❌ **تحويل الدومين:** `wp search-replace`, تغيير `siteurl` / `home`, أي حاجة في DNS. أخطر خطوة في المشروع كله.
+7. ❌ `rm -rf` بأي شكل، و`rm` على أي حاجة بره `/tmp`.
+8. ❌ `mysql` / `mysqldump` / `mariadb`, وأي `DROP` / `TRUNCATE` / `DELETE` — سواء بأمر مباشر أو من جوه `wp eval`.
+9. ❌ `sudo su`, `su -`, `visudo`, تعديل `/etc/sudoers*`, تعديل `/usr/local/bin/wp-agent`, إضافة يوزر, `authorized_keys`, `ufw`.
+10. ❌ **تسريب أسرار:** طبع محتوى `wp-config.php`, `wp config list --fields=name,value`, `wp config get DB_PASSWORD`, طبع `GRAPHQL_JWT_AUTH_SECRET_KEY` أو أي مفتاح. الأسرار تتولّد وتتحط في **نفس الأمر** من غير `echo`. للتحقق من الوجود: `sudo wp-agent wp config has <NAME>`.
+11. ❌ `git commit` / `git push`, أو تعديل `app/` أو `lib/` أو `components/` — الربط بالكود مرحلة تانية بتتعمل في v0، مش هنا.
+12. ❌ تعديل `wordpress/acf/alifleet-acf-schema.json` أو `seed-data.json` أو أي ملف `docs/*.md`. لقيت غلط؟ **بلّغ وقف.**
+13. ❌ حذف أو تعطيل إضافة شغالة. وممنوع أي إضافة كاش صفحات.
+14. ❌ **الاستمرار بعد فشل تحقق.** الفشل = وقوف، مش محاولة تانية بأمر أقوى.
 
 ### صلاحياتك الفعلية
 

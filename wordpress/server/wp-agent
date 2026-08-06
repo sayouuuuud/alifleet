@@ -1,0 +1,418 @@
+#!/usr/bin/env bash
+# ============================================================================
+#  wp-agent — الباب الوحيد للـ agent على كونتينر WordPress
+#  ALI FLEET — root-owned wrapper. The agent's ONLY sudo-able command.
+# ----------------------------------------------------------------------------
+#  ليه الملف ده موجود:
+#
+#  السيرفر بيشغّل WordPress جوه Docker تحت إدارة Coolify، وعليه **6 تطبيقات
+#  إنتاج تانية مش تابعة للمشروع ده**. أي وصول لأمر `docker` = root كامل على
+#  الهوست، لأن اللي معاه docker يقدر يعمل:
+#      docker run -v /:/host --rm -it alpine chroot /host sh
+#
+#  فمفيش أي طريقة نعطي الـ agent `docker` ونسمّيها "محدودة". الحل إن الـ agent
+#  ماياخدش docker خالص — ياخد السكربت ده بس، واسم الكونتينر مثبَّت جواه
+#  والـ agent مش بيمرّره ولا بيقدر يعدّله.
+#
+#  التركيب (بيتعمل تلقائيًا من agent-user.sh):
+#      sudo install -m 0755 -o root -g root wp-agent /usr/local/bin/wp-agent
+#
+#  الاستخدام من الـ agent:
+#      sudo wp-agent doctor
+#      sudo wp-agent wp plugin list --status=active --field=name
+#      sudo wp-agent put /tmp/alifleet-cms.php mu-plugins/alifleet-cms.php
+#      sudo wp-agent lint mu-plugins/alifleet-cms.php
+# ----------------------------------------------------------------------------
+#  ⚠️ اقرأ ده قبل ما تعتمد على السكربت — الحد الحقيقي فين
+#
+#  السكربت بيمنع أوامر WP-CLI الخطرة (db / search-replace / user / core update)
+#  عن طريق قايمة رفض. **بس** `wp eval` و `wp eval-file` لازم يفضلوا مسموحين
+#  لأن استيراد الداتا (M5) مبني عليهم بالكامل — ودول تنفيذ PHP حر جوه
+#  الكونتينر، يعني اللي عنده `eval` يقدر يوصل لقاعدة البيانات بغض النظر عن
+#  رفض `wp db`.
+#
+#  فالحد الحقيقي هو: **الـ agent محصور جوه كونتينر WordPress، مش محصور جوه
+#  قايمة أوامر.** قايمة الرفض بتمنع الغلط والانحراف العابر، مش بتمنع فاعل
+#  مصمِّم على الخروج. اللي بيحمي الـ 6 تطبيقات التانية والهوست هو إن الـ agent
+#  مش شايف docker أصلًا — لا القايمة دي.
+#
+#  ونتيجة لكده، **النسخة الاحتياطية لقاعدة البيانات مسؤولية المستخدم قبل
+#  تسليم أي وصول** — مش خيار.
+# ============================================================================
+
+set -euo pipefail
+
+# ---------------------------------------------------------------------------
+#  ⬇⬇ التعديل الوحيد المطلوب منك ⬇⬇
+#
+#  اسم كونتينر WordPress. Coolify بيولّد الأسماء دي ومن الممكن تتغيّر لو عملت
+#  redeploy بـ resource ID جديد. لو اتغيّر: عدّل السطر ده أنت (الملف مملوك
+#  root:root 0755 — الـ agent مش بيقدر يلمسه).
+#
+#  تجيب الاسم منين:  docker ps --format '{{.Names}}\t{{.Image}}' | grep -i wordpress
+# ---------------------------------------------------------------------------
+WP_CONTAINER="wordpress-yo985p014jyz554zjo2oo6w7"
+
+#  مسار WordPress **جوه** الكونتينر (صورة wordpress:latest الرسمية)
+WP_DOCROOT="/var/www/html"
+
+#  اسم كونتينر قاعدة البيانات — للقراءة في doctor بس. السكربت **مبينفّذش**
+#  ولا أمر واحد عليه.
+DB_CONTAINER="mysql-yo985p014jyz554zjo2oo6w7"
+
+DOCKER="/usr/bin/docker"
+
+# ---------------------------------------------------------------------------
+die()  { printf '\033[0;31m✖ wp-agent: %s\033[0m\n' "$1" >&2; exit 1; }
+warn() { printf '\033[0;33m⚠ wp-agent: %s\033[0m\n' "$1" >&2; }
+ok()   { printf '\033[0;32m✔\033[0m %s\n' "$1"; }
+inf()  { printf '  · %s\n' "$1"; }
+
+[[ -x "$DOCKER" ]] || die "docker مش موجود على $DOCKER"
+
+# ---------------------------------------------------------------------------
+#  تسجيل — كل استدعاء بيتكتب، حتى المرفوض. المستخدم بيتابعه بـ:
+#     sudo tail -f /var/log/wp-agent.log
+# ---------------------------------------------------------------------------
+LOG="/var/log/wp-agent.log"
+log_call() {
+  printf '%s  %s  [%s]  %s\n' \
+    "$(date '+%F %T')" "${SUDO_USER:-$(id -un)}" "$1" "${*:2}" >>"$LOG" 2>/dev/null || true
+}
+
+# ---------------------------------------------------------------------------
+#  التأكد إن الكونتينر شغال
+# ---------------------------------------------------------------------------
+require_container() {
+  local state
+  state="$("$DOCKER" inspect -f '{{.State.Status}}' "$WP_CONTAINER" 2>/dev/null || true)"
+  [[ -n "$state" ]] || die "الكونتينر $WP_CONTAINER مش موجود. عدّل WP_CONTAINER في /usr/local/bin/wp-agent"
+  [[ "$state" == "running" ]] || die "الكونتينر $WP_CONTAINER حالته: $state (المطلوب running). ⛔ قف وبلّغ المستخدم."
+}
+
+# ---------------------------------------------------------------------------
+#  فحص وسائط WP-CLI
+# ---------------------------------------------------------------------------
+#  1) flags ممنوعة مطلقًا — دي اللي بتخلّي الأمر يخرج عن سياقه
+#     أو بتخبّي فشل بدل ما توقف عنده.
+FORBIDDEN_FLAGS='^--(path|ssh|http|url|require|exec|allow-root|force|skip-plugins|skip-themes|skip-packages|debug)(=|$)'
+
+#  2) أوامر WP-CLI مرفوضة — مطابقة على أول كلمة + اللي بعدها
+deny_wp() {
+  local c1="${1:-}" c2="${2:-}" c3="${3:-}"
+
+  case "$c1" in
+    db)
+      die "wp db ممنوع من السكربت. النسخ الاحتياطي والاستعلام المباشر مسؤولية المستخدم." ;;
+    search-replace)
+      die "wp search-replace ممنوع — دي خطوة تحويل الدومين (أخطر خطوة في المشروع)." ;;
+    user)
+      case "$c2" in
+        list|get) : ;;
+        *) die "wp user $c2 ممنوع — الحسابات والصلاحيات خارج نطاق الـ agent." ;;
+      esac ;;
+    core)
+      case "$c2" in
+        version|is-installed|check-update) : ;;
+        *) die "wp core $c2 ممنوع — ممكن يكسر توافق WPGraphQL." ;;
+      esac ;;
+    theme)
+      case "$c2" in
+        list|get|status) : ;;
+        *) die "wp theme $c2 ممنوع." ;;
+      esac ;;
+    plugin)
+      case "$c2" in
+        delete|uninstall|deactivate|update|update-all)
+          die "wp plugin $c2 ممنوع — حذف/تعطيل/تحديث إضافة شغالة خارج النطاق." ;;
+      esac ;;
+    site|server|shell|package|cron|profile|doctor|admin|cli)
+      die "wp $c1 ممنوع." ;;
+    config)
+      case "$c2" in
+        has) : ;;
+        get)
+          # منع طبع الأسرار مباشرة. (ملحوظة: `wp eval` بيقدر يطبع أي حاجة —
+          # فده منع للغلط العابر، مش حصر محكم. شوف رأس الملف.)
+          case "$c3" in
+            DB_PASSWORD|DB_USER|DB_NAME|DB_HOST|AUTH_KEY|SECURE_AUTH_KEY|LOGGED_IN_KEY|NONCE_KEY|AUTH_SALT|SECURE_AUTH_SALT|LOGGED_IN_SALT|NONCE_SALT|GRAPHQL_JWT_AUTH_SECRET_KEY)
+              die "wp config get $c3 ممنوع — ده سر. للتحقق من الوجود استخدم: wp-agent wp config has $c3" ;;
+          esac ;;
+        set) : ;;
+        list)
+          # منع طبع القيم — ده تسريب أسرار (DB_PASSWORD / JWT key)
+          for a in "$@"; do
+            [[ "$a" == *value* ]] && die "wp config list بقيم ممنوع — تسريب أسرار. استخدم --fields=name بس."
+          done ;;
+        *) die "wp config $c2 ممنوع." ;;
+      esac
+      # حتى مع config set: منع لمس بيانات الاتصال بقاعدة البيانات
+      if [[ "$c2" == "set" ]]; then
+        case "$c3" in
+          DB_NAME|DB_USER|DB_PASSWORD|DB_HOST|DB_CHARSET|DB_COLLATE|WP_HOME|WP_SITEURL|table_prefix)
+            die "wp config set $c3 ممنوع — بيانات الاتصال والدومين بتتدار من Coolify (متغيرات بيئة)، مش من الملف." ;;
+        esac
+      fi ;;
+    option)
+      # siteurl / home = تحويل الدومين
+      if [[ "$c2" == "update" || "$c2" == "delete" || "$c2" == "patch" ]]; then
+        case "$c3" in
+          siteurl|home) die "wp option $c2 $c3 ممنوع — ده تحويل الدومين." ;;
+        esac
+      fi ;;
+  esac
+}
+
+# ---------------------------------------------------------------------------
+#  wp — تشغيل WP-CLI جوه الكونتينر كـ www-data
+# ---------------------------------------------------------------------------
+cmd_wp() {
+  [[ $# -gt 0 ]] || die "استخدام: wp-agent wp <أوامر WP-CLI>"
+
+  for a in "$@"; do
+    [[ "$a" =~ $FORBIDDEN_FLAGS ]] && die "الوسيط '$a' ممنوع. (الـ flags دي بتخرج بالأمر عن سياقه أو بتخبّي الفشل.)"
+  done
+
+  deny_wp "$@"
+  require_container
+  log_call wp "$@"
+
+  # -u www-data: نفس مستخدم PHP جوه الصورة الرسمية — عشان أي ملف بيتعمل
+  #              يبقى مملوك صح ومايكسرش الصلاحيات جوه الـ volume.
+  # --no-color : الناتج بيتقرا في اللوج
+  "$DOCKER" exec -u www-data -w "$WP_DOCROOT" "$WP_CONTAINER" wp --no-color "$@"
+}
+
+# ---------------------------------------------------------------------------
+#  put — نسخ ملف من الهوست لجوه wp-content
+#  النقل بقى خطوتين: scp للهوست (/tmp) ثم put للكونتينر.
+# ---------------------------------------------------------------------------
+cmd_put() {
+  local src="${1:-}" dest="${2:-}"
+  [[ -n "$src" && -n "$dest" ]] || die "استخدام: wp-agent put <ملف-على-الهوست> <مسار-نسبي-جوه-wp-content>"
+  [[ -f "$src" ]] || die "الملف مش موجود: $src"
+
+  # المصدر لازم من /tmp — الـ agent مش بيرفع من أي مكان تاني
+  [[ "$src" == /tmp/* ]] || die "المصدر لازم يكون جوه /tmp — اتلقى: $src"
+
+  # الهدف: جوه wp-content بس، ومفيش تسلّق بـ ..
+  [[ "$dest" != /* ]]   || die "الهدف لازم يكون مسار نسبي جوه wp-content — اتلقى: $dest"
+  [[ "$dest" != *..* ]] || die "'..' ممنوعة في مسار الهدف."
+  case "$dest" in
+    plugins/*|mu-plugins/*|uploads/*|mu-plugins|plugins|uploads) : ;;
+    *) die "الهدف مسموح جوه plugins/ أو mu-plugins/ أو uploads/ بس — اتلقى: $dest" ;;
+  esac
+
+  require_container
+  log_call put "$src -> wp-content/$dest"
+
+  local full="$WP_DOCROOT/wp-content/$dest"
+  "$DOCKER" exec -u root "$WP_CONTAINER" mkdir -p "$(dirname "$full")"
+  "$DOCKER" cp "$src" "$WP_CONTAINER:$full"
+  # الصورة الرسمية بتشغّل PHP كـ www-data. docker cp بيحط الملف root:root،
+  # فلازم نصلّح الملكية وإلا mu-plugin ممكن مايتحمّلش.
+  "$DOCKER" exec -u root "$WP_CONTAINER" chown www-data:www-data "$full"
+  "$DOCKER" exec -u root "$WP_CONTAINER" chmod 644 "$full"
+  ok "اتنسخ لـ wp-content/$dest (www-data:www-data 644)"
+}
+
+# ---------------------------------------------------------------------------
+#  unzip — فتح إضافة مرفوعة يدويًا جوه plugins/
+# ---------------------------------------------------------------------------
+cmd_unzip() {
+  local src="${1:-}"
+  [[ -n "$src" ]] || die "استخدام: wp-agent unzip /tmp/plugin.zip"
+  [[ "$src" == /tmp/*.zip ]] || die "المصدر لازم يكون ملف .zip جوه /tmp — اتلقى: $src"
+  [[ -f "$src" ]] || die "الملف مش موجود: $src"
+
+  require_container
+  log_call unzip "$src"
+
+  local base; base="$(basename "$src")"
+  "$DOCKER" cp "$src" "$WP_CONTAINER:/tmp/$base"
+  # -n: مش بيكتب فوق ملف موجود. لو الإضافة موجودة → السكربت بيوقف بدل ما يدهس.
+  "$DOCKER" exec -u root "$WP_CONTAINER" \
+    sh -c "cd $WP_DOCROOT/wp-content/plugins && unzip -n /tmp/$base && chown -R www-data:www-data ."
+  ok "الـ zip اتفك في wp-content/plugins"
+}
+
+# ---------------------------------------------------------------------------
+#  lint — php -l على ملف جوه wp-content
+# ---------------------------------------------------------------------------
+cmd_lint() {
+  local rel="${1:-}"
+  [[ -n "$rel" ]] || die "استخدام: wp-agent lint mu-plugins/alifleet-cms.php"
+  [[ "$rel" != /* && "$rel" != *..* ]] || die "مسار نسبي جوه wp-content بس."
+  require_container
+  log_call lint "$rel"
+  "$DOCKER" exec -u www-data "$WP_CONTAINER" php -l "$WP_DOCROOT/wp-content/$rel"
+}
+
+# ---------------------------------------------------------------------------
+#  ls — سرد محتوى مجلد جوه wp-content (قراءة فقط)
+# ---------------------------------------------------------------------------
+cmd_ls() {
+  local rel="${1:-}"
+  [[ "$rel" != /* && "$rel" != *..* ]] || die "مسار نسبي جوه wp-content بس."
+  require_container
+  log_call ls "${rel:-.}"
+  "$DOCKER" exec -u www-data "$WP_CONTAINER" ls -la "$WP_DOCROOT/wp-content/${rel:-}"
+}
+
+# ---------------------------------------------------------------------------
+#  bootstrap — تنصيب WP-CLI جوه الكونتينر
+#
+#  ⚠️ الصورة wordpress:latest **مفيهاش** wp-cli. والتنصيب ده بيروح مع أي
+#     rebuild/redeploy من Coolify، لأنه بيتحط في طبقة الكونتينر مش في volume.
+#     عادي — أداة مش داتا. لكن معناه إن الـ agent لازم يتحقق من وجوده في أول
+#     كل جلسة (doctor بيعمل كده) بدل ما يفترضه موجود.
+# ---------------------------------------------------------------------------
+cmd_bootstrap() {
+  require_container
+  log_call bootstrap ""
+
+  if "$DOCKER" exec -u www-data "$WP_CONTAINER" sh -c 'command -v wp' >/dev/null 2>&1; then
+    ok "wp-cli موجود بالفعل جوه الكونتينر"
+    "$DOCKER" exec -u www-data -w "$WP_DOCROOT" "$WP_CONTAINER" wp --version || true
+    return 0
+  fi
+
+  warn "wp-cli مش موجود جوه الكونتينر — بيتنصّب دلوقتي"
+
+  # الصورة الرسمية فيها curl أو wget عادة. بناخد الاتنين في الاعتبار.
+  "$DOCKER" exec -u root "$WP_CONTAINER" sh -c '
+    set -e
+    url="https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
+    if command -v curl >/dev/null 2>&1; then curl -sSL -o /tmp/wp-cli.phar "$url"
+    elif command -v wget >/dev/null 2>&1; then wget -qO /tmp/wp-cli.phar "$url"
+    else echo "لا curl ولا wget جوه الكونتينر" >&2; exit 1
+    fi
+    php /tmp/wp-cli.phar --info >/dev/null
+    install -m 0755 /tmp/wp-cli.phar /usr/local/bin/wp
+    rm -f /tmp/wp-cli.phar
+  '
+  ok "wp-cli اتنصّب جوه الكونتينر"
+  "$DOCKER" exec -u www-data -w "$WP_DOCROOT" "$WP_CONTAINER" wp --version
+  warn "التنصيب ده مؤقت — بيروح لو الكونتينر اتعمله rebuild من Coolify."
+}
+
+# ---------------------------------------------------------------------------
+#  doctor — الحقائق الأربعة اللي لازم تتأكد قبل أي كتابة
+#  قراءة فقط. مفيش سر بيتطبع — متغيرات البيئة بالأسماء بس.
+# ---------------------------------------------------------------------------
+cmd_doctor() {
+  require_container
+  log_call doctor ""
+
+  printf '\n== 1) الكونتينر ==\n'
+  inf "الاسم   : $WP_CONTAINER"
+  inf "الصورة  : $("$DOCKER" inspect -f '{{.Config.Image}}' "$WP_CONTAINER")"
+  inf "الحالة  : $("$DOCKER" inspect -f '{{.State.Status}}' "$WP_CONTAINER")"
+  inf "بدأ في  : $("$DOCKER" inspect -f '{{.State.StartedAt}}' "$WP_CONTAINER")"
+
+  printf '\n== 2) متغيرات البيئة — أسماء فقط (الحقيقة #1) ==\n'
+  # ⚠️ القيم مبتتطبعش: WORDPRESS_DB_PASSWORD جوه القايمة دي.
+  "$DOCKER" inspect -f '{{range .Config.Env}}{{println .}}{{end}}' "$WP_CONTAINER" \
+    | sed 's/=.*$//' | sort | sed 's/^/    /'
+  printf '\n  القيم غير الحسّاسة اللي محتاجينها بالظبط:\n'
+  "$DOCKER" inspect -f '{{range .Config.Env}}{{println .}}{{end}}' "$WP_CONTAINER" \
+    | grep -E '^(WORDPRESS_(HOME|SITEURL|DEBUG|TABLE_PREFIX)|WP_(HOME|SITEURL))=' \
+    | sed 's/^/    /' || inf "(مفيش WP_HOME / WP_SITEURL كمتغير بيئة)"
+
+  printf '\n  الدومين المربوط من Traefik labels:\n'
+  "$DOCKER" inspect -f '{{range $k,$v := .Config.Labels}}{{$k}}={{$v}}{{println}}{{end}}' "$WP_CONTAINER" \
+    | grep -iE 'traefik.*(rule|Host)' | sed 's/^/    /' || inf "(مفيش label فيه Host)"
+
+  printf '\n== 3) نطاق الـ volume (الحقيقة #4) ==\n'
+  printf '  أي مسار **مش** مغطّى بـ volume بيروح مع أي rebuild من Coolify.\n'
+  printf '  لو wp-config.php مش مغطّى → ثوابت M2 لازم تتحوّل لمتغيرات بيئة في Coolify.\n\n'
+  "$DOCKER" inspect -f '{{range .Mounts}}    {{.Type}}  {{.Destination}}  ⟵  {{.Source}}{{println}}{{end}}' "$WP_CONTAINER"
+
+  local covered="no"
+  while IFS= read -r d; do
+    [[ "$d" == "$WP_DOCROOT" ]] && covered="root"
+    [[ "$d" == "$WP_DOCROOT/wp-content" && "$covered" == "no" ]] && covered="wp-content"
+  done < <("$DOCKER" inspect -f '{{range .Mounts}}{{println .Destination}}{{end}}' "$WP_CONTAINER")
+
+  case "$covered" in
+    root)       ok "الـ volume بيغطي $WP_DOCROOT كامل → wp-config.php بيستمر بعد rebuild" ;;
+    wp-content) warn "الـ volume بيغطي wp-content بس → wp-config.php **بيروح** مع rebuild. ⛔ قف واسأل المستخدم قبل M2." ;;
+    *)          warn "ملقيتش volume يغطي $WP_DOCROOT ولا wp-content → أي كتابة مؤقتة. ⛔ قف وبلّغ." ;;
+  esac
+
+  printf '\n  🔒 هل docker socket متمرَّر جوه الكونتينر؟ (لو أيوه = الحصر ملغي)\n'
+  if "$DOCKER" inspect -f '{{range .Mounts}}{{println .Source}}{{end}}' "$WP_CONTAINER" | grep -q 'docker.sock'; then
+    warn "docker.sock متمرَّر جوه الكونتينر — الحصر جوه الكونتينر **مش** حصر. بلّغ المستخدم فورًا."
+  else
+    ok "docker.sock مش متمرَّر — الحصر جوه الكونتينر سليم"
+  fi
+  if [[ "$("$DOCKER" inspect -f '{{.HostConfig.Privileged}}' "$WP_CONTAINER")" == "true" ]]; then
+    warn "الكونتينر privileged — الحصر ضعيف. بلّغ المستخدم."
+  else
+    ok "الكونتينر مش privileged"
+  fi
+
+  printf '\n== 4) WP-CLI جوه الكونتينر ==\n'
+  if "$DOCKER" exec -u www-data "$WP_CONTAINER" sh -c 'command -v wp' >/dev/null 2>&1; then
+    ok "wp-cli موجود: $("$DOCKER" exec -u www-data -w "$WP_DOCROOT" "$WP_CONTAINER" wp --version 2>/dev/null | head -1)"
+  else
+    warn "wp-cli مش موجود → شغّل: sudo wp-agent bootstrap"
+  fi
+
+  printf '\n== 5) الإضافات النازلة فعلًا (الحقيقة #2) ==\n'
+  printf '  ⚠️ الجدول في AGENT.md كان بيقول "أكترها نازلة" — ده كان افتراض من\n'
+  printf '     قبل ما نعرف إنها Docker. الناتج تحت هو الحقيقة.\n\n'
+  "$DOCKER" exec -u www-data "$WP_CONTAINER" ls -1 "$WP_DOCROOT/wp-content/plugins" 2>/dev/null | sed 's/^/    /' \
+    || warn "مقدرتش أقرأ مجلد plugins"
+
+  printf '\n== 6) mu-plugins (الحقيقة #3) ==\n'
+  if "$DOCKER" exec -u www-data "$WP_CONTAINER" test -d "$WP_DOCROOT/wp-content/mu-plugins" 2>/dev/null; then
+    ok "المجلد موجود"
+    "$DOCKER" exec -u www-data "$WP_CONTAINER" ls -1 "$WP_DOCROOT/wp-content/mu-plugins" | sed 's/^/    /'
+  else
+    inf "mu-plugins مش موجود — بيتعمل في M3 عبر: sudo wp-agent put"
+  fi
+
+  printf '\n== 7) قاعدة البيانات — للعلم فقط ==\n'
+  inf "الكونتينر: $DB_CONTAINER"
+  inf "الحالة   : $("$DOCKER" inspect -f '{{.State.Status}}' "$DB_CONTAINER" 2>/dev/null || echo 'مش موجود')"
+  printf '  wp-agent **مبينفّذش** أي أمر على كونتينر قاعدة البيانات.\n'
+  printf '  النسخة الاحتياطية مسؤولية المستخدم (mysqldump عبر docker exec).\n'
+
+  printf '\n'
+}
+
+# ---------------------------------------------------------------------------
+usage() {
+  cat <<EOF
+wp-agent — الباب الوحيد للـ agent على كونتينر WordPress
+
+  doctor              الحقائق الأربعة قبل أي كتابة (قراءة فقط) — ابدأ بيها
+  bootstrap           تنصيب wp-cli جوه الكونتينر (بيروح مع أي rebuild)
+  wp <args...>        تشغيل WP-CLI جوه الكونتينر كـ www-data
+  put <src> <dest>    نسخ ملف من /tmp لجوه wp-content/{plugins,mu-plugins,uploads}
+  unzip <zip>         فك إضافة .zip من /tmp جوه wp-content/plugins
+  lint <rel>          php -l على ملف جوه wp-content
+  ls [rel]            سرد محتوى مجلد جوه wp-content
+
+الكونتينر المستهدف (مثبَّت — الـ agent مش بيمرّره):
+  $WP_CONTAINER
+
+ممنوع من السكربت: wp db, search-replace, option update siteurl|home,
+  user create/update/delete, core update, theme *, plugin delete/deactivate/update,
+  config set على DB_* أو WP_HOME/WP_SITEURL, config list بقيم,
+  وكل flags: --path --ssh --http --url --require --exec --allow-root --force --skip-*
+EOF
+}
+
+case "${1:-}" in
+  doctor)    shift; cmd_doctor "$@" ;;
+  bootstrap) shift; cmd_bootstrap "$@" ;;
+  wp)        shift; cmd_wp "$@" ;;
+  put)       shift; cmd_put "$@" ;;
+  unzip)     shift; cmd_unzip "$@" ;;
+  lint)      shift; cmd_lint "$@" ;;
+  ls)        shift; cmd_ls "$@" ;;
+  ""|-h|--help|help) usage ;;
+  *)         log_call REJECTED "$@"; die "أمر مش معروف: $1 — شوف: wp-agent help" ;;
+esac
