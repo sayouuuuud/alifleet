@@ -2,16 +2,38 @@
 #  قايمة sudo محدودة لليوزر المؤقت بتاع الـ agent
 #  ALI FLEET — sudo whitelist for the temporary agent user
 # ----------------------------------------------------------------------------
-#  التركيب:
-#    sudo cp alifleet-agent.sudoers /etc/sudoers.d/alifleet-agent
-#    sudo chmod 0440 /etc/sudoers.d/alifleet-agent
+#  التركيب (بيتعمل تلقائيًا من agent-user.sh):
+#    sudo install -m 0440 -o root -g root alifleet-agent.sudoers \
+#         /etc/sudoers.d/alifleet-agent
 #    sudo visudo -c                # لازم يطلع: parsed OK
 #
 #  الإزالة بعد ما الـ agent يخلّص:
 #    sudo rm /etc/sudoers.d/alifleet-agent
 #    sudo deluser --remove-home afagent
+# ============================================================================
+#  ⚠️ الملف ده اتغيّر جوهريًا — اقرأ ليه قبل ما تعدّل فيه
 #
-#  ⚠️ غيّر afagent لاسم اليوزر الفعلي، و8.2 لنسخة PHP الفعلية لو مختلفة.
+#  النسخة القديمة كانت بتدي الـ agent صلاحيات على مسار WordPress على القرص
+#  (/var/www/cms.alifleet.com) وعلى nginx و php8.2-fpm. **كل ده انهار**:
+#
+#    · /var/www فاضي تمامًا. WordPress جوه كونتينر Docker تحت إدارة Coolify.
+#    · nginx و php8.2-fpm و mariadb كلهم inactive على الهوست. Traefik ماسك
+#      80/443. فسطور nginx كانت بتدي صلاحية على حاجة مش موجودة.
+#    · السيرفر **مشترك**: عليه 16 كونتينر، منهم 6 تطبيقات إنتاج مش تابعة
+#      للمشروع ده.
+#
+#  والنقطة الأخطر: نموذج "sudo محدود" اللي الملف ده مبني عليه **ملوش معنى**
+#  في بيئة Docker. أي وصول لأمر `docker` = root كامل على الهوست:
+#      docker run -v /:/host --rm alpine chroot /host sh
+#  يعني قايمة ضيقة على docker = باب أمامي مقفول وباب خلفي مفتوح على السيرفر
+#  كله — ومعاه الـ 6 تطبيقات التانية.
+#
+#  فالتصميم بقى: الـ agent **مياخدش** docker خالص، ولا مجموعة docker. ياخد
+#  سكربت root واحد اسمه wp-agent، واسم كونتينر WordPress مثبَّت **جواه**،
+#  والفلترة كلها جواه — مش هنا. سبب النقل: sudoers مبيعرفش يفلتر وسائط
+#  بشكل موثوق (الـ wildcards بتتلف بسهولة)، أما السكربت فبيقدر يفحص كل وسيط.
+#
+#  ⚠️ غيّر afagent لاسم اليوزر الفعلي لو مختلف.
 #  ⚠️ الملف ده الطبقة التانية للحماية. الطبقة الأولى هي docs/AGENT.md.
 #     أي أمر عدّى من هنا ومخالف للرَنبوك = مخالفة، مش تصريح.
 # ============================================================================
@@ -19,72 +41,88 @@
 # اسم اليوزر — عدّله لو مختلف
 User_Alias  AFAGENT = afagent
 
-# --- المسارات المسموحة (عدّل لو WordPress في مكان تاني) ---
-# ملحوظة: sudoers مبيفهمش متغيرات، فالمسار مكتوب كامل في كل سطر.
+# ----------------------------------------------------------------------------
+#  1) الباب الوحيد على WordPress — سكربت wp-agent
+#
+#  الـ wildcard على الوسائط هنا **مقصود وآمن**، لأن السكربت نفسه:
+#    · اسم الكونتينر مثبَّت جواه — الـ agent مش بيمرّره
+#    · بيرفض flags الهروب (--path --ssh --http --require --exec --allow-root …)
+#    · بيرفض wp db / search-replace / option update siteurl|home / user * / core update
+#    · بيحصر put و unzip جوه wp-content/{plugins,mu-plugins,uploads} ومن /tmp بس
+#    · بيسجّل كل استدعاء (حتى المرفوض) في /var/log/wp-agent.log
+#
+#  السكربت مملوك root:root 0755 — الـ agent يقدر يشغّله ومش يقدر يعدّله.
+# ----------------------------------------------------------------------------
+Cmnd_Alias AF_WP = /usr/local/bin/wp-agent, /usr/local/bin/wp-agent *
 
-# 1) قراءة حالة الخدمات — قراءة فقط، مفيش start/stop/restart/reload
+# ----------------------------------------------------------------------------
+#  2) قراءة حالة الخدمات على الهوست — قراءة فقط
+#
+#  ملحوظة: nginx / php-fpm / mariadb كلهم inactive على السيرفر ده. السطور دي
+#  باقية عشان الـ agent يقدر **يتحقق** من الحقيقة دي بنفسه في M0 ويبلّغ بيها،
+#  مش عشان يتعامل معاهم.
+# ----------------------------------------------------------------------------
 Cmnd_Alias AF_STATUS = /usr/bin/systemctl status, \
                        /usr/bin/systemctl status *, \
                        /usr/bin/systemctl is-active *, \
                        /usr/bin/systemctl list-units --type=service*
 
-# 2) فحص إعدادات nginx — فحص فقط. ممنوع reload/restart وممنوع تعديل /etc/nginx
-Cmnd_Alias AF_NGINX_RO = /usr/sbin/nginx -t, \
-                         /usr/sbin/nginx -T, \
-                         /usr/sbin/nginx -v
-
-# 3) قراءة اللوجات — للتشخيص
-Cmnd_Alias AF_LOGS = /usr/bin/tail /var/log/nginx/*, \
-                     /usr/bin/tail -n [0-9]* /var/log/nginx/*, \
-                     /usr/bin/journalctl -u php8.2-fpm*, \
-                     /usr/bin/journalctl -u nginx*
-
-# 4) صلاحيات ملفات ووردبريس — جوه مسار الموقع بس (القسم 2 والقسم 5 في الدليل)
-Cmnd_Alias AF_WP_FILES = /usr/bin/mkdir -p /var/www/cms.alifleet.com/wp-content/mu-plugins, \
-                         /usr/bin/chown deploy\:www-data /var/www/cms.alifleet.com/wp-content/mu-plugins/*, \
-                         /usr/bin/chown -R deploy\:www-data /var/www/cms.alifleet.com/wp-content/mu-plugins, \
-                         /usr/bin/chown -R deploy\:www-data /var/www/cms.alifleet.com/wp-content/plugins, \
-                         /usr/bin/chown -R deploy\:www-data /var/www/cms.alifleet.com/wp-content/uploads, \
-                         /bin/chmod 644 /var/www/cms.alifleet.com/wp-content/mu-plugins/*, \
-                         /bin/chmod -R 775 /var/www/cms.alifleet.com/wp-content/uploads
-
-# 5) إعادة تحميل PHP-FPM — بعد تركيب mu-plugin أو تغيير الثوابت.
-#    reload بس، مش restart، ومفيش stop/disable
-Cmnd_Alias AF_PHP_RELOAD = /usr/bin/systemctl reload php8.2-fpm
+# ============================================================================
+#  المنح — سطر واحد. مفيش غيره.
+# ============================================================================
+AFAGENT ALL=(root) NOPASSWD: AF_WP, AF_STATUS
 
 # ============================================================================
-#  المنح
+#  ممنوع صريح
+# ----------------------------------------------------------------------------
+#  أي حاجة تحت مش ممنوحة أصلًا فوق. السطور دي حزام أمان ضد أي منح واسع
+#  اتحط بالغلط في ملف sudoers تاني (Coolify بيكتب في /etc/sudoers.d كمان).
 # ============================================================================
-AFAGENT ALL=(root) NOPASSWD: AF_STATUS, AF_NGINX_RO, AF_LOGS, AF_WP_FILES, AF_PHP_RELOAD
 
-# ============================================================================
-#  ممنوع صريح — أي حاجة تحت مش ممنوحة أصلًا فوق، والسطور دي حزام أمان إضافي
-#  ضد أي منح واسع اتحط بالغلط في ملف sudoers تاني.
-# ============================================================================
+# ⛔ الأهم في الملف كله: docker = root على الهوست. الـ agent ياخد wp-agent وبس.
+AFAGENT ALL=(ALL) !/usr/bin/docker, !/usr/bin/docker *, !/usr/local/bin/docker*
+AFAGENT ALL=(ALL) !/usr/bin/docker-compose*, !/usr/libexec/docker/*, !/usr/bin/ctr, !/usr/bin/nerdctl*
+AFAGENT ALL=(ALL) !/usr/bin/systemctl * docker*, !/usr/bin/systemctl * containerd*
+
+# ⛔ Coolify — لوحة الإدارة ومتغيرات بيئتها خارج نطاق الـ agent تمامًا.
+#    الدومين والشهادات وربط Traefik كلها من اللوحة، والمستخدم هو اللي يعملها.
+AFAGENT ALL=(ALL) !/data/coolify/*, !/usr/bin/tee /data/coolify/*
+
 AFAGENT ALL=(ALL) !/bin/su, !/usr/bin/su, !/usr/bin/sudo, !/usr/sbin/visudo
 AFAGENT ALL=(ALL) !/bin/bash, !/bin/sh, !/bin/dash, !/usr/bin/zsh, !/usr/bin/env
 AFAGENT ALL=(ALL) !/bin/rm, !/bin/rm *, !/usr/bin/rm, !/usr/bin/rm *
 AFAGENT ALL=(ALL) !/usr/bin/mysql*, !/usr/bin/mariadb*, !/usr/bin/mysqldump*
 AFAGENT ALL=(ALL) !/usr/bin/certbot, !/usr/bin/certbot *, !/snap/bin/certbot*
 AFAGENT ALL=(ALL) !/usr/bin/apt, !/usr/bin/apt-get, !/usr/bin/dpkg, !/usr/bin/snap
-AFAGENT ALL=(ALL) !/usr/sbin/ufw, !/usr/sbin/iptables
+AFAGENT ALL=(ALL) !/usr/sbin/ufw, !/usr/sbin/iptables, !/usr/sbin/nft
 AFAGENT ALL=(ALL) !/usr/sbin/adduser, !/usr/sbin/useradd, !/usr/bin/passwd, !/usr/bin/chpasswd
-AFAGENT ALL=(ALL) !/usr/bin/systemctl restart nginx, !/usr/bin/systemctl reload nginx, \
-                  !/usr/bin/systemctl stop *, !/usr/bin/systemctl disable *
+AFAGENT ALL=(ALL) !/usr/bin/systemctl stop *, !/usr/bin/systemctl disable *, \
+                  !/usr/bin/systemctl restart *, !/usr/bin/systemctl reload *
 AFAGENT ALL=(ALL) !/usr/bin/nano /etc/*, !/usr/bin/vi /etc/*, !/usr/bin/vim /etc/*, \
                   !/usr/bin/tee /etc/*, !/usr/bin/sed -i /etc/*
 
 # ============================================================================
 #  ملاحظات لازم تفهمها قبل ما تعتمد على الملف ده
 # ----------------------------------------------------------------------------
-#  1) الـ negation في sudoers (!) مش حماية محكمة — بتتلف بطرق كتير (مسارات
-#     بديلة، سكربتات وسيطة). الحماية الحقيقية إننا **مش** بندي أي منح واسع
-#     أصلًا: القايمة فوق منح صريح ضيق، والسطور دي احتياط بس.
-#  2) الـ agent **مش** محتاج sudo لمعظم شغله: مجلد ووردبريس مملوك لليوزر
-#     deploy، فأوامر wp-* و unzip و cp بتشتغل من غير sudo. لو الـ agent طلب
-#     sudo لأمر مش في القايمة → دي إشارة إنه خرج عن حدوده.
-#  3) ممنوع تضيف ALL=(ALL) NOPASSWD: ALL "مؤقتًا عشان يخلّص". لو خطوة محتاجة
+#  1) الـ negation في sudoers (!) مش حماية محكمة — بتتلف بمسارات بديلة أو
+#     سكربتات وسيطة. الحماية الحقيقية إننا مش بندي أي منح واسع أصلًا: المنح
+#     فوق سطر واحد على سكربت واحد، والسطور دي احتياط بس.
+#
+#  2) الحد الحقيقي على الـ agent هو **الحصر جوه كونتينر WordPress**، مش قايمة
+#     الأوامر. السبب: استيراد الداتا (M5) مبني على `wp eval-file` — تنفيذ PHP
+#     حر جوه الكونتينر. اللي عنده eval يوصل لقاعدة البيانات بغض النظر عن رفض
+#     `wp db`. فرفض `wp db` بيمنع الغلط العابر، مش فاعل مصمِّم.
+#     ونتيجة لكده: **النسخة الاحتياطية مسؤوليتك قبل التسليم — مش خيار.**
+#     شغّل `sudo wp-agent doctor` وتأكد إن docker.sock مش متمرَّر جوه
+#     الكونتينر، وإنه مش privileged — وإلا الحصر ده ملوش قيمة.
+#
+#  3) الـ agent **مش** محتاج sudo لشغله المحلي على جهاز المستخدم ولا لـ scp
+#     لـ /tmp على الهوست. محتاجه بس لـ wp-agent. لو طلب sudo لأي أمر تاني →
+#     دي إشارة إنه خرج عن حدوده.
+#
+#  4) ممنوع تضيف ALL=(ALL) NOPASSWD: ALL "مؤقتًا عشان يخلّص". لو خطوة محتاجة
 #     كده — نفّذها بنفسك.
-#  4) النسخة الاحتياطية مسؤوليتك أنت قبل ما تسلّم التيرمينال. الـ agent ممنوع
-#     من wp db بالكامل.
+#
+#  5) السيرفر مشترك. أي أمر بيلمس حاجة بره كونتينر WordPress = مخالفة، مهما
+#     كان مبرَّر، لأن الضرر بيوصل لتطبيقات إنتاج تانية مش تابعة للمشروع.
 # ============================================================================
