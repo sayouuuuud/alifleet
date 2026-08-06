@@ -22,10 +22,16 @@ scp wordpress/server/agent-user.sh wordpress/server/alifleet-agent.sudoers deplo
 
 ```bash
 ssh deploy@YOUR_SERVER_IP
-cd /tmp && sudo bash agent-user.sh create
+cd /tmp
+sed -i 's/\r$//' agent-user.sh alifleet-agent.sudoers   # لو رفعت من ويندوز
+sudo bash agent-user.sh create
 ```
 
 هيطبعلك في الآخر `ssh afagent@IP` + الباسورد. **انسخهم فورًا** — الباسورد بيتعرض مرة واحدة بس.
+
+**لو `deploy` مش موجود** (`Permission denied` مع إن الباسورد صح): استخدم `root@YOUR_SERVER_IP` وشيل `sudo` من الأوامر.
+
+**لو ظهر `$'\r': command not found`:** سطر `sed` فوق هو الحل — ويندوز حوّل نهايات السطور لـ CRLF. لازم تنضّف ملف الـ `.sudoers` هو كمان، لأن `\r` جواه بيفشّل `visudo -c`. (ملف `.gitattributes` في المستودع بيمنع المشكلة دي في أي checkout جديد.)
 
 ## 2) خُد نسخة احتياطية
 
