@@ -175,6 +175,18 @@ function alifleet_attachment_id( string $rel ): int {
 	static $cache = [];
 
 	$rel = trim( $rel );
+
+	/*
+	 * Some seed entries store the path as it will look once WordPress serves it
+	 * ( /wp-content/uploads/images/foo.png ) instead of the source path inside
+	 * the Next.js public directory ( /images/foo.png ). Both point at the same
+	 * source file, so strip the uploads prefix before resolving.
+	 *
+	 * Normalising here also means the two spellings share one cache entry and
+	 * one _alifleet_source value, so the same file is never uploaded twice.
+	 */
+	$rel = (string) preg_replace( '#^/?wp-content/uploads/#', '/', $rel );
+
 	if ( '' === $rel || '' === $images_dir ) {
 		return 0;
 	}
