@@ -23,7 +23,7 @@
 5. [تركيب mu-plugin (لازم قبل ACF)](#5-تركيب-mu-plugin)
 6. [استيراد ACF schema](#6-استيراد-acf-schema)
 7. [استيراد الداتا](#7-استيراد-الداتا)
-8. [فهم الـ repeaters جوه ACF](#8-فهم-الـ-repeaters-جوه-acf)
+8. [فهم المجموعات المرقّمة جوه ACF](#8-فهم-المجموعات-المرقّمة-جوه-acf)
 9. [إعداد WooCommerce](#9-إعداد-woocommerce)
 10. [رفع Next.js وربطه](#10-رفع-nextjs-وربطه)
 11. [Nginx + SSL](#11-nginx--ssl)
@@ -144,7 +144,7 @@ max_execution_time = 300
 max_input_vars = 5000
 ```
 
-> `max_input_vars = 5000` **ضروري**: صفحة الهوم فيها 478 حقل ACF. لو سبته على 1000 الافتراضي، أول ما تحفظ الصفحة من لوحة التحكم PHP هيقطع باقي الحقول في سكوت ويضيّع بياناتك.
+> `max_input_vars = 5000` **ضروري**: صفحة الهوم فيها 442 حقل ACF. والمجموعات المرقّمة بتخلي الرقم ده ثابت مهما كانت الداتا — كل الخانات بترتسم في الفورم حتى الفاضية، عكس الـ repeater اللي كان بيرسم الصفوف المليانة بس. لو سبته على 1000 الافتراضي، أول ما تحفظ الصفحة من لوحة التحكم PHP هيقطع باقي الحقول في سكوت ويضيّع بياناتك.
 
 ```bash
 sudo systemctl restart php8.2-fpm
@@ -282,13 +282,15 @@ cd /var/www/cms.alifleet.com
 wp plugin install woocommerce --activate
 wp plugin install wp-graphql --activate
 wp plugin install wp-graphql-jwt-authentication --activate
+wp plugin install advanced-custom-fields --activate
 ```
+
+> **ACF المجانية كفاية لكل الحقول.** الـ schema **مفيهاش ولا repeater** — كل قائمة اتحولت لمجموعات مرقّمة ثابتة (`hero_slide_1` … `hero_slide_5`). الأنواع المستخدمة كلها (`group` / `text` / `textarea` / `image` / `select` / `number` / `url` / `wysiwyg`) موجودة في المجانية. التفاصيل في القسم 8.
 
 ### 3.2 المدفوعة/اليدوية — لازم ترفعها بنفسك
 
 | الإضافة | ليه | المصدر |
 |---|---|---|
-| **ACF PRO** | حقول `repeater` **مش موجودة في ACF المجانية**. الـ schema بتاعتنا فيها 14 repeater (الشرائح، المواصفات، الخطوات، الجاليري…). بدون PRO الاستيراد هيتخطاهم كلهم. | [advancedcustomfields.com](https://www.advancedcustomfields.com/pro/) |
 | **WPGraphQL for ACF** | بدونها حقول ACF **مش هتظهر في GraphQL خالص** — الموقع هيرجع محتوى فاضي. | [github.com/wp-graphql/wpgraphql-acf](https://github.com/wp-graphql/wpgraphql-acf/releases) — نزّل v2.x |
 | **WooGraphQL** (WPGraphQL for WooCommerce) | بيعرّض المنتجات والأسعار والمخزون والطلبات والعميل في GraphQL. صفحة الطلبات والقطع بتعتمد عليها. | [github.com/wp-graphql/wp-graphql-woocommerce](https://github.com/wp-graphql/wp-graphql-woocommerce/releases) |
 
@@ -298,17 +300,28 @@ wp plugin install wp-graphql-jwt-authentication --activate
 cd /var/www/cms.alifleet.com/wp-content/plugins
 
 # ارفع الـ zip من جهازك أولًا:
-#   scp advanced-custom-fields-pro.zip deploy@YOUR_SERVER_IP:/tmp/
-#   scp wpgraphql-acf.zip            deploy@YOUR_SERVER_IP:/tmp/
-#   scp wp-graphql-woocommerce.zip   deploy@YOUR_SERVER_IP:/tmp/
+#   scp wpgraphql-acf.zip          deploy@YOUR_SERVER_IP:/tmp/
+#   scp wp-graphql-woocommerce.zip deploy@YOUR_SERVER_IP:/tmp/
 
-unzip /tmp/advanced-custom-fields-pro.zip
 unzip /tmp/wpgraphql-acf.zip
 unzip /tmp/wp-graphql-woocommerce.zip
 
 cd /var/www/cms.alifleet.com
-wp plugin activate advanced-custom-fields-pro wpgraphql-acf wp-graphql-woocommerce
+wp plugin activate wpgraphql-acf wp-graphql-woocommerce
 ```
+
+#### الاستثناء الوحيد لـ ACF PRO — صفحة Site Settings
+
+تحويل الـ repeaters شال احتياج PRO من **الحقول**، بس فاضل حاجة واحدة: **صفحة الإعدادات** (`acf_add_options_page` في الـ mu-plugin) دي دالة PRO. على ACF المجانية الـ mu-plugin بيتخطاها بهدوء، فمجموعة **Site Options & Global Settings** بتتسجّل ومش بيبان لها مكان في لوحة التحكم.
+
+عندك اختيارين:
+
+| الاختيار | النتيجة |
+|---|---|
+| **ارفع ACF PRO** ([advancedcustomfields.com](https://www.advancedcustomfields.com/pro/)) وفعّلها بدل المجانية | قايمة **Site Settings** تظهر في لوحة التحكم وتعدّل الـ 29 خانة منها |
+| **ابقى على المجانية** | الإعدادات بتتكتب في `wp_options` بسكربت الاستيراد أو بأمر `wp eval` (القسم 7.ب.3) وبتقراها من GraphQL عادي. للتعديل بعد كده: عدّل `seed-data.json` وأعد السكربت، أو `wp eval 'update_field("company_info", [...], "option");'` |
+
+الفرونت مش فارق عنده — `siteOptions` في GraphQL بيقرأ من `wp_options` في الحالتين. الفرق بس إنك تعدّل من شاشة ولا من الـ CLI.
 
 ### 3.3 تحقق من الترتيب
 
@@ -316,10 +329,10 @@ wp plugin activate advanced-custom-fields-pro wpgraphql-acf wp-graphql-woocommer
 wp plugin list --status=active --field=name
 ```
 
-المفروض تشوف الخمسة دول:
+المفروض تشوف الستة دول (`advanced-custom-fields-pro` بدل `advanced-custom-fields` لو اخترت PRO عشان صفحة الإعدادات):
 
 ```
-advanced-custom-fields-pro
+advanced-custom-fields
 woocommerce
 wp-graphql
 wp-graphql-jwt-authentication
@@ -493,11 +506,19 @@ foreach ($groups as $g) {
 
 ### 6.5 مهم بخصوص الـ Options Page
 
-مجموعة `group_site_options` مش هتظهر إلا لما ACF تكون شافت صفحة الإعدادات المسجّلة من الـ mu-plugin. لو مش شايفها:
+مجموعة `group_site_options` مش هتظهر في لوحة التحكم إلا لما ACF تكون شافت صفحة الإعدادات المسجّلة من الـ mu-plugin — وتسجيل صفحة إعدادات محتاج **ACF PRO**. اعرف انت على أنهي نسخة:
 
 ```bash
 wp cache flush
-wp eval 'echo function_exists("acf_add_options_page") ? "ACF PRO OK\n" : "ACF PRO MISSING (options pages need PRO)\n";'
+wp eval 'echo function_exists("acf_add_options_page")
+  ? "PRO — Site Settings screen available\n"
+  : "FREE — no Site Settings screen; edit site options via WP-CLI (section 3.2)\n";'
+```
+
+`FREE` **مش خطأ** — القيم بتتكتب وتتقرأ عادي من `wp_options`، انت بس بتعدّلها من الـ CLI مش من شاشة. تحقق إنها فعلًا موجودة بعد الاستيراد:
+
+```bash
+wp eval '$c = get_field("company_info","option"); echo ($c["company_name_en"] ?? "EMPTY") . "\n";'
 ```
 
 ---
@@ -510,7 +531,7 @@ wp eval 'echo function_exists("acf_add_options_page") ? "ACF PRO OK\n" : "ACF PR
 
 ### الطريقة أ) سكربت WP-CLI — الموصى بها
 
-بيعمل كل حاجة في مرة واحدة: الصفحات + إعدادات الموقع + ٧ عربيات + ١٢ قطعة غيار كمنتجات WooCommerce + ٦ مقالات + رفع كل الصور للمكتبة + الـ repeaters + التصنيفات.
+بيعمل كل حاجة في مرة واحدة: الصفحات + إعدادات الموقع + ٧ عربيات + ١٢ قطعة غيار كمنتجات WooCommerce + ٦ مقالات + رفع كل الصور للمكتبة + كل المجموعات المرقّمة + التصنيفات.
 
 #### 7.أ.1 ارفع الملفات
 
@@ -605,10 +626,19 @@ $hero = get_field("hero_section", $id);
 echo "front page: $id\n";
 echo "line1 en: " . ($hero["hero_line1_en"] ?? "EMPTY") . "\n";
 echo "line1 ar: " . ($hero["hero_line1_ar"] ?? "EMPTY") . "\n";
-echo "slides: " . count($hero["hero_slides"] ?? []) . "\n";'
+// المجموعات المرقّمة: عُد الخانات المليانة، مش طول مصفوفة
+$filled = 0;
+for ($i = 1; $i <= 5; $i++) {
+  if (!empty($hero["hero_slide_$i"]["slide_label_en"])) $filled++;
+}
+echo "slides filled: $filled / 5\n";'
 
 # إعدادات الموقع
-wp eval '$c = get_field("company_info","option"); echo ($c["company_name_en"] ?? "EMPTY") . " | lines: " . count($c["address_lines"] ?? []) . "\n";'
+wp eval '
+$c = get_field("company_info","option");
+$lines = 0;
+for ($i = 1; $i <= 3; $i++) { if (!empty($c["address_line_$i"]["line_en"])) $lines++; }
+echo ($c["company_name_en"] ?? "EMPTY") . " | address lines filled: $lines / 3\n";'
 
 # أسماء المنتجات بالـ3 لغات — لازم مفيش ولا EMPTY
 wp eval '
@@ -633,19 +663,21 @@ foreach (get_posts(["post_type" => "product", "numberposts" => -1]) as $p) {
 
 | الحاجة | مجاني؟ |
 |---|---|
-| WP All Import (المجانية) | ✅ بتستورد الصفحات والحقول البسيطة |
-| **WP All Import Pro + ACF Add-on** | ❌ **مدفوعة — وضرورية لأي repeater** |
+| WP All Import (المجانية) | ✅ كفاية — كل الأعمدة بقت حقول مسطّحة عادية بعد شيل الـ repeaters |
+| WP All Import Pro + ACF Add-on | اختيارية — بتوفر شاشة ربط أسهل بس، مش شرط |
 
 الملفات:
 
 ```
 wordpress/import/
-├── pages.csv           478 عمود × 6 صفوف
-├── import-cars.csv      53 عمود × 7 صفوف
-├── spare-parts.csv      54 عمود × 12 صف
+├── pages.csv           467 عمود × 6 صفوف
+├── import-cars.csv      51 عمود × 7 صفوف
+├── spare-parts.csv      52 عمود × 12 صف
 ├── blog-posts.csv       17 عمود × 6 صفوف
 └── site-settings.json   إعدادات الموقع — CSV مش بيقدر يستوردها (اقرأ تحت)
 ```
+
+> **الأعمدة الموجودة = الخانات المليانة بس.** `import-cars.csv` فيه `gallery_image_1_*` و `gallery_image_2_*` لأن العربيات فيها صورتين جاليري، مع إن الـ schema فيها ٨ خانات. الخانة الفاضية عمودها مش موجود خالص — وده مقصود ومقبول. لو ضفت صورة تالتة في الداتا، ضيف أعمدة `gallery_image_3_*` وشغّل المدقّق.
 
 كل الـ CSV بترميز **UTF-8 with BOM**. لو Excel حفظها بترميز تاني، العربي والعبري هيتحولوا لرموز غريبة.
 
@@ -694,110 +726,119 @@ foreach ($data["site_settings"] as $name => $value) {
 
 | البند | الحل |
 |---|---|
-| الـ repeaters بدون WP All Import Pro | املأها بإيدك (اقرأ القسم 8) أو استخدم الطريقة أ |
+| إعدادات الموقع (بتتخزّن في `wp_options` مش `wp_posts`) | أمر `wp eval` في 7.ب.3 |
 | ضبط الصفحة الرئيسية | `wp option update show_on_front page` + `wp option update page_on_front <ID>` |
 | صفحة المقالات | `wp option update page_for_posts <ID>` |
 | أسعار WooCommerce ومخزونها | اربط `regular_price` و `stock_status` في شاشة الربط، أو عدّلهم من شاشة المنتج |
 
 ---
 
-## 8. فهم الـ repeaters جوه ACF
+## 8. فهم المجموعات المرقّمة جوه ACF
 
 القسم ده مهم لأنك هتعدّل الحقول دي بإيدك بعد كده.
 
-### 8.1 إيه هو الـ repeater
+### 8.1 ليه مجموعات مرقّمة بدل repeaters
 
-مجموعة حقول بتتكرّر بعدد مرات مفتوح. مثال: شرائح الهيرو — كل شريحة فيها صورة + عنوان بـ٣ لغات + نص بديل بـ٣ لغات، وعدد الشرائح مفتوح.
-
-في لوحة التحكم شكله:
+القوائم في الموقع (شرائح الهيرو، المواصفات، خطوات الاستيراد، الجاليري…) كانت متعمّلة `repeater` — وحقل الـ `repeater` **مش موجود في ACF المجانية**، هو PRO. عشان المشروع يشتغل على المجانية، كل repeater اتحوّل لـ **عدد ثابت من المجموعات المرقّمة**:
 
 ```
-Hero Slides
+قبل:  hero_slides (repeater، عدد مفتوح)
+بعد:  hero_slide_1 … hero_slide_5 (٥ groups، كل واحدة بنفس الحقول الفرعية)
+```
+
+المقايضة صريحة:
+
+| | repeater (PRO) | مجموعات مرقّمة (مجاني) |
+|---|---|---|
+| العدد | مفتوح | سقف ثابت في الـ schema |
+| زيادة عنصر | زرار `+ Add Row` | تعديل الـ schema + استيرادها من جديد |
+| الترتيب | سحب بالماوس | ترتيب الأرقام — تنقل المحتوى بنفسك |
+| الخانة الفاضية | مش موجودة | موجودة وفاضية، والفرونت بيتجاهلها |
+| عدّاد صفوف | لازم | **مفيش** |
+
+**الخانة الفاضية طبيعية.** لو الشريط عنده ٨ خانات وانت مليان منها ٦، الخانتين الباقيين بيفضلوا فاضيين في لوحة التحكم والموقع مش بيعرض حاجة مكانهم.
+
+### 8.2 شكلها في لوحة التحكم
+
+```
+Hero Section
 ┌──────────────────────────────────────────┐
-│ ⠿  Row 1                             ⌄  │
+│ Hero Slide 1                             │
 │    Slide Image      [ hero-showroom.png ]│
 │    Slide Label (AR) [ الطراز الرئيسي    ]│
 │    Slide Label (EN) [ Flagship          ]│
 │    Slide Label (HE) [ דגל               ]│
 │    Slide Alt  (AR)  [ صالة عرض...       ]│
+├──────────────────────────────────────────┤
+│ Hero Slide 2                             │
 │    ...                                   │
 ├──────────────────────────────────────────┤
-│ ⠿  Row 2                             ⌄  │
-│    ...                                   │
+│ Hero Slide 5                             │
+│    Slide Image      [ (فاضية)           ]│  ← خانة غير مستخدمة، عادي
 └──────────────────────────────────────────┘
-        [ + Add Hero Slide ]
 ```
 
-- `⠿` = تسحب بيها لإعادة الترتيب. **الترتيب هنا هو ترتيب الظهور في الموقع.**
-- `⌄` = تفتح/تقفل الصف
-- `+ Add Hero Slide` = صف جديد
+مفيش `+ Add` ومفيش سحب. عايز تقدّم الشريحة ٣ لتبقى الأولى؟ تنقل قيمها بنفسك.
 
-### 8.2 إزاي WordPress بيخزّنه فعليًا
+### 8.3 إزاي WordPress بيخزّنها فعليًا
 
-الحقل الواحد جوه repeater جوه group بياخد **اسم مسطّح** في جدول `wp_postmeta`:
+كل حقل بياخد **اسم مسطّح** فيه أسماء كل المجموعات الأب في جدول `wp_postmeta`:
 
 ```
-hero_section_hero_slides_0_slide_label_en
-└─────┬─────┘ └─────┬────┘ │ └──────┬────┘
-   group      repeater    رقم    الحقل الفرعي
-                        الصف
-                     (من صفر)
+hero_section_hero_slide_1_slide_label_en
+└─────┬─────┘ └─────┬─────┘ └──────┬────┘
+   group        المجموعة       الحقل الفرعي
+              المرقّمة (من ١)
 ```
 
-وجنبه صف عدّاد **بالاسم المجرّد بدون رقم**:
+فروق مهمة عن الـ repeater القديم:
 
-```
-hero_section_hero_slides  =  5     ← عدد الصفوف
-```
+- **الترقيم من ١** مش من صفر (`hero_slide_1` مش `hero_slides_0`)
+- **مفيش عمود عدّاد.** `hero_section_hero_slides = 5` اللي كان أخطر نقطة في الاستيراد اليدوي **اختفى تمامًا** — ACF بتقرأ كل مجموعة على حدة
+- أي عمود CSV باسم repeater قديم (`hero_section_hero_slides` أو `..._0_...`) بقى **خطأ**، والمدقّق بيرفضه
 
-> **العدّاد ده هو أخطر نقطة في الاستيراد اليدوي.** لو الأعمدة `..._0_...` لحد `..._4_...` موجودة بس عمود `hero_section_hero_slides = 5` ناقص، ACF بتقرأ **صفر صفوف** والقسم بيطلع فاضي في الموقع وانت شايف البيانات في قاعدة البيانات. عشان كده كل ملفات الـ CSV بتاعتنا فيها عمود العدّاد، والمدقّق (`validate-content.mjs`) بيرفض أي ملف ناقص فيه.
+### 8.4 المجموعات المرقّمة في المشروع
 
-### 8.3 الـ ١٤ repeater في المشروع
+١٧ عائلة، مجموع ٩٠ خانة:
 
-| المكان | الحقل | كل صف فيه | العدد الحالي |
+| المكان | العائلة | كل خانة فيها | عدد الخانات |
 |---|---|---|---|
-| الهوم / الهيرو | `hero_slides` | صورة + عنوان ×٣ + بديل ×٣ | 5 |
-| الهوم / الأرقام | `stats_items` | رقم + لاحقة ×٣ + وصف ×٣ | 5 |
-| الهوم / الأسطول | `fleet_vehicles` | عنوان ×٣ + وسم ×٣ + وصف ×٣ + صورة | 4 |
-| الهوم / الشريط | `marquee_items` | نص ×٣ | 8 |
-| الهوم / الكرة الأرضية | `global_features` | عنوان ×٣ + نص ×٣ + مدينة ×٣ + خط عرض + خط طول | 4 |
-| الهوم / مشهد ١ | `specs_list` | تسمية ×٣ + قيمة ×٣ | 5 |
-| الهوم / مشهد ١ | `stats_list` | قيمة + لاحقة ×٣ + تسمية ×٣ | 3 |
-| الهوم / مشهد ٢ | `route_stops` | كود + تسمية ×٣ + مكان ×٣ + حالة + ملاحظة ×٣ | 4 |
-| الهوم / مشهد ٣ | `part_callouts` | تسمية ×٣ + كود + top + inset | 4 |
-| الهوم / مشهد ٣ | `inventory_list` | اسم ×٣ + مستوى | 4 |
-| صفحة الاستيراد | `steps_list` | رقم ×٣ + عنوان ×٣ + وصف ×٣ | 4 |
-| الإعدادات | `address_lines` | سطر ×٣ | 2 |
-| كل عربية | `gallery` | صورة + نص بديل ×٣ | 2 |
-| كل عربية | `highlights` | نص ×٣ | 4 |
-| كل عربية | `specs` (group مش repeater) | — | — |
-| كل قطعة | `specs` | تسمية ×٣ + قيمة ×٣ | 5 |
-| كل قطعة | `compatibility` | اسم موديل واحد (محيّد) | 4 |
+| الهوم / الهيرو | `hero_slide_N` | صورة + عنوان ×٣ + بديل ×٣ | 5 |
+| الهوم / الأرقام | `stat_item_N` | رقم + لاحقة ×٣ + وصف ×٣ | 5 |
+| الهوم / الأسطول | `fleet_vehicle_N` | عنوان ×٣ + وسم ×٣ + وصف ×٣ + صورة | 4 |
+| الهوم / الشريط | `marquee_item_N` | نص ×٣ | 8 |
+| الهوم / الكرة الأرضية | `global_feature_N` | عنوان ×٣ + نص ×٣ + مدينة ×٣ + خط عرض + خط طول | 4 |
+| الهوم / مشهد ١ | `spec_item_N` | تسمية ×٣ + قيمة ×٣ | 5 |
+| الهوم / مشهد ١ | `stat_list_item_N` | قيمة + لاحقة ×٣ + تسمية ×٣ | 3 |
+| الهوم / مشهد ٢ | `route_stop_N` | كود + تسمية ×٣ + مكان ×٣ + حالة + ملاحظة ×٣ | 4 |
+| الهوم / مشهد ٣ | `part_callout_N` | تسمية ×٣ + كود + top + inset | 4 |
+| الهوم / مشهد ٣ | `inventory_item_N` | اسم ×٣ + مستوى | 4 |
+| الهوم / المشاهد | `scene_N` | مشهد كامل (المشاهد نفسها مرقّمة) | 3 |
+| صفحة الاستيراد | `step_item_N` | رقم ×٣ + عنوان ×٣ + وصف ×٣ | 4 |
+| الإعدادات | `address_line_N` | سطر ×٣ | 3 |
+| كل عربية | `gallery_image_N` | صورة + نص بديل ×٣ | 8 |
+| كل عربية | `highlight_N` | نص ×٣ | 8 |
+| كل قطعة | `spec_N` | تسمية ×٣ + قيمة ×٣ | 8 |
+| كل قطعة | `compat_model_N` | اسم موديل واحد (محيّد) | 10 |
 
-### 8.4 الفرق بين Group و Repeater
+> العدد ده هو **السقف**، مش المليان. الداتا الحالية بتستخدم صورتين جاليري و٤ مميزات لكل عربية، والباقي خانات فاضية جاهزة.
 
-| | Group | Repeater |
-|---|---|---|
-| العدد | صف واحد ثابت | مفتوح |
-| الاستخدام هنا | تجميع قسم (`hero_section`) | قائمة عناصر (`hero_slides`) |
-| المفتاح المسطّح | `hero_section_hero_line1_ar` | `hero_slides_0_slide_label_ar` |
-| عدّاد؟ | لا | **أيوه** |
-| متاح في ACF المجانية؟ | ✅ | ❌ PRO بس |
+**عايز خانة زيادة؟** ضيف مجموعة جديدة بنفس الحقول الفرعية في `wordpress/acf/alifleet-acf-schema.json` (بمفتاح `field_*` جديد فريد)، شغّل `node wordpress/scripts/validate-content.mjs`، وبعدها `wp acf import`. المدقّق بيمسك اللحظة اللي فيها الداتا تتعدّى السقف ويقولك السقف كام.
 
-في الـ schema فيه تعشيش لتلات مستويات، مثلًا:
+### 8.5 التعشيش لتلات مستويات
 
 ```
 services_section (group)
 └── scene_01 (group)
-    └── specs_list (repeater)
+    └── spec_item_1 (group)
         └── label_ar (text)
 ```
 
-المفتاح النهائي: `services_section_scene_01_specs_list_0_label_ar`
+المفتاح النهائي: `services_section_scene_01_spec_item_1_label_ar`
 
-> لاحظ إن `scene_01` **group** مش repeater — الرقم جزء من اسمه، مش رقم صف. تلات مشاهد ثابتة بمحتوى مختلف تمامًا، فمنطقي يكونوا مجموعات منفصلة عشان كل واحد يكون له تسمياته الواضحة في لوحة التحكم.
+> `scene_01` كانت group من الأصل — تلات مشاهد ثابتة بمحتوى مختلف تمامًا، فمنطقي يكونوا مجموعات منفصلة عشان كل واحد يكون له تسمياته الواضحة في لوحة التحكم. الحاجة الجديدة إن `spec_item_1` جوّاها بقى نفس النمط.
 
-### 8.5 حقول اللغات — ليه `_ar` و `_en` و `_he`
+### 8.6 حقول اللغات — ليه `_ar` و `_en` و `_he`
 
 مفيش إضافة ترجمة (WPML / Polylang) في التركيبة دي. الترجمة بتحصل بالتسمية: كل نص فيه ٣ حقول، والفرونت بيختار اللاحقة حسب اللغة المعروضة.
 
@@ -821,11 +862,12 @@ services_section (group)
 | `spec_sheet_code` / `tracking_code` | `ALI-FLEET / 01` | أكواد |
 | `lat` / `lng` / `stage` / `year` / `price` | — | أرقام |
 
-### 8.6 نصائح تحرير سريعة
+### 8.7 نصائح تحرير سريعة
 
-- **صف جديد في نص المكان:** ضيفه في الآخر واسحبه بـ `⠿` — ACF بترقّم من جديد لوحدها
-- **حذف صف:** زرار `−` على يمين الصف. الترقيم بيتصلّح لوحده
-- **نسخ صف:** ACF PRO فيها زرار Duplicate في قائمة الصف — أسرع طريقة لعنصر شبه الموجود
+- **عنصر جديد:** املأ أول خانة فاضية في العائلة (`hero_slide_4` مثلًا). مش لازم تكون بالترتيب، بس الفرونت بيعرضهم بترتيب الرقم
+- **حذف عنصر:** فضّي حقول الخانة. **متسيبش فراغ في النص لو الترتيب مهم** — انقل اللي بعده مكانه، عشان `hero_slide_2` فاضية و`hero_slide_3` مليانة بيبان كفراغ في التصميم في بعض الأقسام
+- **إعادة ترتيب:** بتنقل القيم بين الخانات بإيدك — مفيش سحب زي الـ repeater
+- **خلصت الخانات؟** ضيف مجموعة جديدة في الـ schema (القسم 8.4)
 - **الحفظ بيقطع الحقول؟** ارجع لـ `max_input_vars = 5000` في القسم 1.4
 - **بعد أي تعديل:** الفرونت بيعمل revalidate كل ٦٠ ثانية (القسم 10). عايز تغيير فوري؟ `pm2 restart alifleet-web`
 
@@ -1150,7 +1192,7 @@ wp rewrite flush --hard
 wp cache flush
 ```
 
-### الحاجات اللي **لازم** تتغير معاه
+### الحاجات اللي **لازم** تتغ��ر معاه
 
 | المكان | من | لـ |
 |---|---|---|
@@ -1436,18 +1478,25 @@ php -l /var/www/cms.alifleet.com/wp-content/mu-plugins/alifleet-cms.php
 wp eval 'echo post_type_exists("import_car") ? "OK\n" : "MISSING\n";'
 ```
 
-### repeater فاضي والبيانات موجودة في قاعدة البيانات
+### قائمة فاضية في الموقع والبيانات موجودة في قاعدة البيانات
 
-عمود العدّاد ناقص (القسم 8.2):
+مفيش عدّادات في التركيبة دي (القسم 8.3)، فالسبب غالبًا **اسم مفتاح بنمط repeater قديم** لسه في الداتا. شوف المفاتيح الحقيقية:
 
 ```bash
 wp eval '
 $id = (int) get_option("page_on_front");
-echo "counter: " . get_post_meta($id, "hero_section_hero_slides", true) . "\n";
-echo "row 0:   " . get_post_meta($id, "hero_section_hero_slides_0_slide_label_en", true) . "\n";'
+foreach (get_post_meta($id) as $key => $value) {
+  if (strpos($key, "hero_slide") !== false || strpos($key, "hero_slides") !== false) {
+    echo "$key = " . substr($value[0], 0, 40) . "\n";
+  }
+}'
 ```
 
-لو العدّاد فاضي والصفوف موجودة، أعد تشغيل سكربت الاستيراد — `update_field()` بيكتب العدّاد صح.
+- مفتاح فيه `hero_slides_0_` أو `hero_slides` لوحده = داتا بنمط PRO قديم، ACF مش بتقراها → أعد تشغيل سكربت الاستيراد بـ `seed-data.json` الحالي
+- مفتاح `hero_section_hero_slide_1_slide_label_en` موجود وفيه قيمة = التخزين سليم، فالمشكلة في الفرونت أو في الكاش → `wp cache flush` و `pm2 restart alifleet-web`
+- خانات عالية فاضية (`hero_slide_4` / `hero_slide_5`) = مقصود، مش عطل
+
+لو المدقّق المحلي طلع `has only N fixed slots`، يعني الداتا فيها عناصر أكتر من الخانات — زوّد الـ schema (القسم 8.4) قبل الاستيراد، وإلا الزيادة بتتضيّع في سكوت.
 
 ### عربي أو عبري بيطلع `????` أو رموز
 
@@ -1462,7 +1511,7 @@ grep -E "DB_CHARSET|DB_COLLATE" /var/www/cms.alifleet.com/wp-config.php
 
 ### الصفحة بتحفظ ناقصة حقول
 
-`max_input_vars`. صفحة الهوم فيها 478 حقل:
+`max_input_vars`. صفحة الهوم فيها 442 حقل:
 
 ```bash
 php -i | grep max_input_vars
