@@ -101,28 +101,95 @@ wp eval بكود قراءة فقط، scp لـ /tmp، mkdir/chmod جوه مسار
 
 ## قبل ما تحقن البرومبت — 3 حاجات
 
-1. **ركّب قايمة الـ sudo المحدودة** (`wordpress/server/alifleet-agent.sudoers`) وتأكد من صحتها:
+### 1. اعمل اليوزر المؤقت (أمر واحد)
 
-   ```bash
-   sudo cp wordpress/server/alifleet-agent.sudoers /etc/sudoers.d/alifleet-agent
-   sudo chmod 0440 /etc/sudoers.d/alifleet-agent
-   sudo visudo -c            # لازم: parsed OK
-   ```
+من جهازك، ارفع ملفين لسيرفرك:
 
-2. **خُد نسخة احتياطية بنفسك** قبل ما تدي التيرمينال (الـ agent ممنوع من `wp db`):
+```bash
+scp wordpress/server/agent-user.sh \
+    wordpress/server/alifleet-agent.sudoers \
+    deploy@YOUR_SERVER_IP:/tmp/
+```
 
-   ```bash
-   cd /var/www/cms.alifleet.com
-   wp db export ~/backup-before-agent-$(date +%F-%H%M).sql
-   tar czf ~/uploads-before-agent-$(date +%F).tar.gz wp-content/uploads
-   ```
+على السيرفر — **لازم من يوزر عنده sudo كامل** (`deploy` أو `root`):
 
-3. **اليوزر المؤقت مؤقت فعلًا.** بعد ما يخلّص:
+```bash
+cd /tmp
+sudo bash agent-user.sh create
+```
 
-   ```bash
-   sudo rm /etc/sudoers.d/alifleet-agent
-   sudo deluser --remove-home <AGENT_USER>
-   ```
+السكربت بيعمل كل ده لوحده:
+
+| الخطوة | اللي بيحصل |
+|---|---|
+| باسورد | 24 حرف عشوائي من `/dev/urandom` — **بيتعرض مرة واحدة** ومش بيتسجّل في أي ملف |
+| اليوزر | `afagent` — **مش** في مجموعة `sudo` |
+| انتهاء تلقائي | الحساب يقفل نفسه بعد 3 أيام (`chage -E`) |
+| صلاحيات الملفات | `www-data` + صلاحية كتابة على `plugins` / `mu-plugins` / `uploads` **بس** — مش على core |
+| `wp-config.php` | 664 عشان يعدّل الثوابت (القسم 4). **ده معناه إنه هيقرأ بيانات DB — الرَنبوك يمنعه من طبعها** |
+| قايمة sudo | بيركّب `/etc/sudoers.d/alifleet-agent` وبيتحقق بـ `visudo -c`، ولو فيه غلط **بيشيلها فورًا** بدل إنه يكسر sudo |
+
+قبل ما تشغّله، اتأكد من الإعدادات في أول الملف لو حاجة مختلفة عندك:
+
+```bash
+AGENT_USER="afagent"
+WP_PATH="/var/www/cms.alifleet.com"
+EXPIRE_DAYS="3"
+```
+
+في آخر السكربت هتلاقي سطر الدخول جاهز:
+
+```
+ssh afagent@YOUR_SERVER_IP
+password: <الباسورد المعروض مرة واحدة>
+```
+
+**انسخه فورًا** — لو ضاع، شغّل `create` تاني ويولّد باسورد جديد.
+
+> **بديل أنضف لو الـ agent بيدعم مفتاح SSH:** بعد `create`، حُط مفتاحه بدل الباسورد وألغِ الباسورد خالص:
+> ```bash
+> sudo mkdir -p /home/afagent/.ssh
+> sudo tee /home/afagent/.ssh/authorized_keys < agent-key.pub
+> sudo chown -R afagent:afagent /home/afagent/.ssh
+> sudo chmod 700 /home/afagent/.ssh && sudo chmod 600 /home/afagent/.ssh/authorized_keys
+> sudo passwd -d afagent    # يشيل الباسورد — الدخول بالمفتاح بس
+> ```
+
+### 2. خُد نسخة احتياطية بنفسك
+
+الـ agent ممنوع من `wp db` بالكامل، فالنسخة مسؤوليتك:
+
+```bash
+cd /var/www/cms.alifleet.com
+wp db export ~/backup-before-agent-$(date +%F-%H%M).sql
+cp wp-config.php ~/wp-config.php.bak
+tar czf ~/uploads-before-agent-$(date +%F).tar.gz wp-content/uploads
+```
+
+### 3. راقبه وهو شغال
+
+في تيرمينال تانية بتاعتك:
+
+```bash
+sudo bash /tmp/agent-user.sh status    # الجلسات + آخر 15 أمر sudo
+sudo tail -f /var/log/auth.log         # كل أمر sudo لحظيًا
+```
+
+**لو شكيت في أي حاجة — قفل فوري:**
+
+```bash
+sudo bash /tmp/agent-user.sh revoke
+```
+
+`revoke` بيقفل الباسورد، ويخلّي الشِل `nologin`، ينهي الحساب، يشيل قايمة الـ sudo، **ويقطع أي جلسة شغالة** (`pkill -u`).
+
+### 4. بعد ما يخلّص — امسحه فورًا
+
+```bash
+sudo bash /tmp/agent-user.sh delete
+```
+
+وبعدها، لأن الـ agent كان شايف `wp-config.php`: **غيّر باسورد يوزر قاعدة البيانات** وحدّث `DB_PASSWORD`، ودوّر أي مفتاح كان مكتوب في ثوابت القسم 4.
 
 ## علامات إنه خرج عن حدوده — اقطع فورًا
 
