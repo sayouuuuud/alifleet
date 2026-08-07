@@ -6,6 +6,7 @@ import { ArrowUpRight, Calendar, Gauge, MapPin } from 'lucide-react'
 import type { ImportCar } from '@/lib/data/import-cars'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatNumber, formatPrice } from '@/lib/format'
+import { useStore } from '@/lib/store-context'
 
 const statusStyles: Record<ImportCar['status'], string> = {
   available: 'bg-accent text-accent-foreground',
@@ -16,6 +17,7 @@ const statusStyles: Record<ImportCar['status'], string> = {
 
 export function ImportCarCard({ car }: { car: ImportCar }) {
   const { t, locale } = useLanguage()
+  const store = useStore()
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-3xl bg-card ring-1 ring-border transition-shadow hover:shadow-xl hover:shadow-foreground/5">
@@ -73,7 +75,9 @@ export function ImportCarCard({ car }: { car: ImportCar }) {
               {t.common.from}
             </p>
             <p className="font-serif text-2xl text-foreground" dir="ltr">
-              {car.price === null ? t.common.onRequest : formatPrice(car.price)}
+              {car.price === null
+                ? t.common.onRequest
+                : formatPrice(car.price, store.currency)}
             </p>
           </div>
           <Link

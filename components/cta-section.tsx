@@ -7,13 +7,14 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
 import { ArrowRight, Mail, Phone } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
-import { siteConfig } from '@/lib/site-config'
+import { useStore } from '@/lib/store-context'
 
 gsap.registerPlugin(ScrollTrigger)
 
 export function CtaSection() {
   const sectionRef = useRef<HTMLElement>(null)
   const { t } = useLanguage()
+  const store = useStore()
 
   useGSAP(
     () => {
@@ -68,13 +69,15 @@ export function CtaSection() {
                 data-flip-rtl
               />
             </Link>
-            <a
-              href={siteConfig.phoneHref}
-              className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-foreground/25 px-7 py-3.5 text-sm font-medium text-primary-foreground transition-colors hover:border-accent hover:text-accent"
-            >
-              <Phone className="size-4" aria-hidden="true" />
-              {t.common.callUs}
-            </a>
+            {store.phoneHref && (
+              <a
+                href={store.phoneHref}
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-primary-foreground/25 px-7 py-3.5 text-sm font-medium text-primary-foreground transition-colors hover:border-accent hover:text-accent"
+              >
+                <Phone className="size-4" aria-hidden="true" />
+                {t.common.callUs}
+              </a>
+            )}
           </div>
         </div>
       </div>

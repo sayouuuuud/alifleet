@@ -159,10 +159,19 @@ export const ar: Dictionary = {
       filters: 'الفلاتر',
       suspension: 'نظام التعليق',
       electrical: 'الكهرباء',
+      other: 'قطع أخرى',
     },
     trustWarranty: 'ضمان 12 شهرًا',
     trustShipping: 'شحن لكل العالم',
     trustGenuine: 'أصلي ومعتمد فقط',
+    catalogUnavailable: 'كتالوج القطع غير متاح مؤقتًا',
+    catalogUnavailableLead:
+      'لم نتمكن من الوصول إلى المتجر الآن. جرّب مرة أخرى بعد قليل، أو تواصل معنا وسنتحقق من التوفر بدلًا منك.',
+    catalogEmpty: 'لم يتم نشر أي قطع بعد',
+    catalogEmptyLead:
+      'الكتالوج قيد التحضير. تواصل معنا وسنوفّر لك القطعة التي تحتاجها.',
+    untranslatedNotice:
+      'بعض أسماء المنتجات لا تزال معروضة بالعبرية الأصلية إلى أن تكتمل الترجمة.',
   },
   productDetail: {
     related: 'قد تحتاج أيضًا',

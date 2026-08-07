@@ -1,25 +1,25 @@
-'use client'
-
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
-import { PageHero } from '@/components/page-hero'
-import { ProductsBrowser } from '@/components/products-browser'
-import { useLanguage } from '@/lib/i18n/language-context'
+import { ProductsScreen } from '@/components/products-screen'
+import { getCatalogSummaries } from '@/lib/wp/catalog'
 
-export default function ProductsPage() {
-  const { t } = useLanguage()
+/**
+ * The catalog is read on the server so the products are in the initial HTML —
+ * good for SEO and it keeps the WooCommerce endpoint out of the browser. The
+ * fetch is cached, so 165 products do not mean 165 round trips per visitor.
+ */
+export default async function ProductsPage() {
+  const { parts, status, hasUntranslated } = await getCatalogSummaries()
 
   return (
     <>
       <SiteHeader />
       <main>
-        <PageHero
-          eyebrow={t.products.eyebrow}
-          title={t.products.title}
-          titleEm={t.products.titleEm}
-          lead={t.products.lead}
+        <ProductsScreen
+          parts={parts}
+          status={status}
+          hasUntranslated={hasUntranslated}
         />
-        <ProductsBrowser />
       </main>
       <SiteFooter />
     </>

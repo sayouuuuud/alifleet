@@ -113,7 +113,7 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-xs text-muted-foreground md:flex-row">
           <p>
-            © {new Date().getFullYear()} {siteConfig.name}. {t.footer.rights}
+            © {new Date().getFullYear()} {store.name}. {t.footer.rights}
           </p>
           <p>{t.footer.slogan}</p>
         </div>

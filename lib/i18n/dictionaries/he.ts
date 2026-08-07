@@ -159,10 +159,18 @@ export const he: Dictionary = {
       filters: 'מסננים',
       suspension: 'מתלים',
       electrical: 'חשמל',
+      other: 'חלפים נוספים',
     },
     trustWarranty: 'אחריות 12 חודשים',
     trustShipping: 'משלוח עולמי',
     trustGenuine: 'מקורי ו-OEM בלבד',
+    catalogUnavailable: 'קטלוג החלפים אינו זמין כרגע',
+    catalogUnavailableLead:
+      'לא הצלחנו להתחבר לחנות ברגע זה. נסו שוב בעוד רגע, או פנו אלינו ונבדוק זמינות עבורכם.',
+    catalogEmpty: 'עדיין לא פורסמו חלפים',
+    catalogEmptyLead: 'הקטלוג בהכנה. פנו אלינו ונשיג את החלק שאתם צריכים.',
+    untranslatedNotice:
+      'חלק משמות המוצרים מוצגים בעברית המקורית עד להשלמת התרגום.',
   },
   productDetail: {
     related: 'אולי תצטרכו גם',
@@ -176,7 +184,7 @@ export const he: Dictionary = {
   },
   cart: {
     title: 'העגלה שלך',
-    lead: 'בד��ו את החלפים ואז המשיכו לחנות המאובטחת שלנו להשלמת ההזמנה.',
+    lead: 'בד����ו את החלפים ואז המשיכו לחנות המאובטחת שלנו להשלמת ההזמנה.',
     empty: 'העגלה שלך ריקה',
     emptyLead: 'עברו על קטלוג החלפים והוסיפו את מה שדרוש לכם.',
     browseParts: 'עברו לחלפים',

@@ -2,28 +2,38 @@
 
 import { useMemo, useState } from 'react'
 import { Search, ShieldCheck, Truck, BadgeCheck, X } from 'lucide-react'
-import { parts, partCategories, type PartCategory } from '@/lib/data/parts'
+import { partCategories, type PartCategory, type PartSummary } from '@/lib/data/parts'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { ProductCard } from '@/components/product-card'
 
 type SortKey = 'featured' | 'priceAsc' | 'priceDesc' | 'nameAsc'
 
-export function ProductsBrowser() {
+export function ProductsBrowser({ parts }: { parts: PartSummary[] }) {
   const { t, locale } = useLanguage()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<PartCategory | 'all'>('all')
   const [sort, setSort] = useState<SortKey>('featured')
+
+  // Only categories that actually contain products get a chip, so the imported
+  // catalog does not show seven dead filters next to one live one.
+  const availableCategories = useMemo(() => {
+    const present = new Set(parts.map((part) => part.category))
+    return partCategories.filter((key) => present.has(key))
+  }, [parts])
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase()
     const filtered = parts.filter((part) => {
       if (category !== 'all' && part.category !== category) return false
       if (!needle) return true
+      // Every locale is searched, not just the active one: a customer who knows
+      // the Hebrew name of a part must still find it while browsing in Arabic.
       const haystack = [
-        part.name[locale],
+        part.name.ar,
+        part.name.he,
+        part.name.en,
         part.brand,
         part.sku,
-        ...part.compatibility,
       ]
         .join(' ')
         .toLowerCase()
@@ -40,7 +50,7 @@ export function ProductsBrowser() {
         (a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured))
       )
     return sorted
-  }, [query, category, sort, locale])
+  }, [parts, query, category, sort, locale])
 
   const hasFilters = query.trim() !== '' || category !== 'all'
 
@@ -121,7 +131,7 @@ export function ProductsBrowser() {
           >
             {t.common.all}
           </button>
-          {partCategories.map((key) => (
+          {availableCategories.map((key) => (
             <button
               key={key}
               type="button"

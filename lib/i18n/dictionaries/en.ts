@@ -160,10 +160,19 @@ export const en = {
       filters: 'Filters',
       suspension: 'Suspension',
       electrical: 'Electrical',
+      other: 'Other parts',
     },
     trustWarranty: '12-month warranty',
     trustShipping: 'Worldwide shipping',
     trustGenuine: 'Genuine & OEM only',
+    catalogUnavailable: 'The parts catalogue is temporarily unavailable',
+    catalogUnavailableLead:
+      'We could not reach the store just now. Please try again shortly, or contact us and we will check availability for you.',
+    catalogEmpty: 'No parts have been published yet',
+    catalogEmptyLead:
+      'The catalogue is being prepared. Contact us and we will source the part you need.',
+    untranslatedNotice:
+      'Some product names are still shown in their original Hebrew while translation is in progress.',
   },
   productDetail: {
     related: 'You may also need',
