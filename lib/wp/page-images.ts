@@ -29,6 +29,7 @@ export type PageImages = {
   importHero: string
   productsHero: string
   blogHero: string
+  contactHero: string
 }
 
 // ---------------------------------------------------------------------------
@@ -52,6 +53,7 @@ export const FALLBACK_PAGE_IMAGES: PageImages = {
   importHero: '/images/port-light.png',
   productsHero: '/images/hero-truck.png',
   blogHero: '/images/fleet-truck.png',
+  contactHero: '/images/hero-truck.png',
 }
 
 // ---------------------------------------------------------------------------
@@ -77,6 +79,7 @@ const PAGE_IMAGES_QUERY = /* GraphQL */ `
       importHero
       productsHero
       blogHero
+      contactHero
     }
   }
 `
