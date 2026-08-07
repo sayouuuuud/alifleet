@@ -12,10 +12,12 @@ import {
   Truck,
 } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
+import type { PageImages } from '@/lib/wp/page-images'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const slideSrcs = [
+// Fallback sources used when WP has not provided a value
+const FALLBACK_SLIDE_SRCS = [
   '/images/hero-showroom.png',
   '/images/truck-light.png',
   '/images/van-light.png',
@@ -24,10 +26,24 @@ const slideSrcs = [
   '/images/import-global.png',
 ]
 
-export function Hero() {
+export function Hero({ wpImages }: { wpImages?: PageImages }) {
   const sectionRef = useRef<HTMLElement>(null)
   const [active, setActive] = useState(0)
   const { t } = useLanguage()
+
+  // Merge WP images with local fallbacks slot-by-slot
+  const slideSrcs = wpImages
+    ? [
+        wpImages.heroSlide1 || FALLBACK_SLIDE_SRCS[0],
+        wpImages.heroSlide2 || FALLBACK_SLIDE_SRCS[1],
+        wpImages.heroSlide3 || FALLBACK_SLIDE_SRCS[2],
+        wpImages.heroSlide4 || FALLBACK_SLIDE_SRCS[3],
+        wpImages.heroSlide5 || FALLBACK_SLIDE_SRCS[4],
+        FALLBACK_SLIDE_SRCS[5], // slot 6 has no WP counterpart yet
+      ]
+    : FALLBACK_SLIDE_SRCS
+
+  const avatarSrc = wpImages?.heroAvatarImage || '/images/hero-avatars.png'
 
   const slides = [
     { src: slideSrcs[0], label: t.home.heroSlides.flagship, alt: t.home.heroAvatarAlt },
@@ -97,7 +113,7 @@ export function Hero() {
                   {t.home.heroLine1}
                   <span className="hidden h-9 w-[4.5rem] shrink-0 items-center overflow-hidden rounded-full border-[3px] border-background shadow-md md:inline-flex xl:h-11 xl:w-[5.5rem]">
                     <Image
-                      src="/images/hero-avatars.png"
+                      src={avatarSrc}
                       alt={t.home.heroAvatarAlt}
                       width={132}
                       height={48}

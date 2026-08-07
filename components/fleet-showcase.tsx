@@ -7,10 +7,11 @@ import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowUpRight } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
+import type { PageImages } from '@/lib/wp/page-images'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function FleetShowcase() {
+export function FleetShowcase({ wpImages }: { wpImages?: PageImages }) {
   const sectionRef = useRef<HTMLElement>(null)
   const { t } = useLanguage()
 
@@ -19,21 +20,21 @@ export function FleetShowcase() {
       title: t.home.fleet.truckTitle,
       tag: t.home.fleet.truckTag,
       description: t.home.fleet.truckDesc,
-      image: '/images/truck-light.png',
+      image: wpImages?.fleetVehicle1 || '/images/fleet-van.png',
       alt: t.home.fleet.truckTitle,
     },
     {
       title: t.home.fleet.vanTitle,
       tag: t.home.fleet.vanTag,
       description: t.home.fleet.vanDesc,
-      image: '/images/van-light.png',
+      image: wpImages?.fleetVehicle2 || '/images/fleet-suv.png',
       alt: t.home.fleet.vanTitle,
     },
     {
       title: t.home.fleet.luxuryTitle,
       tag: t.home.fleet.luxuryTag,
       description: t.home.fleet.luxuryDesc,
-      image: '/images/suv-light.png',
+      image: wpImages?.fleetVehicle3 || '/images/fleet-truck.png',
       alt: t.home.fleet.luxuryTitle,
     },
   ]

@@ -520,6 +520,7 @@ add_action(
 					'fleetVehicle1'   => [ 'type' => 'String', 'description' => 'Fleet showcase panel 1.' ],
 					'fleetVehicle2'   => [ 'type' => 'String', 'description' => 'Fleet showcase panel 2.' ],
 					'fleetVehicle3'   => [ 'type' => 'String', 'description' => 'Fleet showcase panel 3.' ],
+					'fleetVehicle4'   => [ 'type' => 'String', 'description' => 'Fleet showcase panel 4.' ],
 					'serviceScene1'   => [ 'type' => 'String', 'description' => 'Services scene 1 background.' ],
 					'serviceScene2'   => [ 'type' => 'String', 'description' => 'Services scene 2 background.' ],
 					'serviceScene3'   => [ 'type' => 'String', 'description' => 'Services scene 3 background.' ],
@@ -529,6 +530,8 @@ add_action(
 					'productsHero'    => [ 'type' => 'String', 'description' => 'Spare parts page hero background.' ],
 					// ── Blog page ──────────────────────────────────────────────
 					'blogHero'        => [ 'type' => 'String', 'description' => 'Blog archive hero background.' ],
+					// ── Contact page ───────────────────────────────────────────
+					'contactHero'     => [ 'type' => 'String', 'description' => 'Contact page hero background.' ],
 				],
 			]
 		);
@@ -561,6 +564,7 @@ add_action(
 					$import_id   = $page_id_for( 'import' ) ?: $page_id_for( 'car-import' );
 					$products_id = $page_id_for( 'products' ) ?: $page_id_for( 'spare-parts' );
 					$blog_id     = $page_id_for( 'blog' ) ?: (int) get_option( 'page_for_posts', 0 );
+					$contact_id  = $page_id_for( 'contact' ) ?: $page_id_for( 'contact-us' );
 
 					$img = static fn ( int $pid, string $group, string $sub, string $leaf = '' ): string =>
 						alifleet_img_url( alifleet_page_field( $pid, $group, $sub, $leaf ) );
@@ -577,14 +581,16 @@ add_action(
 						'fleetVehicle1'   => $img( $home_id, 'fleet_showcase_section', 'fleet_vehicle_1', 'image' ),
 						'fleetVehicle2'   => $img( $home_id, 'fleet_showcase_section', 'fleet_vehicle_2', 'image' ),
 						'fleetVehicle3'   => $img( $home_id, 'fleet_showcase_section', 'fleet_vehicle_3', 'image' ),
+						'fleetVehicle4'   => $img( $home_id, 'fleet_showcase_section', 'fleet_vehicle_4', 'image' ),
 						// Services scenes
 						'serviceScene1'   => $img( $home_id, 'services_section', 'scene_01', 'bg_image' ),
 						'serviceScene2'   => $img( $home_id, 'services_section', 'scene_02', 'bg_image' ),
 						'serviceScene3'   => $img( $home_id, 'services_section', 'scene_03', 'bg_image' ),
-						// Other pages
+						// Inner-page heroes
 						'importHero'      => $img( $import_id,   'import_hero',    'hero_background_image' ),
 						'productsHero'    => $img( $products_id, 'products_hero',  'hero_background_image' ),
 						'blogHero'        => $img( $blog_id,     'blog_hero',      'hero_background_image' ),
+						'contactHero'     => $img( $contact_id,  'contact_hero',   'hero_background_image' ),
 					];
 				},
 			]

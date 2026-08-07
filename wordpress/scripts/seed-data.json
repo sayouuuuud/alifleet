@@ -190,7 +190,18 @@
             "description_he": "רכבי שטח ויוקרה שנבחרו אישית משווקים גלובליים, מיובאים עם תיעוד מלא.",
             "image": "/wp-content/uploads/images/fleet-suv.png"
           },
-          "fleet_vehicle_3": {},
+          "fleet_vehicle_3": {
+            "title_ar": "شاحنات ثقيلة",
+            "title_en": "Heavy Trucks",
+            "title_he": "משאיות כבדות",
+            "tag_ar": "للأعمال التجارية",
+            "tag_en": "Commercial",
+            "tag_he": "מסחרי",
+            "description_ar": "شاحنات ثقيلة للخدمات اللوجستية التجارية ونقل البضائع على المسافات الطويلة.",
+            "description_en": "Heavy-duty trucks built for commercial logistics and long-haul cargo transport.",
+            "description_he": "משאיות כבדות ללוגיסטיקה מסחרית ולהובלת מטענים למרחקים ארוכים.",
+            "image": "/images/fleet-truck.png"
+          },
           "fleet_vehicle_4": {}
         },
         "marquee_item_1": {
@@ -494,7 +505,8 @@
           "cta_browse_he": "לרכבים הזמינים",
           "cta_custom_ar": "اطلب استيرادًا مخصصًا",
           "cta_custom_en": "Request a custom import",
-          "cta_custom_he": "בקשת ייבוא אישי"
+          "cta_custom_he": "בקשת ייבוא אישי",
+          "hero_background_image": "/images/port-light.png"
         },
         "import_steps": {
           "steps_eyebrow_ar": "كيف تعمل الخدمة",
@@ -569,7 +581,8 @@
           "title_em_he": "מוכנים למשלוח",
           "lead_ar": "قطع غيار أصلية وبمعايير المصنع للشاحنات والفانات والسيارات الفاخرة — توافق مؤكد، مع ضمان، وشحن لكل العالم.",
           "lead_en": "Original and OEM-grade spare parts for trucks, vans and luxury vehicles — verified fitment, warranty backed, dispatched worldwide.",
-          "lead_he": "חלפים מקוריים וברמת OEM למשאיות, ואנים ורכבי יוקרה — התאמה מאומתת, באחריות, ומשלוח לכל העולם."
+          "lead_he": "חלפים מקוריים וברמת OEM למשאיות, ואנים ורכבי יוקרה — התאמה מאומתת, באחריות, ומשלוח לכל העולם.",
+          "hero_background_image": "/images/hero-truck.png"
         },
         "trust_badges": {
           "warranty_label_ar": "ضمان 12 شهرًا",
@@ -631,7 +644,8 @@
           "title_em_he": "הצי",
           "lead_ar": "أخبار الصناعة، نصائح الاستيراد، أدلة إدارة الأساطيل وقصص من وراء الكواليس من فريق علي فليت.",
           "lead_en": "Industry news, import tips, fleet management guides and behind-the-scenes stories from the ALI FLEET team.",
-          "lead_he": "חדשות מהתעשייה, טיפים לייבוא, מדריכי ניהול צי וסיפורים מאחורי הקלעים מצוות ALI FLEET."
+          "lead_he": "חדשות מהתעשייה, טיפים לייבוא, מדריכי ניהול צי וסיפורים מאחורי הקלעים מצוות ALI FLEET.",
+          "hero_background_image": "/images/fleet-truck.png"
         },
         "blog_labels": {
           "featured_label_ar": "مميز",
