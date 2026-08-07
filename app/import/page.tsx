@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 export default async function ImportPage() {
   const { cars, status } = await getVehicles()
 
+
   return (
     <>
       <SiteHeader />
