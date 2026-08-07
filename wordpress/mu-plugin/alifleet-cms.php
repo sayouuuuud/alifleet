@@ -430,6 +430,170 @@ add_action(
 );
 
 /* -------------------------------------------------------------------------
+ * 6b. pageImages — editable image URLs for every static page section
+ *
+ * ACF image fields return an attachment ID (integer). We resolve each one to
+ * its full `src` URL here so the Next.js frontend never has to do a second
+ * REST call for every image.  Every field gracefully returns an empty string
+ * when the attachment hasn't been uploaded yet, so the frontend can fall back
+ * to its local /images/ placeholders.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Safely resolves an ACF image field (attachment ID or URL string or array)
+ * to a plain https URL, returning '' when nothing has been set.
+ *
+ * @param mixed $value  Whatever ACF / WPGraphQL stored.
+ * @param string $size  Image size name, default 'large'.
+ */
+function alifleet_img_url( $value, string $size = 'large' ): string {
+	if ( empty( $value ) ) {
+		return '';
+	}
+
+	// WPGraphQL for ACF returns an array with 'url' key for image fields.
+	if ( is_array( $value ) ) {
+		return isset( $value['url'] ) ? (string) $value['url'] : '';
+	}
+
+	// Plain URL string (rare but possible).
+	if ( is_string( $value ) && str_starts_with( $value, 'http' ) ) {
+		return $value;
+	}
+
+	// Attachment ID (integer or numeric string).
+	$id = (int) $value;
+	if ( $id > 0 ) {
+		$src = wp_get_attachment_image_url( $id, $size );
+		return is_string( $src ) ? $src : '';
+	}
+
+	return '';
+}
+
+/**
+ * Reads a sub-field value from an ACF group attached to a WordPress page.
+ * Uses `get_field()` which is available with free ACF and WPGraphQL for ACF.
+ *
+ * @param int    $page_id   WordPress post ID of the target page.
+ * @param string $group     ACF group field name (e.g. 'hero_section').
+ * @param string $sub_field ACF sub-field name (e.g. 'hero_slide_1').
+ * @param string $leaf      Optional deeper nested field name.
+ */
+function alifleet_page_field( int $page_id, string $group, string $sub_field, string $leaf = '' ) {
+	if ( ! function_exists( 'get_field' ) ) {
+		return null;
+	}
+
+	$group_value = get_field( $group, $page_id );
+
+	if ( ! is_array( $group_value ) || ! isset( $group_value[ $sub_field ] ) ) {
+		return null;
+	}
+
+	$value = $group_value[ $sub_field ];
+
+	if ( '' !== $leaf ) {
+		return is_array( $value ) && isset( $value[ $leaf ] ) ? $value[ $leaf ] : null;
+	}
+
+	return $value;
+}
+
+add_action(
+	'graphql_register_types',
+	static function (): void {
+
+		/* ---- Object type ---- */
+		register_graphql_object_type(
+			'AliFleetPageImages',
+			[
+				'description' => 'Editable image URLs for every static page section, resolved from ACF.',
+				'fields'      => [
+					// ── Home page ──────────────────────────────────────────────
+					'heroAvatarImage' => [ 'type' => 'String', 'description' => 'Hero avatar strip image.' ],
+					'heroSlide1'      => [ 'type' => 'String', 'description' => 'Hero carousel slide 1.' ],
+					'heroSlide2'      => [ 'type' => 'String', 'description' => 'Hero carousel slide 2.' ],
+					'heroSlide3'      => [ 'type' => 'String', 'description' => 'Hero carousel slide 3.' ],
+					'heroSlide4'      => [ 'type' => 'String', 'description' => 'Hero carousel slide 4.' ],
+					'heroSlide5'      => [ 'type' => 'String', 'description' => 'Hero carousel slide 5.' ],
+					'fleetVehicle1'   => [ 'type' => 'String', 'description' => 'Fleet showcase panel 1.' ],
+					'fleetVehicle2'   => [ 'type' => 'String', 'description' => 'Fleet showcase panel 2.' ],
+					'fleetVehicle3'   => [ 'type' => 'String', 'description' => 'Fleet showcase panel 3.' ],
+					'serviceScene1'   => [ 'type' => 'String', 'description' => 'Services scene 1 background.' ],
+					'serviceScene2'   => [ 'type' => 'String', 'description' => 'Services scene 2 background.' ],
+					'serviceScene3'   => [ 'type' => 'String', 'description' => 'Services scene 3 background.' ],
+					// ── Import page ────────────────────────────────────────────
+					'importHero'      => [ 'type' => 'String', 'description' => 'Import page hero background.' ],
+					// ── Products page ──────────────────────────────────────────
+					'productsHero'    => [ 'type' => 'String', 'description' => 'Spare parts page hero background.' ],
+					// ── Blog page ──────────────────────────────────────────────
+					'blogHero'        => [ 'type' => 'String', 'description' => 'Blog archive hero background.' ],
+				],
+			]
+		);
+
+		/* ---- Root field ---- */
+		register_graphql_field(
+			'RootQuery',
+			'pageImages',
+			[
+				'type'        => 'AliFleetPageImages',
+				'description' => 'Editable image URLs for static page sections, read from ACF page fields.',
+				'resolve'     => static function (): array {
+
+					/**
+					 * Helper: find a WordPress page by slug and return its ID.
+					 * Returns 0 when no published page is found.
+					 */
+					$page_id_for = static function ( string $slug ): int {
+						$pages = get_posts( [
+							'name'           => $slug,
+							'post_type'      => 'page',
+							'post_status'    => 'publish',
+							'posts_per_page' => 1,
+							'fields'         => 'ids',
+						] );
+						return ! empty( $pages ) ? (int) $pages[0] : 0;
+					};
+
+					$home_id     = $page_id_for( 'home' ) ?: (int) get_option( 'page_on_front', 0 );
+					$import_id   = $page_id_for( 'import' ) ?: $page_id_for( 'car-import' );
+					$products_id = $page_id_for( 'products' ) ?: $page_id_for( 'spare-parts' );
+					$blog_id     = $page_id_for( 'blog' ) ?: (int) get_option( 'page_for_posts', 0 );
+
+					$img = static fn ( int $pid, string $group, string $sub, string $leaf = '' ): string =>
+						alifleet_img_url( alifleet_page_field( $pid, $group, $sub, $leaf ) );
+
+					return [
+						// Home / hero slides
+						'heroAvatarImage' => $img( $home_id, 'hero_section', 'hero_avatar_image' ),
+						'heroSlide1'      => $img( $home_id, 'hero_section', 'hero_slide_1', 'slide_image' ),
+						'heroSlide2'      => $img( $home_id, 'hero_section', 'hero_slide_2', 'slide_image' ),
+						'heroSlide3'      => $img( $home_id, 'hero_section', 'hero_slide_3', 'slide_image' ),
+						'heroSlide4'      => $img( $home_id, 'hero_section', 'hero_slide_4', 'slide_image' ),
+						'heroSlide5'      => $img( $home_id, 'hero_section', 'hero_slide_5', 'slide_image' ),
+						// Fleet showcase panels
+						'fleetVehicle1'   => $img( $home_id, 'fleet_showcase_section', 'fleet_vehicle_1', 'image' ),
+						'fleetVehicle2'   => $img( $home_id, 'fleet_showcase_section', 'fleet_vehicle_2', 'image' ),
+						'fleetVehicle3'   => $img( $home_id, 'fleet_showcase_section', 'fleet_vehicle_3', 'image' ),
+						// Services scenes
+						'serviceScene1'   => $img( $home_id, 'services_section', 'scene_01', 'bg_image' ),
+						'serviceScene2'   => $img( $home_id, 'services_section', 'scene_02', 'bg_image' ),
+						'serviceScene3'   => $img( $home_id, 'services_section', 'scene_03', 'bg_image' ),
+						// Other pages
+						'importHero'      => $img( $import_id,   'import_hero',    'hero_background_image' ),
+						'productsHero'    => $img( $products_id, 'products_hero',  'hero_background_image' ),
+						'blogHero'        => $img( $blog_id,     'blog_hero',      'hero_background_image' ),
+					];
+				},
+			]
+		);
+	},
+	30  // priority 30 so this runs after storeSettings (priority 10 default)
+);
+
+/* -------------------------------------------------------------------------
  * 7. Startup diagnostics
  *
  * Surfaces a dismissible admin notice when a dependency the frontend needs is
