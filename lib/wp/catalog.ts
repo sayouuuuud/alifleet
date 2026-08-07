@@ -131,7 +131,7 @@ type WireMeta = {
     nameEn?: string | null
     brand?: string | null
     sku?: string | null
-    partCategory?: string | null
+    partCategory?: string | string[] | null
     featured?: boolean | null
     descriptionAr?: string | null
     descriptionEn?: string | null
@@ -343,11 +343,18 @@ const CATEGORY_KEYWORDS: Record<Exclude<PartCategory, 'other'>, string[]> = {
 }
 
 function resolveCategory(
-  acfCategory: string | null | undefined,
+  acfCategory: unknown,
   wooCategories: { slug: string; name: string }[],
   productName: string
 ): PartCategory {
-  const curated = acfCategory?.trim().toLowerCase()
+  // ACF `select` fields return a string; `checkbox` fields return an array.
+  // When WPGraphQL for ACF is inactive the value may be {} (empty object).
+  const raw = Array.isArray(acfCategory)
+    ? (acfCategory[0] as string | undefined)
+    : typeof acfCategory === 'string'
+      ? acfCategory
+      : undefined
+  const curated = raw?.trim().toLowerCase()
   if (isPartCategory(curated)) return curated
 
   const haystacks = [
