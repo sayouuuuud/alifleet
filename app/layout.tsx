@@ -12,7 +12,9 @@ import './globals.css'
 import { LanguageProvider } from '@/lib/i18n/language-context'
 import { CartProvider } from '@/lib/cart-context'
 import { AuthProvider } from '@/lib/auth/auth-context'
+import { StoreProvider } from '@/lib/store-context'
 import { loadViewer } from '@/lib/auth/queries'
+import { getStoreSettings } from '@/lib/wp/settings'
 import { isWpConfigured } from '@/lib/wp/config'
 import {
   LOCALE_STORAGE_KEY,
@@ -65,9 +67,13 @@ export default async function RootLayout({
   const locale = isLocale(stored) ? stored : defaultLocale
   const meta = localeMeta[locale]
 
-  // Resolve the session once per request so the header renders the correct
-  // signed-in state on the first paint instead of flickering after hydration.
-  const viewer = await loadViewer()
+  // Resolve the session and the store settings once per request so the header
+  // and footer render correctly on the first paint instead of flickering after
+  // hydration. Settings are cached, the session never is.
+  const [viewer, storeSettings] = await Promise.all([
+    loadViewer(),
+    getStoreSettings(),
+  ])
 
   return (
     <html
@@ -77,9 +83,11 @@ export default async function RootLayout({
     >
       <body className="antialiased">
         <LanguageProvider initialLocale={locale}>
-          <AuthProvider viewer={viewer} backendReady={isWpConfigured()}>
-            <CartProvider>{children}</CartProvider>
-          </AuthProvider>
+          <StoreProvider settings={storeSettings}>
+            <AuthProvider viewer={viewer} backendReady={isWpConfigured()}>
+              <CartProvider>{children}</CartProvider>
+            </AuthProvider>
+          </StoreProvider>
         </LanguageProvider>
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

@@ -32,6 +32,26 @@ export function isWpConfigured(): boolean {
   return RAW_ENDPOINT.length > 0
 }
 
+/**
+ * The storefront origin, derived from the GraphQL endpoint so there is only one
+ * hostname to configure. `https://cms.alifleet.com/graphql` yields
+ * `https://cms.alifleet.com`. Override with `WORDPRESS_STORE_URL` when the shop
+ * front lives on a different host than the API.
+ */
+export function wpStoreOrigin(): string {
+  const override = (process.env.WORDPRESS_STORE_URL ?? '').trim()
+  if (override) return override.replace(/\/+$/, '')
+  if (!RAW_ENDPOINT) return ''
+  try {
+    return new URL(RAW_ENDPOINT).origin
+  } catch {
+    return ''
+  }
+}
+
+/** How long cached catalog reads stay fresh, in seconds. */
+export const CATALOG_REVALIDATE = 600
+
 /** How long we keep the short-lived JWT access token in its cookie. */
 export const AUTH_TOKEN_MAX_AGE = 60 * 60 // 1 hour
 

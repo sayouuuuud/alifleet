@@ -246,7 +246,191 @@ add_action(
 );
 
 /* -------------------------------------------------------------------------
- * 6. Startup diagnostics
+ * 6. storeSettings — contact details and commerce settings for the frontend
+ *
+ * The frontend needs the shop's phone number, address, WhatsApp number and
+ * currency. None of that is reachable over GraphQL out of the box:
+ *
+ *   - ACF options pages (`get_field(..., 'option')`) require ACF PRO. This
+ *     install has the free edition, so `acf_get_options_pages()` does not
+ *     exist and WPGraphQL never registers a `siteOptions` root field.
+ *   - WooCommerce's own settings live in `wp_options` as plain rows
+ *     (`woocommerce_store_address`, `woocommerce_currency`, ...) and
+ *     WooGraphQL does not expose them either.
+ *
+ * So the values are read straight from `wp_options` and registered as one
+ * `storeSettings` root field. ACF's `options_*` rows win when they are filled
+ * in — that keeps the door open for ACF PRO later without a code change — and
+ * WooCommerce's own settings are the fallback, which means the values the
+ * store owner already maintains in WooCommerce → Settings show up on the site.
+ *
+ * Everything here is public shop-window information that already appears in
+ * the WooCommerce checkout, so no capability check is needed. Nothing else
+ * from wp_options is exposed.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Reads one leaf out of an ACF options group stored in wp_options.
+ *
+ * ACF serialises a group field into a single `options_<group>` row, so this
+ * avoids get_field() (which needs ACF PRO for options pages) entirely.
+ */
+function alifleet_acf_option( string $group, string $key ): string {
+	$stored = get_option( 'options_' . $group );
+
+	if ( is_array( $stored ) && isset( $stored[ $key ] ) && is_scalar( $stored[ $key ] ) ) {
+		return trim( (string) $stored[ $key ] );
+	}
+
+	// ACF also writes each leaf as its own row for non-group field types.
+	$leaf = get_option( 'options_' . $group . '_' . $key );
+
+	return is_scalar( $leaf ) ? trim( (string) $leaf ) : '';
+}
+
+/** First non-empty value, so ACF overrides WooCommerce and WooCommerce overrides nothing. */
+function alifleet_first_filled( string ...$values ): string {
+	foreach ( $values as $value ) {
+		if ( '' !== trim( $value ) ) {
+			return trim( $value );
+		}
+	}
+
+	return '';
+}
+
+/** Digits only — WhatsApp deep links reject spaces, dashes and a leading '+'. */
+function alifleet_digits( string $value ): string {
+	return preg_replace( '/\D+/', '', $value ) ?? '';
+}
+
+/** Reads a WooCommerce option, returning '' rather than false when unset. */
+function alifleet_woo_option( string $name ): string {
+	$value = get_option( $name, '' );
+
+	return is_scalar( $value ) ? trim( (string) $value ) : '';
+}
+
+add_action(
+	'graphql_register_types',
+	static function (): void {
+		register_graphql_object_type(
+			'AliFleetStoreSettings',
+			[
+				'description' => __( 'Contact details and commerce settings for the ALI FLEET headless frontend.', 'alifleet' ),
+				'fields'      => [
+					'phone'          => [ 'type' => 'String', 'description' => 'Display phone number.' ],
+					'whatsapp'       => [ 'type' => 'String', 'description' => 'WhatsApp number, digits only, ready for wa.me links.' ],
+					'email'          => [ 'type' => 'String', 'description' => 'Public contact email address.' ],
+					'addressLines'   => [ 'type' => [ 'list_of' => 'String' ], 'description' => 'Street address, split into display lines.' ],
+					'hours'          => [ 'type' => 'String', 'description' => 'Opening hours, as one display string.' ],
+					'instagram'      => [ 'type' => 'String' ],
+					'facebook'       => [ 'type' => 'String' ],
+					'linkedin'       => [ 'type' => 'String' ],
+					'currencyCode'   => [ 'type' => 'String', 'description' => 'ISO code from WooCommerce, e.g. ILS.' ],
+					'currencySymbol' => [ 'type' => 'String', 'description' => 'Symbol matching currencyCode, e.g. ₪.' ],
+					'storeUrl'       => [ 'type' => 'String', 'description' => 'Storefront origin that owns the cart and checkout.' ],
+					'cartPath'       => [ 'type' => 'String', 'description' => 'Path of the WooCommerce cart page, e.g. /cart/.' ],
+				],
+			]
+		);
+
+		register_graphql_field(
+			'RootQuery',
+			'storeSettings',
+			[
+				'type'        => 'AliFleetStoreSettings',
+				'description' => __( 'Contact details and commerce settings, read from ACF options with WooCommerce as the fallback.', 'alifleet' ),
+				'resolve'     => static function (): array {
+					$woo_active = class_exists( 'WooCommerce' );
+
+					$address_lines = array_values(
+						array_filter(
+							[
+								alifleet_first_filled(
+									alifleet_acf_option( 'company_info', 'address_line_1' ),
+									alifleet_woo_option( 'woocommerce_store_address' )
+								),
+								alifleet_first_filled(
+									alifleet_acf_option( 'company_info', 'address_line_2' ),
+									alifleet_woo_option( 'woocommerce_store_address_2' )
+								),
+								alifleet_first_filled(
+									alifleet_acf_option( 'company_info', 'address_line_3' ),
+									trim(
+										alifleet_woo_option( 'woocommerce_store_city' ) . ' ' .
+										alifleet_woo_option( 'woocommerce_store_postcode' )
+									)
+								),
+							],
+							static fn ( string $line ): bool => '' !== $line
+						)
+					);
+
+					$phone = alifleet_first_filled(
+						alifleet_acf_option( 'company_info', 'phone' ),
+						alifleet_acf_option( 'company_info', 'phone_number' )
+					);
+
+					$whatsapp = alifleet_first_filled(
+						alifleet_acf_option( 'company_info', 'whatsapp' ),
+						alifleet_acf_option( 'company_info', 'whatsapp_number' ),
+						$phone
+					);
+
+					$currency_code = alifleet_first_filled(
+						alifleet_acf_option( 'commerce_settings', 'currency_code' ),
+						alifleet_woo_option( 'woocommerce_currency' )
+					);
+
+					$currency_symbol = alifleet_acf_option( 'commerce_settings', 'currency_symbol' );
+					if ( '' === $currency_symbol && $woo_active && function_exists( 'get_woocommerce_currency_symbol' ) ) {
+						$currency_symbol = html_entity_decode(
+							get_woocommerce_currency_symbol( $currency_code ),
+							ENT_QUOTES,
+							'UTF-8'
+						);
+					}
+
+					// The cart page slug is whatever WooCommerce is configured to use;
+					// hard-coding '/cart/' breaks a renamed or translated cart page.
+					$cart_path = '/cart/';
+					if ( $woo_active && function_exists( 'wc_get_page_permalink' ) ) {
+						$permalink = wc_get_page_permalink( 'cart' );
+						if ( is_string( $permalink ) && '' !== $permalink ) {
+							$path      = wp_parse_url( $permalink, PHP_URL_PATH );
+							$cart_path = is_string( $path ) && '' !== $path ? $path : $cart_path;
+						}
+					}
+
+					return [
+						'phone'          => $phone,
+						'whatsapp'       => alifleet_digits( $whatsapp ),
+						'email'          => alifleet_first_filled(
+							alifleet_acf_option( 'company_info', 'email' ),
+							(string) get_option( 'admin_email', '' )
+						),
+						'addressLines'   => $address_lines,
+						'hours'          => alifleet_first_filled(
+							alifleet_acf_option( 'company_info', 'hours' ),
+							alifleet_acf_option( 'company_info', 'opening_hours' )
+						),
+						'instagram'      => alifleet_acf_option( 'company_info', 'instagram' ),
+						'facebook'       => alifleet_acf_option( 'company_info', 'facebook' ),
+						'linkedin'       => alifleet_acf_option( 'company_info', 'linkedin' ),
+						'currencyCode'   => $currency_code,
+						'currencySymbol' => $currency_symbol,
+						'storeUrl'       => untrailingslashit( (string) get_option( 'home', '' ) ),
+						'cartPath'       => $cart_path,
+					];
+				},
+			]
+		);
+	}
+);
+
+/* -------------------------------------------------------------------------
+ * 7. Startup diagnostics
  *
  * Surfaces a dismissible admin notice when a dependency the frontend needs is
  * missing, instead of letting the site fail with an opaque GraphQL error.

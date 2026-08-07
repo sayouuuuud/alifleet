@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "translate": "node --env-file-if-exists=.env.local scripts/translate-catalog.mjs",
+    "translate:dry": "node --env-file-if-exists=.env.local scripts/translate-catalog.mjs --dry-run"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.37",

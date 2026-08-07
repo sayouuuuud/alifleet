@@ -1,0 +1,13 @@
+{
+  "_readme": [
+    "Arabic and English translations for the Hebrew product text that lives in",
+    "WooCommerce. Keys are the normalised Hebrew source string (HTML stripped,",
+    "whitespace collapsed) so a changed source string simply misses the cache",
+    "and falls back to Hebrew instead of showing a stale translation.",
+    "",
+    "Generated and updated by:  node scripts/translate-catalog.mjs",
+    "Safe to hand-edit: a human correction is never overwritten, the script only",
+    "fills in keys that are missing."
+  ],
+  "entries": {}
+}
