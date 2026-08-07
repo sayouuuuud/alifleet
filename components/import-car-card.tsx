@@ -7,6 +7,7 @@ import type { ImportCar } from '@/lib/data/import-cars'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatNumber, formatPrice } from '@/lib/format'
 import { useStore } from '@/lib/store-context'
+import { proxied } from '@/lib/img-proxy'
 
 const statusStyles: Record<ImportCar['status'], string> = {
   available: 'bg-accent text-accent-foreground',
@@ -26,7 +27,7 @@ export function ImportCarCard({ car }: { car: ImportCar }) {
         className="relative block aspect-16/10 overflow-hidden bg-secondary"
       >
         <Image
-          src={car.image || '/placeholder.svg'}
+          src={proxied(car.image)}
           alt={car.alt[locale]}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"

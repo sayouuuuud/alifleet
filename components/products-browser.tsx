@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { Search, ShieldCheck, Truck, BadgeCheck, X } from 'lucide-react'
+import { Paginator } from '@/components/paginator'
 import { partCategories, type PartCategory, type PartSummary } from '@/lib/data/parts'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { ProductCard } from '@/components/product-card'
@@ -13,6 +14,8 @@ export function ProductsBrowser({ parts }: { parts: PartSummary[] }) {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState<PartCategory | 'all'>('all')
   const [sort, setSort] = useState<SortKey>('featured')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 8 // 2 rows × 4 cols (xl breakpoint)
 
   // Only categories that actually contain products get a chip, so the imported
   // catalog does not show seven dead filters next to one live one.
@@ -52,6 +55,16 @@ export function ProductsBrowser({ parts }: { parts: PartSummary[] }) {
     return sorted
   }, [parts, query, category, sort, locale])
 
+  // Reset to page 1 whenever the filtered set changes
+  const totalPages = Math.max(1, Math.ceil(visible.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const paged = visible.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+
+  const goToPage = (p: number) => {
+    setPage(p)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const hasFilters = query.trim() !== '' || category !== 'all'
 
   const trust = [
@@ -88,9 +101,9 @@ export function ProductsBrowser({ parts }: { parts: PartSummary[] }) {
             <input
               type="search"
               value={query}
-              onChange={(event) => setQuery(event.target.value)}
               placeholder={t.products.searchPlaceholder}
               aria-label={t.common.search}
+              onChange={(event) => { setQuery(event.target.value); setPage(1) }}
               className="w-full rounded-full bg-secondary py-3 pe-4 ps-11 text-sm text-foreground outline-none ring-1 ring-transparent transition-shadow placeholder:text-muted-foreground focus:ring-accent"
             />
           </div>
@@ -121,7 +134,7 @@ export function ProductsBrowser({ parts }: { parts: PartSummary[] }) {
           <span className="sr-only">{t.products.categoriesLabel}</span>
           <button
             type="button"
-            onClick={() => setCategory('all')}
+            onClick={() => { setCategory('all'); setPage(1) }}
             aria-pressed={category === 'all'}
             className={
               category === 'all'
@@ -135,7 +148,7 @@ export function ProductsBrowser({ parts }: { parts: PartSummary[] }) {
             <button
               key={key}
               type="button"
-              onClick={() => setCategory(key)}
+              onClick={() => { setCategory(key); setPage(1) }}
               aria-pressed={category === key}
               className={
                 category === key
@@ -172,11 +185,17 @@ export function ProductsBrowser({ parts }: { parts: PartSummary[] }) {
             <p className="text-base text-muted-foreground">{t.common.noResults}</p>
           </div>
         ) : (
-          <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {visible.map((part) => (
-              <ProductCard key={part.slug} part={part} />
-            ))}
-          </div>
+          <>
+            <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {paged.map((part) => (
+                <ProductCard key={part.slug} part={part} />
+              ))}
+            </div>
+
+            {totalPages > 1 && (
+              <Paginator current={safePage} total={totalPages} onChange={goToPage} prevLabel={t.common.prevPage} nextLabel={t.common.nextPage} />
+            )}
+          </>
         )}
       </section>
     </>

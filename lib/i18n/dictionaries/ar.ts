@@ -43,6 +43,8 @@ export const ar: Dictionary = {
     sendRequest: 'إرسال الطلب',
     backToProducts: 'رجوع إلى قطع الغيار',
     backToImport: 'رجوع إلى الاستيراد',
+    prevPage: 'الصفحة السابقة',
+    nextPage: 'الصفحة التالية',
     loading: 'جارٍ التحميل…',
     from: 'يبدأ من',
   },
@@ -305,7 +307,7 @@ export const ar: Dictionary = {
     required: 'مطلوب',
     successTitle: 'الرسالة جاهزة',
     successLead:
-      'سيتم فتح برنامج البريد لديك بالرسالة. يمكنك أيضًا التواصل معنا عبر واتساب لرد أسرع.',
+      'سيتم فتح برنامج البريد لديك بالرسالة. يمكنك أيضًا التواصل معنا عبر واتساب ��رد أسرع.',
     mapAlt: 'خريطة توضح موقع مقر علي فليت',
   },
   blog: {
@@ -483,7 +485,7 @@ export const ar: Dictionary = {
       shippingTitle: 'عنوان الشحن',
       shippingLead: 'العنوان الذي تُوصَّل إليه قطعك.',
       sameAsBilling: 'نسخ عنوان الفاتورة',
-      save: 'حفظ العناوين',
+      save: 'حفظ ال��ناوين',
       saving: 'جارٍ الحفظ…',
       saved: 'تم حفظ عناوينك.',
     },

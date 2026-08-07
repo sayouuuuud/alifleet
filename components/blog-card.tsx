@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { ArrowUpRight, Clock } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
 import type { BlogPost, BlogCategory } from '@/lib/data/blog'
+import { proxied } from '@/lib/img-proxy'
 
 function getLocalizedTitle(post: BlogPost, locale: string) {
   if (locale === 'ar') return post.titleAr
@@ -51,7 +52,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
         {/* Image */}
         <div className="relative h-64 w-full shrink-0 lg:h-auto lg:w-[55%]">
           <Image
-            src={post.coverImage}
+            src={proxied(post.coverImage)}
             alt={title}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -84,7 +85,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
           <div className="mt-8 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="relative h-8 w-8 overflow-hidden rounded-full border border-primary-foreground/20">
-                <Image src={post.authorAvatar} alt={post.authorName} fill className="object-cover" sizes="32px" />
+                <Image src={proxied(post.authorAvatar)} alt={post.authorName} fill className="object-cover" sizes="32px" />
               </div>
               <div>
                 <p className="text-xs font-medium text-primary-foreground/90">{post.authorName}</p>
@@ -115,7 +116,7 @@ export function BlogCard({ post, featured = false }: BlogCardProps) {
       {/* Cover */}
       <div className="relative aspect-[16/9] w-full overflow-hidden">
         <Image
-          src={post.coverImage}
+          src={proxied(post.coverImage)}
           alt={title}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"

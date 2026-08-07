@@ -8,6 +8,7 @@ import { useLanguage } from '@/lib/i18n/language-context'
 import { formatPrice } from '@/lib/format'
 import { useStore } from '@/lib/store-context'
 import { AddToCartButton } from '@/components/add-to-cart-button'
+import { proxied } from '@/lib/img-proxy'
 
 export function ProductCard({ part }: { part: PartSummary }) {
   const { t, locale } = useLanguage()
@@ -25,7 +26,7 @@ export function ProductCard({ part }: { part: PartSummary }) {
         className="relative block aspect-4/3 overflow-hidden bg-secondary"
       >
         <Image
-          src={part.image || '/placeholder.svg'}
+          src={proxied(part.image)}
           alt={part.alt[locale]}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"

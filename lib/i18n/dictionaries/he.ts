@@ -43,6 +43,8 @@ export const he: Dictionary = {
     sendRequest: 'שליחת בקשה',
     backToProducts: 'חזרה לחלפים',
     backToImport: 'חזרה לייבוא',
+    prevPage: 'עמוד קודם',
+    nextPage: 'עמוד הבא',
     loading: 'טוען…',
     from: 'החל מ',
   },
@@ -168,7 +170,7 @@ export const he: Dictionary = {
     catalogUnavailableLead:
       'לא הצלחנו להתחבר לחנות ברגע זה. נסו שוב בעוד רגע, או פנו אלינו ונבדוק זמינות עבורכם.',
     catalogEmpty: 'עדיין לא פורסמו חלפים',
-    catalogEmptyLead: 'הקטלוג בהכנה. פנו אלינו ונשיג את החלק ש��תם צריכים.',
+    catalogEmptyLead: 'הקטלוג בהכנה. פנו אלינו ונשיג את החלק ש����תם צריכים.',
     untranslatedNotice:
       'חלק משמות המוצרים מוצגים בעברית המקורית עד להשלמת התרגום.',
   },
@@ -517,7 +519,7 @@ export const he: Dictionary = {
       weak_password: 'נא להשתמש בסיסמה של 8 תווים לפחות.',
       password_mismatch: 'שתי הסיסמאות אינן תואמות.',
       registration_disabled:
-        'ההרשמה הציבורית כרגע מושבתת בחנות. צרו איתנו קשר ונפתח לכם חשבון.',
+        'ה��רשמה הציבורית כרגע מושבתת בחנות. צרו איתנו קשר ונפתח לכם חשבון.',
       session_expired: 'הפעלת ההתחברות פגה. נא להתחבר מחדש.',
       not_logged_in: 'נא להתחבר כדי להמשיך.',
       woo_missing: 'היסטוריית ההזמנות אינה זמינה כי בחנות חסר התוסף WooCommerce GraphQL.',

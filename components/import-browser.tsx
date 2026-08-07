@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import { carOrigins, carStatuses } from '@/lib/data/import-cars'
+import { Paginator } from '@/components/paginator'
 import type { CarOrigin, CarStatus, ImportCar } from '@/lib/data/import-cars'
 import type { VehiclesStatus } from '@/lib/wp/vehicles'
 import { useLanguage } from '@/lib/i18n/language-context'
@@ -17,6 +18,8 @@ export function ImportBrowser({ cars, status }: Props) {
   const { t } = useLanguage()
   const [origin, setOrigin] = useState<CarOrigin | 'all'>('all')
   const [carStatus, setCarStatus] = useState<CarStatus | 'all'>('all')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 6 // 2 rows × 3 cols
 
   const filtered = useMemo(
     () =>
@@ -27,6 +30,11 @@ export function ImportBrowser({ cars, status }: Props) {
       ),
     [cars, origin, carStatus]
   )
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+  const goToPage = (p: number) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }) }
 
   const chip = (active: boolean) =>
     active
@@ -109,14 +117,14 @@ export function ImportBrowser({ cars, status }: Props) {
           <span className="me-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t.import.filterOrigin}
           </span>
-          <button type="button" onClick={() => setOrigin('all')} className={chip(origin === 'all')}>
+          <button type="button" onClick={() => { setOrigin('all'); setPage(1) }} className={chip(origin === 'all')}>
             {t.common.all}
           </button>
           {carOrigins.map((item) => (
             <button
               key={item}
               type="button"
-              onClick={() => setOrigin(item)}
+              onClick={() => { setOrigin(item); setPage(1) }}
               className={chip(origin === item)}
             >
               {t.import.origins[item]}
@@ -130,7 +138,7 @@ export function ImportBrowser({ cars, status }: Props) {
           </span>
           <button
             type="button"
-            onClick={() => setCarStatus('all')}
+            onClick={() => { setCarStatus('all'); setPage(1) }}
             className={chip(carStatus === 'all')}
           >
             {t.common.all}
@@ -139,7 +147,7 @@ export function ImportBrowser({ cars, status }: Props) {
             <button
               key={item}
               type="button"
-              onClick={() => setCarStatus(item)}
+              onClick={() => { setCarStatus(item); setPage(1) }}
               className={chip(carStatus === item)}
             >
               {t.import.status[item]}
@@ -160,6 +168,7 @@ export function ImportBrowser({ cars, status }: Props) {
             onClick={() => {
               setOrigin('all')
               setCarStatus('all')
+              setPage(1)
             }}
             className="mt-4 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90"
           >
@@ -167,11 +176,17 @@ export function ImportBrowser({ cars, status }: Props) {
           </button>
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((car) => (
-            <ImportCarCard key={car.slug} car={car} />
-          ))}
-        </div>
+        <>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {paged.map((car) => (
+              <ImportCarCard key={car.slug} car={car} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <Paginator current={safePage} total={totalPages} onChange={goToPage} prevLabel={t.common.prevPage} nextLabel={t.common.nextPage} />
+          )}
+        </>
       )}
     </section>
   )

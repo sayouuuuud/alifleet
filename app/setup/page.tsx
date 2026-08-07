@@ -29,9 +29,9 @@ export default function SetupPage() {
           <StatusRow done label="WPGraphQL" detail="مفعّل — الاتصال تمام" />
           <StatusRow done label="WPGraphQL for ACF" detail="مفعّل — الأسماء والتصنيفات والعلامات التجارية بتتحمّل" />
           <StatusRow done label="138+ منتج" detail="بيتحملوا من WooCommerce مع الأسعار والمخزون" />
-          <StatusRow pending label="mu-plugin (النسخة الجديدة)" detail="لازم ترفعه — فيه storeSettings + alifleet-cart" />
-          <StatusRow pending label="GRAPHQL_JWT_AUTH_SECRET_KEY" detail="تسجيل الدخول مش هيشتغل بدونه" />
-          <StatusRow pending label="السيارات التسعة" detail="محتاج تشغّل migrate:cars بعد ما تحط credentials" />
+          <StatusRow label="mu-plugin (النسخة الجديدة)" detail="لازم ترفعه — فيه storeSettings + alifleet-cart" />
+          <StatusRow label="GRAPHQL_JWT_AUTH_SECRET_KEY" detail="تسجيل الدخول مش هيشتغل بدونه" />
+          <StatusRow label="السيارات التسعة" detail="محتاج تشغّل migrate:cars بعد ما تحط credentials" />
         </div>
       </section>
 

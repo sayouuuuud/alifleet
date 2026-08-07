@@ -41,6 +41,8 @@ export const en = {
     sendRequest: 'Send request',
     backToProducts: 'Back to spare parts',
     backToImport: 'Back to import',
+    prevPage: 'Previous page',
+    nextPage: 'Next page',
     loading: 'Loading…',
     from: 'From',
   },
