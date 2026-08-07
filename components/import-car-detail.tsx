@@ -5,14 +5,13 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Check, MessageCircle, Phone } from 'lucide-react'
 import type { ImportCar } from '@/lib/data/import-cars'
-import { similarCars } from '@/lib/data/import-cars'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatNumber, formatPrice } from '@/lib/format'
 import { whatsappLink } from '@/lib/site-config'
 import { useStore } from '@/lib/store-context'
 import { ImportCarCard } from '@/components/import-car-card'
 
-export function ImportCarDetail({ car }: { car: ImportCar }) {
+export function ImportCarDetail({ car, related }: { car: ImportCar; related: ImportCar[] }) {
   const { t, locale } = useLanguage()
   const store = useStore()
   const images = [{ src: car.image, alt: car.alt }, ...car.gallery]
@@ -37,8 +36,6 @@ export function ImportCarDetail({ car }: { car: ImportCar }) {
   ]
 
   const enquiry = `${t.importDetail.whatsappIntro}\n\n${car.model} · ${car.year}\n${t.import.origins[car.origin]}\n${typeof window === 'undefined' ? '' : window.location.href}`
-
-  const related = similarCars(car)
 
   return (
     <>

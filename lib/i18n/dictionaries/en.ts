@@ -256,6 +256,15 @@ export const en = {
     customLead:
       'Tell us the car you want and we will find it, inspect it and land it at your door.',
     customCta: 'Request a custom import',
+    inventoryUnavailable: 'The vehicle inventory is temporarily unavailable',
+    inventoryUnavailableLead:
+      'We could not reach the store right now. Please try again shortly, or contact us and we will check availability for you.',
+    inventoryEmpty: 'No vehicles are listed right now',
+    inventoryEmptyLead:
+      'New inventory arrives regularly. Contact us and we will let you know when something matching your needs comes in.',
+    inventoryAcfMissing: 'Vehicle data is not yet accessible',
+    inventoryAcfMissingLead:
+      'The WPGraphQL for ACF plugin needs to be activated on the WordPress server. Contact the site administrator.',
   },
   importDetail: {
     gallery: 'Gallery',

@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint .",
     "translate": "node --env-file-if-exists=.env.local scripts/translate-catalog.mjs",
-    "translate:dry": "node --env-file-if-exists=.env.local scripts/translate-catalog.mjs --dry-run"
+    "translate:dry": "node --env-file-if-exists=.env.local scripts/translate-catalog.mjs --dry-run",
+    "migrate:cars": "node --env-file-if-exists=.env.local scripts/migrate-cars.mjs",
+    "migrate:cars:dry": "node --env-file-if-exists=.env.local scripts/migrate-cars.mjs --dry-run"
   },
   "dependencies": {
     "@ai-sdk/react": "^4.0.37",

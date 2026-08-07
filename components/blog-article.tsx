@@ -96,17 +96,30 @@ export function BlogArticle({ post, related }: { post: BlogPost; related: BlogPo
         </div>
 
         <div className="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-14 text-start md:px-8 md:py-20">
-          <p className="text-pretty text-lg leading-8 text-foreground/85">{copy.intro}</p>
-          {[1, 2, 3].map((number) => (
-            <section key={number} className="flex flex-col gap-3 border-t border-border pt-8">
-              <h2 className="text-balance text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-                {copy[`heading${number}` as 'heading1' | 'heading2' | 'heading3']}
-              </h2>
-              <p className="text-pretty text-base leading-8 text-muted-foreground md:text-lg">
-                {copy[`body${number}` as 'body1' | 'body2' | 'body3']}
-              </p>
-            </section>
-          ))}
+          {post.content ? (
+            // Live content from WordPress — rendered as HTML
+            <div
+              className="prose prose-neutral dark:prose-invert max-w-none text-base leading-8 text-foreground/85 [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:mt-8 [&_h3]:text-xl [&_h3]:font-semibold [&_p]:text-muted-foreground [&_li]:text-muted-foreground"
+              // WordPress content is server-rendered and trusted (site-owner authored).
+              // eslint-disable-next-line react/no-danger
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+          ) : (
+            // Fallback static copy shown while WordPress content is not yet available
+            <>
+              <p className="text-pretty text-lg leading-8 text-foreground/85">{copy.intro}</p>
+              {[1, 2, 3].map((number) => (
+                <section key={number} className="flex flex-col gap-3 border-t border-border pt-8">
+                  <h2 className="text-balance text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
+                    {copy[`heading${number}` as 'heading1' | 'heading2' | 'heading3']}
+                  </h2>
+                  <p className="text-pretty text-base leading-8 text-muted-foreground md:text-lg">
+                    {copy[`body${number}` as 'body1' | 'body2' | 'body3']}
+                  </p>
+                </section>
+              ))}
+            </>
+          )}
         </div>
 
         <aside className="mx-auto mb-20 max-w-4xl px-6 md:px-8">

@@ -1,4 +1,5 @@
 export type BlogCategory = 'news' | 'import' | 'fleet' | 'parts' | 'tips'
+export const blogCategories: BlogCategory[] = ['news', 'import', 'fleet', 'parts', 'tips']
 
 export interface BlogPost {
   slug: string
@@ -15,6 +16,8 @@ export interface BlogPost {
   publishedAt: string // ISO date string
   readingMinutes: number
   featured?: boolean
+  /** Full HTML body — populated on the detail page only, not in listing queries. */
+  content?: string
 }
 
 export const blogPosts: BlogPost[] = [

@@ -168,7 +168,7 @@ export const he: Dictionary = {
     catalogUnavailableLead:
       'לא הצלחנו להתחבר לחנות ברגע זה. נסו שוב בעוד רגע, או פנו אלינו ונבדוק זמינות עבורכם.',
     catalogEmpty: 'עדיין לא פורסמו חלפים',
-    catalogEmptyLead: 'הקטלוג בהכנה. פנו אלינו ונשיג את החלק שאתם צריכים.',
+    catalogEmptyLead: 'הקטלוג בהכנה. פנו אלינו ונשיג את החלק ש��תם צריכים.',
     untranslatedNotice:
       'חלק משמות המוצרים מוצגים בעברית המקורית עד להשלמת התרגום.',
   },
@@ -252,6 +252,15 @@ export const he: Dictionary = {
     customTitle: 'מחפשים משהו ספציפי?',
     customLead: 'ספרו לנו איזה רכב אתם רוצים ואנחנו נאתר, נבדוק ונביא אותו עד אליכם.',
     customCta: 'בקשת ייבוא אישי',
+    inventoryUnavailable: 'רשימת הרכבים אינה זמינה כרגע',
+    inventoryUnavailableLead:
+      'לא הצלחנו להגיע לחנות כרגע. נסו שוב בעוד כמה דקות, או צרו איתנו קשר ונבדוק זמינות עבורכם.',
+    inventoryEmpty: 'אין רכבים ברשימה כרגע',
+    inventoryEmptyLead:
+      'מלאי חדש מגיע באופן קבוע. צרו איתנו קשר ונעדכן אתכם כשיגיע משהו שמתאים לכם.',
+    inventoryAcfMissing: 'נתוני הרכבים אינם נגישים עדיין',
+    inventoryAcfMissingLead:
+      'יש להפעיל את תוסף WPGraphQL for ACF בשרת WordPress. פנו למנהל האתר.',
   },
   importDetail: {
     gallery: 'גלריה',

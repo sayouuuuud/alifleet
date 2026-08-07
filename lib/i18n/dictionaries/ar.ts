@@ -109,7 +109,7 @@ export const ar: Dictionary = {
       spec4Label: 'التسليم', spec4Value: 'يُسلَّم لباب منزلك',
       specSheetTitle: 'بطاقة مواصفات المركبة',
       specSheetCode: 'ALI-FLEET / 01',
-      specAvailable: 'الاستيراد متاح الآن',
+      specAvailable: 'الاستيراد متاح ال��ن',
       stat1Label: 'مركبة تم توريدها',
       stat2Label: 'سوق تصدير',
       stat3Label: 'مطابقة للمواصفات',
@@ -191,7 +191,7 @@ export const ar: Dictionary = {
     browseParts: 'استعرض قطع الغيار',
     item: 'المنتج',
     price: 'السعر',
-    lineTotal: 'الإجمالي',
+    lineTotal: 'الإجم��لي',
     subtotal: 'المجموع الفرعي',
     shippingNote: 'يتم حساب الشحن والضرائب عند إتمام الطلب.',
     checkout: 'متابعة إلى الدفع',
@@ -253,6 +253,15 @@ export const ar: Dictionary = {
     customTitle: 'تبحث عن سيارة معينة؟',
     customLead: 'أخبرنا بالسيارة التي تريدها وسنجدها ونفحصها ونوصلها إلى بابك.',
     customCta: 'اطلب استيرادًا مخصصًا',
+    inventoryUnavailable: 'قائمة المركبات غير متاحة مؤقتًا',
+    inventoryUnavailableLead:
+      'لم نتمكن من الوصول إلى المتجر الآن. جرّب مرة أخرى بعد قليل، أو تواصل معنا وسنتحقق من التوفر.',
+    inventoryEmpty: 'لا توجد مركبات مدرجة حاليًا',
+    inventoryEmptyLead:
+      'تصلنا مركبات جديدة بانتظام. تواصل معنا وسنخبرك حين يتوفر ما يناسبك.',
+    inventoryAcfMissing: 'بيانات المركبات غير متاحة بعد',
+    inventoryAcfMissingLead:
+      'يجب تفعيل إضافة WPGraphQL for ACF على خادم ووردبريس. تواصل مع مسؤول الموقع.',
   },
   importDetail: {
     gallery: 'معرض الصور',
@@ -308,7 +317,7 @@ export const ar: Dictionary = {
     minRead: 'دقيقة للقراءة',
     allPosts: 'جميع المقالات',
     categories: {
-      news: 'أخبار',
+      news: 'أخبا��',
       import: 'استيراد',
       fleet: 'الأسطول',
       parts: 'قطع الغيار',

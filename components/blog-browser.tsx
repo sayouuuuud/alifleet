@@ -2,15 +2,48 @@
 
 import { useState } from 'react'
 import { useLanguage } from '@/lib/i18n/language-context'
-import { blogPosts, type BlogCategory } from '@/lib/data/blog'
+import type { BlogPost, BlogCategory } from '@/lib/data/blog'
+import type { PostsStatus } from '@/lib/wp/posts'
 import { BlogCard } from '@/components/blog-card'
+import Link from 'next/link'
 
 const ALL = 'all' as const
 type Filter = typeof ALL | BlogCategory
 
-export function BlogBrowser() {
+type Props = {
+  posts: BlogPost[]
+  status: PostsStatus
+}
+
+export function BlogBrowser({ posts, status }: Props) {
   const { t } = useLanguage()
   const [activeFilter, setActiveFilter] = useState<Filter>(ALL)
+
+  if (status === 'not_configured' || status === 'unreachable') {
+    return (
+      <div className="rounded-3xl bg-card p-12 text-center ring-1 ring-border">
+        <p className="font-semibold text-foreground">{t.products.catalogUnavailable}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          {t.products.catalogUnavailableLead}
+        </p>
+        <Link
+          href="/contact"
+          className="mt-6 inline-block rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+        >
+          {t.common.callUs}
+        </Link>
+      </div>
+    )
+  }
+
+  if (status === 'empty' || posts.length === 0) {
+    return (
+      <div className="rounded-3xl bg-card p-12 text-center ring-1 ring-border">
+        <p className="font-semibold text-foreground">{t.products.catalogEmpty}</p>
+        <p className="mt-2 text-sm text-muted-foreground">{t.products.catalogEmptyLead}</p>
+      </div>
+    )
+  }
 
   const categories: { key: Filter; label: string }[] = [
     { key: ALL, label: t.blog.allPosts },
@@ -21,8 +54,8 @@ export function BlogBrowser() {
     { key: 'tips', label: t.blog.categories.tips },
   ]
 
-  // Non-featured posts only (featured is shown separately)
-  const nonFeatured = blogPosts.filter((p) => !p.featured)
+  // Non-featured posts only (featured is shown separately in BlogHero)
+  const nonFeatured = posts.filter((p) => !p.featured)
   const filtered =
     activeFilter === ALL
       ? nonFeatured
@@ -30,7 +63,6 @@ export function BlogBrowser() {
 
   return (
     <div>
-      {/* Category filter */}
       <div className="flex flex-wrap gap-2" role="group" aria-label={t.blog.allPosts}>
         {categories.map((cat) => (
           <button
@@ -49,7 +81,6 @@ export function BlogBrowser() {
         ))}
       </div>
 
-      {/* Grid */}
       {filtered.length > 0 ? (
         <ul className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3" role="list">
           {filtered.map((post) => (
