@@ -6,6 +6,7 @@ import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Check } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
+import type { PageImages } from '@/lib/wp/page-images'
 
 gsap.registerPlugin(ScrollTrigger)
 

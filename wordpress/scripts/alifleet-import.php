@@ -268,7 +268,19 @@ function alifleet_attachment_id( string $rel ): int {
  * @return mixed
  */
 function alifleet_resolve_images( $value, string $field_name = '' ) {
-	$IMAGE_FIELDS = [ 'image', 'featured_image', 'part_image', 'author_avatar' ];
+	$IMAGE_FIELDS = [
+		'image',
+		'featured_image',
+		'part_image',
+		'author_avatar',
+		// Hero section sub-fields
+		'slide_image',
+		'hero_avatar_image',
+		// Services section sub-fields
+		'bg_image',
+		// Inner-page hero backgrounds
+		'hero_background_image',
+	];
 
 	if ( is_array( $value ) ) {
 		$out = [];

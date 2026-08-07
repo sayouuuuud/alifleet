@@ -7,18 +7,21 @@ import { FleetShowcase } from '@/components/fleet-showcase'
 import { Services } from '@/components/services'
 import { CtaSection } from '@/components/cta-section'
 import { SiteFooter } from '@/components/site-footer'
+import { fetchPageImages } from '@/lib/wp/page-images'
 
-export default function Page() {
+export default async function Page() {
+  const images = await fetchPageImages()
+
   return (
     <>
       <SiteHeader />
       <main>
-        <Hero />
+        <Hero wpImages={images} />
         <StatsStrip />
-        <FleetShowcase />
+        <FleetShowcase wpImages={images} />
         <MarqueeStrip />
         <GlobalReach />
-        <Services />
+        <Services wpImages={images} />
         <CtaSection />
       </main>
       <SiteFooter />
