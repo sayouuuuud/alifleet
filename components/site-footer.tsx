@@ -4,10 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Mail, MapPin, Phone } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
-import { siteConfig } from '@/lib/site-config'
+import { useStore } from '@/lib/store-context'
 
 export function SiteFooter() {
   const { t } = useLanguage()
+  const store = useStore()
 
   const columns = [
     {
@@ -54,29 +55,38 @@ export function SiteFooter() {
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-muted-foreground">
               {t.footer.tagline}
             </p>
+            {/* Contact rows come from WordPress, so each one is only rendered
+                once it actually has a value — an empty tel: link is worse than
+                no link at all. */}
             <ul className="mt-6 flex flex-col gap-3 text-sm text-muted-foreground">
-              <li>
-                <a
-                  href={siteConfig.phoneHref}
-                  className="flex items-center gap-2.5 transition-colors hover:text-primary"
-                >
-                  <Phone className="size-4 shrink-0 text-accent" aria-hidden="true" />
-                  <span dir="ltr">{siteConfig.phone}</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`mailto:${siteConfig.email}`}
-                  className="flex items-center gap-2.5 transition-colors hover:text-primary"
-                >
-                  <Mail className="size-4 shrink-0 text-accent" aria-hidden="true" />
-                  <span dir="ltr">{siteConfig.email}</span>
-                </a>
-              </li>
-              <li className="flex items-start gap-2.5">
-                <MapPin className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />
-                <span>{siteConfig.addressLines.join(', ')}</span>
-              </li>
+              {store.phone && (
+                <li>
+                  <a
+                    href={store.phoneHref}
+                    className="flex items-center gap-2.5 transition-colors hover:text-primary"
+                  >
+                    <Phone className="size-4 shrink-0 text-accent" aria-hidden="true" />
+                    <span dir="ltr">{store.phone}</span>
+                  </a>
+                </li>
+              )}
+              {store.email && (
+                <li>
+                  <a
+                    href={`mailto:${store.email}`}
+                    className="flex items-center gap-2.5 transition-colors hover:text-primary"
+                  >
+                    <Mail className="size-4 shrink-0 text-accent" aria-hidden="true" />
+                    <span dir="ltr">{store.email}</span>
+                  </a>
+                </li>
+              )}
+              {store.addressLines.length > 0 && (
+                <li className="flex items-start gap-2.5">
+                  <MapPin className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />
+                  <span>{store.addressLines.join(', ')}</span>
+                </li>
+              )}
             </ul>
           </div>
 
@@ -103,7 +113,7 @@ export function SiteFooter() {
 
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 text-xs text-muted-foreground md:flex-row">
           <p>
-            © {new Date().getFullYear()} {siteConfig.name}. {t.footer.rights}
+            © {new Date().getFullYear()} {store.name}. {t.footer.rights}
           </p>
           <p>{t.footer.slogan}</p>
         </div>

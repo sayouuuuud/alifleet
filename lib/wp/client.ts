@@ -34,14 +34,22 @@ export async function wpFetch<T>(
     headers.Authorization = `Bearer ${options.authToken}`
   }
 
+  // Account data is per-user and must never be shared between visitors, so it
+  // stays uncached. Public catalog data opts in to the Next.js data cache by
+  // passing `revalidate`, which keeps a 165-product storefront off the
+  // WordPress box on every single request.
+  const caching: Pick<RequestInit, 'cache'> & { next?: { revalidate: number } } =
+    typeof options.revalidate === 'number'
+      ? { next: { revalidate: options.revalidate } }
+      : { cache: 'no-store' }
+
   let response: Response
   try {
     response = await fetch(wpEndpoint, {
       method: 'POST',
       headers,
       body: JSON.stringify({ query, variables }),
-      // Account data is per-user and must never be shared between visitors.
-      cache: 'no-store',
+      ...caching,
       signal: AbortSignal.timeout(15_000),
     })
   } catch (error) {

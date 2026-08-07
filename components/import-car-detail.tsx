@@ -5,14 +5,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Check, MessageCircle, Phone } from 'lucide-react'
 import type { ImportCar } from '@/lib/data/import-cars'
-import { similarCars } from '@/lib/data/import-cars'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatNumber, formatPrice } from '@/lib/format'
-import { siteConfig, whatsappLink } from '@/lib/site-config'
+import { whatsappLink } from '@/lib/site-config'
+import { useStore } from '@/lib/store-context'
 import { ImportCarCard } from '@/components/import-car-card'
 
-export function ImportCarDetail({ car }: { car: ImportCar }) {
+export function ImportCarDetail({ car, related }: { car: ImportCar; related: ImportCar[] }) {
   const { t, locale } = useLanguage()
+  const store = useStore()
   const images = [{ src: car.image, alt: car.alt }, ...car.gallery]
   const [active, setActive] = useState(0)
 
@@ -35,8 +36,6 @@ export function ImportCarDetail({ car }: { car: ImportCar }) {
   ]
 
   const enquiry = `${t.importDetail.whatsappIntro}\n\n${car.model} · ${car.year}\n${t.import.origins[car.origin]}\n${typeof window === 'undefined' ? '' : window.location.href}`
-
-  const related = similarCars(car)
 
   return (
     <>
@@ -109,7 +108,9 @@ export function ImportCarDetail({ car }: { car: ImportCar }) {
                 {t.import.landedPrice}
               </p>
               <p className="mt-1.5 font-serif text-4xl text-foreground" dir="ltr">
-                {car.price === null ? t.common.onRequest : formatPrice(car.price)}
+                {car.price === null
+                  ? t.common.onRequest
+                  : formatPrice(car.price, store.currency)}
               </p>
               <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="size-2 rounded-full bg-accent" aria-hidden="true" />
@@ -117,22 +118,26 @@ export function ImportCarDetail({ car }: { car: ImportCar }) {
               </p>
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <a
-                  href={whatsappLink(enquiry)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
-                >
-                  <MessageCircle className="size-4" aria-hidden="true" />
-                  {t.importDetail.requestThisCar}
-                </a>
-                <a
-                  href={siteConfig.phoneHref}
-                  className="flex items-center justify-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-semibold text-foreground ring-1 ring-border transition-colors hover:bg-muted"
-                >
-                  <Phone className="size-4" aria-hidden="true" />
-                  {t.common.callUs}
-                </a>
+                {store.whatsapp && (
+                  <a
+                    href={whatsappLink(enquiry, store.whatsapp)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+                  >
+                    <MessageCircle className="size-4" aria-hidden="true" />
+                    {t.importDetail.requestThisCar}
+                  </a>
+                )}
+                {store.phoneHref && (
+                  <a
+                    href={store.phoneHref}
+                    className="flex items-center justify-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-semibold text-foreground ring-1 ring-border transition-colors hover:bg-muted"
+                  >
+                    <Phone className="size-4" aria-hidden="true" />
+                    {t.common.callUs}
+                  </a>
+                )}
               </div>
             </div>
 

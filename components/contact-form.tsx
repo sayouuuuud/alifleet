@@ -4,13 +4,15 @@ import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { MessageCircle, Send } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
-import { siteConfig, whatsappLink } from '@/lib/site-config'
+import { whatsappLink } from '@/lib/site-config'
+import { useStore } from '@/lib/store-context'
 
 type SubjectKey = 'parts' | 'import' | 'fleet' | 'other'
 const subjectKeys: SubjectKey[] = ['parts', 'import', 'fleet', 'other']
 
 export function ContactForm() {
   const { t } = useLanguage()
+  const store = useStore()
   const searchParams = useSearchParams()
   const initialSubject = searchParams.get('subject')
 
@@ -37,8 +39,9 @@ export function ContactForm() {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const href = `mailto:${siteConfig.email}?subject=${encodeURIComponent(
-      `${siteConfig.name} — ${t.contact.subjects[subject]}`
+    if (!store.email) return
+    const href = `mailto:${store.email}?subject=${encodeURIComponent(
+      `${store.name} — ${t.contact.subjects[subject]}`
     )}&body=${encodeURIComponent(composed)}`
     window.location.href = href
   }
@@ -139,20 +142,25 @@ export function ContactForm() {
         <div className="flex flex-col gap-3 sm:flex-row">
           <button
             type="submit"
-            className="flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+            disabled={!store.email}
+            className="flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-6 py-3.5 text-sm font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Send className="size-4" aria-hidden="true" />
             {t.contact.send}
           </button>
-          <a
-            href={whatsappLink(composed)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
-          >
-            <MessageCircle className="size-4" aria-hidden="true" />
-            {t.contact.sendWhatsapp}
-          </a>
+          {/* Hidden outright when no WhatsApp number is configured, since a
+              wa.me link without a number just opens an error page. */}
+          {store.whatsapp && (
+            <a
+              href={whatsappLink(composed, store.whatsapp)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-accent-foreground transition-opacity hover:opacity-90"
+            >
+              <MessageCircle className="size-4" aria-hidden="true" />
+              {t.contact.sendWhatsapp}
+            </a>
+          )}
         </div>
       </div>
     </form>

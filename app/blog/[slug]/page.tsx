@@ -1,11 +1,10 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getPost, getRelatedPosts } from '@/lib/wp/posts'
 import { BlogArticle } from '@/components/blog-article'
-import { blogPosts, getBlogPost } from '@/lib/data/blog'
 
-export function generateStaticParams() {
-  return blogPosts.map((post) => ({ slug: post.slug }))
-}
+// Dynamic rendering — slugs come from WordPress at runtime.
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({
   params,
@@ -13,8 +12,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>
 }): Promise<Metadata> {
   const { slug } = await params
-  const post = getBlogPost(slug)
-
+  const post = await getPost(slug)
   if (!post) return { title: 'Article not found | ALI FLEET' }
 
   return {
@@ -25,7 +23,7 @@ export async function generateMetadata({
       description: post.excerptEn,
       type: 'article',
       publishedTime: post.publishedAt,
-      images: [{ url: post.coverImage }],
+      images: post.coverImage ? [{ url: post.coverImage }] : undefined,
     },
   }
 }
@@ -36,14 +34,10 @@ export default async function BlogArticlePage({
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const post = getBlogPost(slug)
-
+  const post = await getPost(slug)
   if (!post) notFound()
 
-  const related = blogPosts
-    .filter((item) => item.slug !== post.slug)
-    .sort((a, b) => Number(b.category === post.category) - Number(a.category === post.category))
-    .slice(0, 3)
+  const related = await getRelatedPosts(post)
 
   return <BlogArticle post={post} related={related} />
 }

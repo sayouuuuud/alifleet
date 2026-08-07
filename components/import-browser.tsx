@@ -1,31 +1,105 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { carOrigins, carStatuses, importCars } from '@/lib/data/import-cars'
-import type { CarOrigin, CarStatus } from '@/lib/data/import-cars'
+import { carOrigins, carStatuses } from '@/lib/data/import-cars'
+import { Paginator } from '@/components/paginator'
+import type { CarOrigin, CarStatus, ImportCar } from '@/lib/data/import-cars'
+import type { VehiclesStatus } from '@/lib/wp/vehicles'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { ImportCarCard } from '@/components/import-car-card'
+import Link from 'next/link'
 
-export function ImportBrowser() {
+type Props = {
+  cars: ImportCar[]
+  status: VehiclesStatus
+}
+
+export function ImportBrowser({ cars, status }: Props) {
   const { t } = useLanguage()
   const [origin, setOrigin] = useState<CarOrigin | 'all'>('all')
-  const [status, setStatus] = useState<CarStatus | 'all'>('all')
+  const [carStatus, setCarStatus] = useState<CarStatus | 'all'>('all')
+  const [page, setPage] = useState(1)
+  const PAGE_SIZE = 6 // 2 rows × 3 cols
 
-  const cars = useMemo(
+  const filtered = useMemo(
     () =>
-      importCars.filter(
+      cars.filter(
         (car) =>
           (origin === 'all' || car.origin === origin) &&
-          (status === 'all' || car.status === status)
+          (carStatus === 'all' || car.status === carStatus)
       ),
-    [origin, status]
+    [cars, origin, carStatus]
   )
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const paged = filtered.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
+  const goToPage = (p: number) => { setPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }) }
 
   const chip = (active: boolean) =>
     active
       ? 'rounded-full bg-foreground px-4 py-2 text-sm font-semibold text-background'
       : 'rounded-full bg-card px-4 py-2 text-sm font-medium text-muted-foreground ring-1 ring-border transition-colors hover:bg-secondary hover:text-foreground'
 
+  /* ---------- empty / error states served from server data ---------- */
+  if (status === 'not_configured' || status === 'unreachable') {
+    return (
+      <section className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
+        <div className="rounded-3xl bg-card p-12 text-center ring-1 ring-border">
+          <p className="font-semibold text-foreground">
+            {t.import.inventoryUnavailable}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t.import.inventoryUnavailableLead}
+          </p>
+          <Link
+            href="/contact"
+            className="mt-6 inline-block rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+          >
+            {t.common.callUs}
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  if (status === 'acf_missing') {
+    return (
+      <section className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
+        <div className="rounded-3xl border border-destructive/30 bg-destructive/5 p-12 text-center">
+          <p className="font-semibold text-foreground">
+            {t.import.inventoryAcfMissing}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t.import.inventoryAcfMissingLead}
+          </p>
+        </div>
+      </section>
+    )
+  }
+
+  if (status === 'empty') {
+    return (
+      <section className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
+        <div className="rounded-3xl bg-card p-12 text-center ring-1 ring-border">
+          <p className="font-semibold text-foreground">
+            {t.import.inventoryEmpty}
+          </p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            {t.import.inventoryEmptyLead}
+          </p>
+          <Link
+            href="/contact"
+            className="mt-6 inline-block rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+          >
+            {t.common.callUs}
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  /* ---------- normal grid ---------- */
   return (
     <section id="available" className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
@@ -43,14 +117,14 @@ export function ImportBrowser() {
           <span className="me-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t.import.filterOrigin}
           </span>
-          <button type="button" onClick={() => setOrigin('all')} className={chip(origin === 'all')}>
+          <button type="button" onClick={() => { setOrigin('all'); setPage(1) }} className={chip(origin === 'all')}>
             {t.common.all}
           </button>
           {carOrigins.map((item) => (
             <button
               key={item}
               type="button"
-              onClick={() => setOrigin(item)}
+              onClick={() => { setOrigin(item); setPage(1) }}
               className={chip(origin === item)}
             >
               {t.import.origins[item]}
@@ -62,15 +136,19 @@ export function ImportBrowser() {
           <span className="me-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             {t.import.filterStatus}
           </span>
-          <button type="button" onClick={() => setStatus('all')} className={chip(status === 'all')}>
+          <button
+            type="button"
+            onClick={() => { setCarStatus('all'); setPage(1) }}
+            className={chip(carStatus === 'all')}
+          >
             {t.common.all}
           </button>
           {carStatuses.map((item) => (
             <button
               key={item}
               type="button"
-              onClick={() => setStatus(item)}
-              className={chip(status === item)}
+              onClick={() => { setCarStatus(item); setPage(1) }}
+              className={chip(carStatus === item)}
             >
               {t.import.status[item]}
             </button>
@@ -79,17 +157,18 @@ export function ImportBrowser() {
       </div>
 
       <p className="mt-6 text-sm text-muted-foreground">
-        <span dir="ltr">{cars.length}</span> {t.common.resultsCount}
+        <span dir="ltr">{filtered.length}</span> {t.common.resultsCount}
       </p>
 
-      {cars.length === 0 ? (
+      {filtered.length === 0 ? (
         <div className="mt-10 rounded-3xl bg-card p-12 text-center ring-1 ring-border">
           <p className="text-muted-foreground">{t.common.noResults}</p>
           <button
             type="button"
             onClick={() => {
               setOrigin('all')
-              setStatus('all')
+              setCarStatus('all')
+              setPage(1)
             }}
             className="mt-4 rounded-full bg-foreground px-5 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90"
           >
@@ -97,11 +176,17 @@ export function ImportBrowser() {
           </button>
         </div>
       ) : (
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {cars.map((car) => (
-            <ImportCarCard key={car.slug} car={car} />
-          ))}
-        </div>
+        <>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {paged.map((car) => (
+              <ImportCarCard key={car.slug} car={car} />
+            ))}
+          </div>
+
+          {totalPages > 1 && (
+            <Paginator current={safePage} total={totalPages} onChange={goToPage} prevLabel={t.common.prevPage} nextLabel={t.common.nextPage} />
+          )}
+        </>
       )}
     </section>
   )

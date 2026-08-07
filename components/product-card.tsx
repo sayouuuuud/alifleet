@@ -3,13 +3,21 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
-import type { Part } from '@/lib/data/parts'
+import type { PartSummary } from '@/lib/data/parts'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatPrice } from '@/lib/format'
+import { useStore } from '@/lib/store-context'
 import { AddToCartButton } from '@/components/add-to-cart-button'
+import { proxied } from '@/lib/img-proxy'
 
-export function ProductCard({ part }: { part: Part }) {
+export function ProductCard({ part }: { part: PartSummary }) {
   const { t, locale } = useLanguage()
+  const store = useStore()
+
+  // Products that have not been translated yet still show their original
+  // Hebrew title, so it is tagged as Hebrew for screen readers and for correct
+  // bidi handling rather than being passed off as Arabic or English.
+  const nameLang = part.untranslated ? 'he' : undefined
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-3xl bg-card ring-1 ring-border transition-shadow hover:shadow-xl hover:shadow-foreground/5">
@@ -18,7 +26,7 @@ export function ProductCard({ part }: { part: Part }) {
         className="relative block aspect-4/3 overflow-hidden bg-secondary"
       >
         <Image
-          src={part.image || '/placeholder.svg'}
+          src={proxied(part.image)}
           alt={part.alt[locale]}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
@@ -37,20 +45,26 @@ export function ProductCard({ part }: { part: Part }) {
 
       <div className="flex flex-1 flex-col p-5">
         <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          {part.brand} · {t.products.categories[part.category]}
+          {part.brand ? `${part.brand} · ` : ''}
+          {t.products.categories[part.category]}
         </p>
-        <h3 className="mt-2 text-pretty text-base font-semibold leading-snug text-foreground">
+        <h3
+          className="mt-2 text-pretty text-base font-semibold leading-snug text-foreground"
+          lang={nameLang}
+        >
           <Link href={`/products/${part.slug}`} className="hover:text-accent">
             {part.name[locale]}
           </Link>
         </h3>
-        <p className="mt-1.5 font-mono text-xs text-muted-foreground" dir="ltr">
-          {part.sku}
-        </p>
+        {part.sku && (
+          <p className="mt-1.5 font-mono text-xs text-muted-foreground" dir="ltr">
+            {part.sku}
+          </p>
+        )}
 
         <div className="mt-auto flex items-end justify-between gap-3 pt-5">
           <p className="font-serif text-2xl text-foreground" dir="ltr">
-            {formatPrice(part.price)}
+            {part.price > 0 ? formatPrice(part.price, store.currency) : t.common.onRequest}
           </p>
           <div className="flex items-center gap-2">
             <Link

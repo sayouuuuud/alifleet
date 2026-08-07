@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { MessageCircle, Phone } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
-import { siteConfig, whatsappLink } from '@/lib/site-config'
+import { whatsappLink } from '@/lib/site-config'
+import { useStore } from '@/lib/store-context'
 import { BackendNotice } from './alerts'
 
 type AuthKey = 'login' | 'register' | 'forgot'
@@ -23,6 +24,7 @@ export function AuthShell({
   children: React.ReactNode
 }) {
   const { t } = useLanguage()
+  const store = useStore()
   const copy = t.account[screen]
 
   return (
@@ -59,22 +61,26 @@ export function AuthShell({
                   {t.account.backend.contactLead}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-3">
-                  <a
-                    href={whatsappLink(t.account.backend.contactLead)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
-                  >
-                    <MessageCircle className="h-4 w-4" aria-hidden="true" />
-                    {t.common.whatsapp}
-                  </a>
-                  <a
-                    href={`tel:${siteConfig.phone}`}
-                    className="inline-flex items-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-medium text-secondary-foreground transition-opacity hover:opacity-90"
-                  >
-                    <Phone className="h-4 w-4" aria-hidden="true" />
-                    {t.common.callUs}
-                  </a>
+                  {store.whatsapp && (
+                    <a
+                      href={whatsappLink(t.account.backend.contactLead, store.whatsapp)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-medium text-accent-foreground transition-opacity hover:opacity-90"
+                    >
+                      <MessageCircle className="h-4 w-4" aria-hidden="true" />
+                      {t.common.whatsapp}
+                    </a>
+                  )}
+                  {store.phoneHref && (
+                    <a
+                      href={store.phoneHref}
+                      className="inline-flex items-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-medium text-secondary-foreground transition-opacity hover:opacity-90"
+                    >
+                      <Phone className="h-4 w-4" aria-hidden="true" />
+                      {t.common.callUs}
+                    </a>
+                  )}
                   <Link
                     href="/contact"
                     className="inline-flex items-center gap-2 rounded-full px-5 py-3 text-sm font-medium text-foreground ring-1 ring-border transition-colors hover:bg-secondary"

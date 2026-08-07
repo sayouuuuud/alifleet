@@ -10,27 +10,36 @@ import {
   ShoppingCart,
   Trash2,
 } from 'lucide-react'
-import { parts } from '@/lib/data/parts'
+import type { PartSummary } from '@/lib/data/parts'
 import { useCart } from '@/lib/cart-context'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatPrice } from '@/lib/format'
 import { whatsappLink, wordpressCheckoutUrl } from '@/lib/site-config'
+import { useStore } from '@/lib/store-context'
 
-export function CartView() {
+/**
+ * The cart itself only ever stores slugs and quantities in localStorage, so the
+ * catalog is passed in from the server page to resolve them into live products.
+ * That means prices, stock and — critically — WooCommerce product ids are read
+ * fresh instead of trusting whatever was cached in the browser.
+ */
+export function CartView({ catalog }: { catalog: PartSummary[] }) {
   const { t, locale } = useLanguage()
+  const store = useStore()
   const { lines, setQuantity, remove, clear, ready } = useCart()
 
   const rows = lines
     .map((line) => {
-      const part = parts.find((item) => item.slug === line.slug)
+      const part = catalog.find((item) => item.slug === line.slug)
       return part ? { part, quantity: line.quantity } : null
     })
-    .filter((row): row is { part: (typeof parts)[number]; quantity: number } => row !== null)
+    .filter((row): row is { part: PartSummary; quantity: number } => row !== null)
 
   const subtotal = rows.reduce((total, row) => total + row.part.price * row.quantity, 0)
 
   const checkoutHref = wordpressCheckoutUrl(
-    rows.map((row) => ({ wooId: row.part.wooId, quantity: row.quantity }))
+    rows.map((row) => ({ wooId: row.part.wooId, quantity: row.quantity })),
+    store
   )
 
   const whatsappHref = whatsappLink(
@@ -39,11 +48,13 @@ export function CartView() {
       ...rows.map(
         (row) =>
           `• ${row.part.name[locale]} (${row.part.sku}) × ${row.quantity} — ${formatPrice(
-            row.part.price * row.quantity
+            row.part.price * row.quantity,
+            store.currency
           )}`
       ),
-      `${t.cart.subtotal}: ${formatPrice(subtotal)}`,
-    ].join('\n')
+      `${t.cart.subtotal}: ${formatPrice(subtotal, store.currency)}`,
+    ].join('\n'),
+    store.whatsapp
   )
 
   // Avoid rendering an "empty cart" flash before localStorage is read.
@@ -113,7 +124,7 @@ export function CartView() {
                   </Link>
                 </h3>
                 <p className="mt-1 font-mono text-xs text-muted-foreground" dir="ltr">
-                  {part.sku} · {formatPrice(part.price)}
+                  {part.sku} · {formatPrice(part.price, store.currency)}
                 </p>
               </div>
 
@@ -145,7 +156,7 @@ export function CartView() {
 
                 <div className="flex items-center gap-3">
                   <p className="font-serif text-xl text-foreground" dir="ltr">
-                    {formatPrice(part.price * quantity)}
+                    {formatPrice(part.price * quantity, store.currency)}
                   </p>
                   <button
                     type="button"
@@ -189,7 +200,7 @@ export function CartView() {
                     {part.name[locale]} × <span dir="ltr">{quantity}</span>
                   </dt>
                   <dd className="shrink-0 font-medium text-foreground" dir="ltr">
-                    {formatPrice(part.price * quantity)}
+                    {formatPrice(part.price * quantity, store.currency)}
                   </dd>
                 </div>
               ))}
@@ -200,33 +211,41 @@ export function CartView() {
                 {t.cart.subtotal}
               </p>
               <p className="font-serif text-3xl text-foreground" dir="ltr">
-                {formatPrice(subtotal)}
+                {formatPrice(subtotal, store.currency)}
               </p>
             </div>
             <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
               {t.cart.shippingNote}
             </p>
 
-            <a
-              href={checkoutHref}
-              className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-full bg-foreground px-6 py-4 text-base font-semibold text-background transition-opacity hover:opacity-90"
-            >
-              {t.cart.checkout}
-              <ArrowRight className="size-4" aria-hidden="true" data-flip-rtl />
-            </a>
-            <p className="mt-2.5 text-center text-xs text-muted-foreground">
-              {t.cart.checkoutNote}
-            </p>
+            {/* Checkout hands off to WooCommerce, so the button only appears
+                once we know the store URL — never as a link to nowhere. */}
+            {checkoutHref && (
+              <>
+                <a
+                  href={checkoutHref}
+                  className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-full bg-foreground px-6 py-4 text-base font-semibold text-background transition-opacity hover:opacity-90"
+                >
+                  {t.cart.checkout}
+                  <ArrowRight className="size-4" aria-hidden="true" data-flip-rtl />
+                </a>
+                <p className="mt-2.5 text-center text-xs text-muted-foreground">
+                  {t.cart.checkoutNote}
+                </p>
+              </>
+            )}
 
-            <a
-              href={whatsappHref}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-4 flex w-full items-center justify-center gap-2.5 rounded-full bg-secondary px-6 py-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-border/40"
-            >
-              <MessageCircle className="size-4" aria-hidden="true" />
-              {t.cart.orderViaWhatsapp}
-            </a>
+            {whatsappHref && (
+              <a
+                href={whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 flex w-full items-center justify-center gap-2.5 rounded-full bg-secondary px-6 py-3.5 text-sm font-semibold text-foreground transition-colors hover:bg-border/40"
+              >
+                <MessageCircle className="size-4" aria-hidden="true" />
+                {t.cart.orderViaWhatsapp}
+              </a>
+            )}
           </div>
         </aside>
       </div>

@@ -43,6 +43,8 @@ export const he: Dictionary = {
     sendRequest: 'שליחת בקשה',
     backToProducts: 'חזרה לחלפים',
     backToImport: 'חזרה לייבוא',
+    prevPage: 'עמוד קודם',
+    nextPage: 'עמוד הבא',
     loading: 'טוען…',
     from: 'החל מ',
   },
@@ -159,10 +161,18 @@ export const he: Dictionary = {
       filters: 'מסננים',
       suspension: 'מתלים',
       electrical: 'חשמל',
+      other: 'חלפים נוספים',
     },
     trustWarranty: 'אחריות 12 חודשים',
     trustShipping: 'משלוח עולמי',
     trustGenuine: 'מקורי ו-OEM בלבד',
+    catalogUnavailable: 'קטלוג החלפים אינו זמין כרגע',
+    catalogUnavailableLead:
+      'לא הצלחנו להתחבר לחנות ברגע זה. נסו שוב בעוד רגע, או פנו אלינו ונבדוק זמינות עבורכם.',
+    catalogEmpty: 'עדיין לא פורסמו חלפים',
+    catalogEmptyLead: 'הקטלוג בהכנה. פנו אלינו ונשיג את החלק ש����תם צריכים.',
+    untranslatedNotice:
+      'חלק משמות המוצרים מוצגים בעברית המקורית עד להשלמת התרגום.',
   },
   productDetail: {
     related: 'אולי תצטרכו גם',
@@ -176,7 +186,7 @@ export const he: Dictionary = {
   },
   cart: {
     title: 'העגלה שלך',
-    lead: 'בד��ו את החלפים ואז המשיכו לחנות המאובטחת שלנו להשלמת ההזמנה.',
+    lead: 'בד����ו את החלפים ואז המשיכו לחנות המאובטחת שלנו להשלמת ההזמנה.',
     empty: 'העגלה שלך ריקה',
     emptyLead: 'עברו על קטלוג החלפים והוסיפו את מה שדרוש לכם.',
     browseParts: 'עברו לחלפים',
@@ -244,6 +254,15 @@ export const he: Dictionary = {
     customTitle: 'מחפשים משהו ספציפי?',
     customLead: 'ספרו לנו איזה רכב אתם רוצים ואנחנו נאתר, נבדוק ונביא אותו עד אליכם.',
     customCta: 'בקשת ייבוא אישי',
+    inventoryUnavailable: 'רשימת הרכבים אינה זמינה כרגע',
+    inventoryUnavailableLead:
+      'לא הצלחנו להגיע לחנות כרגע. נסו שוב בעוד כמה דקות, או צרו איתנו קשר ונבדוק זמינות עבורכם.',
+    inventoryEmpty: 'אין רכבים ברשימה כרגע',
+    inventoryEmptyLead:
+      'מלאי חדש מגיע באופן קבוע. צרו איתנו קשר ונעדכן אתכם כשיגיע משהו שמתאים לכם.',
+    inventoryAcfMissing: 'נתוני הרכבים אינם נגישים עדיין',
+    inventoryAcfMissingLead:
+      'יש להפעיל את תוסף WPGraphQL for ACF בשרת WordPress. פנו למנהל האתר.',
   },
   importDetail: {
     gallery: 'גלריה',
@@ -500,7 +519,7 @@ export const he: Dictionary = {
       weak_password: 'נא להשתמש בסיסמה של 8 תווים לפחות.',
       password_mismatch: 'שתי הסיסמאות אינן תואמות.',
       registration_disabled:
-        'ההרשמה הציבורית כרגע מושבתת בחנות. צרו איתנו קשר ונפתח לכם חשבון.',
+        'ה��רשמה הציבורית כרגע מושבתת בחנות. צרו איתנו קשר ונפתח לכם חשבון.',
       session_expired: 'הפעלת ההתחברות פגה. נא להתחבר מחדש.',
       not_logged_in: 'נא להתחבר כדי להמשיך.',
       woo_missing: 'היסטוריית ההזמנות אינה זמינה כי בחנות חסר התוסף WooCommerce GraphQL.',

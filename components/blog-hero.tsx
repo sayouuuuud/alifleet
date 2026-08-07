@@ -5,15 +5,14 @@ import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { useLanguage } from '@/lib/i18n/language-context'
-import { getFeaturedPost } from '@/lib/data/blog'
+import type { BlogPost } from '@/lib/data/blog'
 import { BlogCard } from '@/components/blog-card'
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function BlogHero() {
+export function BlogHero({ featured }: { featured: BlogPost | null }) {
   const sectionRef = useRef<HTMLElement>(null)
   const { t } = useLanguage()
-  const featured = getFeaturedPost()
 
   useGSAP(
     () => {
