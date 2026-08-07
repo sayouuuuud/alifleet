@@ -65,17 +65,19 @@ export function whatsappLink(message: string, whatsapp: string) {
 }
 
 /**
- * Hands the cart off to WooCommerce using its bulk add-to-cart query syntax,
- * where each entry is `productId:quantity`.
+ * Hands the whole basket to WooCommerce in a single navigation.
  *
- * `channel=online_store` keeps a store that still has coming-soon mode enabled
- * from bouncing the customer to a password screen.
+ * This targets the `alifleet-cart` endpoint from
+ * `wordpress/mu-plugin/alifleet-cms.php` rather than WooCommerce's own
+ * `?add-to-cart=`, because core only ever reads ONE product id from that
+ * parameter — a comma-separated list silently transfers just the first line.
+ * The endpoint rebuilds the cart server-side and forwards to checkout.
  */
 export function wordpressCheckoutUrl(
   items: { wooId: number; quantity: number }[],
   store: Pick<StoreSettings, 'wordpress'>
 ) {
-  const { baseUrl, cartPath } = store.wordpress
+  const { baseUrl } = store.wordpress
   if (!baseUrl || items.length === 0) return ''
 
   const list = items
@@ -84,5 +86,5 @@ export function wordpressCheckoutUrl(
     .join(',')
 
   if (!list) return ''
-  return `${baseUrl}${cartPath}?add-to-cart=${list}&channel=online_store`
+  return `${baseUrl}/?alifleet-cart=${encodeURIComponent(list)}`
 }

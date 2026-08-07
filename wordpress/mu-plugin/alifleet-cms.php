@@ -472,3 +472,85 @@ add_action(
 		echo '</ul></div>';
 	}
 );
+
+/* -------------------------------------------------------------------------
+ * 8. Multi-item cart handoff
+ *
+ * The Next.js frontend keeps its own cart, so the whole basket has to be
+ * transferred in one navigation when the customer checks out.
+ *
+ * WooCommerce core cannot do this: `?add-to-cart=` is handled by
+ * WC_Form_Handler::add_to_cart_action() which reads a single product id and
+ * ignores anything after it, so a comma-separated list silently transfers only
+ * the first line — or nothing at all. Core's own multi-item feature
+ * (`/checkout-link/?products=`) only exists in WooCommerce 10.0+, which we
+ * cannot assume of a store that has been running for years.
+ *
+ * So the frontend calls this endpoint instead:
+ *
+ *     /?alifleet-cart=<productId>:<qty>,<productId>:<qty>
+ *
+ * It rebuilds the cart server-side and redirects to the real checkout page.
+ * ---------------------------------------------------------------------- */
+
+add_action(
+	'template_redirect',
+	static function (): void {
+		if ( ! isset( $_GET['alifleet-cart'] ) ) {
+			return;
+		}
+		// WooCommerce loads its session on `wp_loaded`, so by `template_redirect`
+		// WC()->cart is guaranteed to exist — unless Woo is switched off entirely.
+		if ( ! function_exists( 'WC' ) || ! WC()->cart ) {
+			return;
+		}
+
+		$raw   = sanitize_text_field( wp_unslash( $_GET['alifleet-cart'] ) );
+		$added = 0;
+
+		// Start from an empty cart: this endpoint represents the frontend basket
+		// in full, so merging would duplicate lines when a customer returns.
+		WC()->cart->empty_cart();
+
+		foreach ( explode( ',', $raw ) as $entry ) {
+			$parts      = explode( ':', trim( $entry ), 2 );
+			$product_id = absint( $parts[0] ?? 0 );
+			$quantity   = isset( $parts[1] ) ? absint( $parts[1] ) : 1;
+
+			if ( ! $product_id || $quantity < 1 ) {
+				continue;
+			}
+
+			$product = wc_get_product( $product_id );
+			// Never trust an id from the query string: only real, purchasable,
+			// in-stock products may enter the cart.
+			if ( ! $product || ! $product->is_purchasable() || ! $product->is_in_stock() ) {
+				continue;
+			}
+
+			// Cap the line at what the store can actually ship, so checkout does
+			// not immediately reject the order it just accepted.
+			if ( $product->managing_stock() && ! $product->backorders_allowed() ) {
+				$stock = $product->get_stock_quantity();
+				if ( is_numeric( $stock ) ) {
+					$quantity = min( $quantity, max( 0, (int) $stock ) );
+				}
+			}
+			if ( $quantity < 1 ) {
+				continue;
+			}
+
+			if ( WC()->cart->add_to_cart( $product_id, $quantity ) ) {
+				$added++;
+			}
+		}
+
+		// With nothing valid to buy, the cart page explains the empty state far
+		// better than an empty checkout form does.
+		$destination = $added > 0 ? wc_get_checkout_url() : wc_get_cart_url();
+
+		wp_safe_redirect( $destination );
+		exit;
+	},
+	5
+);
