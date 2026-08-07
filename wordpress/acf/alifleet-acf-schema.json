@@ -3530,6 +3530,30 @@
         "layout": "block",
         "sub_fields": [
           {
+            "key": "field_import_hero_bg_image",
+            "label": "Background Image",
+            "name": "hero_background_image",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "instructions": "Full-width background image for this page hero section",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "",
+              "class": "",
+              "id": ""
+            }
+          },
+          {
             "key": "field_import_hero_eyebrow_ar",
             "label": "Eyebrow (AR)",
             "name": "eyebrow_ar",
@@ -4111,6 +4135,30 @@
         "layout": "block",
         "sub_fields": [
           {
+            "key": "field_products_hero_bg_image",
+            "label": "Background Image",
+            "name": "hero_background_image",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "instructions": "Full-width background image for this page hero section",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "",
+              "class": "",
+              "id": ""
+            }
+          },
+          {
             "key": "field_products_hero_eyebrow_ar",
             "label": "Eyebrow Text (AR)",
             "name": "eyebrow_ar",
@@ -4288,6 +4336,30 @@
         "name": "blog_hero",
         "type": "group",
         "sub_fields": [
+          {
+            "key": "field_blog_hero_bg_image",
+            "label": "Background Image",
+            "name": "hero_background_image",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "instructions": "Full-width background image for this page hero section",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "",
+              "class": "",
+              "id": ""
+            }
+          },
           {
             "key": "field_eyebrow_ar",
             "label": "Eyebrow (AR)",
@@ -4637,6 +4709,30 @@
         "type": "group",
         "layout": "block",
         "sub_fields": [
+          {
+            "key": "field_contact_hero_bg_image",
+            "label": "Background Image",
+            "name": "hero_background_image",
+            "type": "image",
+            "return_format": "array",
+            "preview_size": "medium",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "instructions": "Full-width background image for this page hero section",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+              "width": "",
+              "class": "",
+              "id": ""
+            }
+          },
           {
             "key": "field_contact_hero_eyebrow_ar",
             "label": "Eyebrow Text (AR)",

@@ -20,6 +20,7 @@ export type PageImages = {
   fleetVehicle1: string
   fleetVehicle2: string
   fleetVehicle3: string
+  fleetVehicle4: string
   // Home – services scenes
   serviceScene1: string
   serviceScene2: string
@@ -44,6 +45,7 @@ export const FALLBACK_PAGE_IMAGES: PageImages = {
   fleetVehicle1: '/images/fleet-van.png',
   fleetVehicle2: '/images/fleet-suv.png',
   fleetVehicle3: '/images/fleet-truck.png',
+  fleetVehicle4: '/images/port-light.png',
   serviceScene1: '/images/scene-personal-import.png',
   serviceScene2: '/images/scene-direct-import.png',
   serviceScene3: '/images/scene-spare-parts.png',
@@ -68,6 +70,7 @@ const PAGE_IMAGES_QUERY = /* GraphQL */ `
       fleetVehicle1
       fleetVehicle2
       fleetVehicle3
+      fleetVehicle4
       serviceScene1
       serviceScene2
       serviceScene3

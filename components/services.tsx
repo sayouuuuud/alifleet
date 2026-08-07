@@ -108,7 +108,7 @@ function SceneKicker({ index, kicker }: { index: string; kicker: string }) {
    Scene 01 — Personal Import: luxury spec sheet
    ============================================================ */
 
-function ShowroomScene() {
+function ShowroomScene({ bgImage }: { bgImage?: string }) {
   const { t } = useLanguage()
   const s = t.home.services
 
@@ -128,7 +128,7 @@ function ShowroomScene() {
   return (
     <SceneShell
       index={0}
-      image="/images/scene-personal-import.png"
+      image={bgImage || '/images/scene-personal-import.png'}
       video="/videos/scene-showroom.mp4"
       alt={s.scene1Kicker}
     >
@@ -201,7 +201,7 @@ function ShowroomScene() {
    Scene 02 — Direct Import: logistics route HUD
    ============================================================ */
 
-function PortScene() {
+function PortScene({ bgImage }: { bgImage?: string }) {
   const { t } = useLanguage()
   const s = t.home.services
 
@@ -215,7 +215,7 @@ function PortScene() {
   return (
     <SceneShell
       index={1}
-      image="/images/scene-direct-import.png"
+      image={bgImage || '/images/scene-direct-import.png'}
       video="/videos/scene-port.mp4"
       alt={s.scene2Kicker}
     >
@@ -316,7 +316,7 @@ function PortScene() {
    Scene 03 — Spare Parts: engine HUD
    ============================================================ */
 
-function PartsScene() {
+function PartsScene({ bgImage }: { bgImage?: string }) {
   const { t } = useLanguage()
   const s = t.home.services
 
@@ -335,7 +335,7 @@ function PartsScene() {
   return (
     <SceneShell
       index={2}
-      image="/images/scene-spare-parts.png"
+      image={bgImage || '/images/scene-spare-parts.png'}
       video="/videos/scene-engine.mp4"
       alt={s.scene3Kicker}
     >
@@ -414,7 +414,7 @@ function PartsScene() {
    Section
    ============================================================ */
 
-export function Services() {
+export function Services({ wpImages }: { wpImages?: import('@/lib/wp/page-images').PageImages }) {
   const sectionRef = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -613,9 +613,9 @@ export function Services() {
 
   return (
     <section ref={sectionRef} aria-label="Services">
-      <ShowroomScene />
-      <PortScene />
-      <PartsScene />
+      <ShowroomScene bgImage={wpImages?.serviceScene1} />
+      <PortScene     bgImage={wpImages?.serviceScene2} />
+      <PartsScene    bgImage={wpImages?.serviceScene3} />
     </section>
   )
 }
