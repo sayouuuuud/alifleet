@@ -122,8 +122,8 @@ export const he: Dictionary = {
       trackingLabel: 'מעקב משלוח',
       stop1Label: 'מפעל', stop1Place: 'שטוטגרט, גרמניה', stop1Meta: 'יצא · 12 ינואר',
       stop2Label: 'נמל יציאה', stop2Place: 'המבורג, גרמניה', stop2Meta: 'נטען · 18 ינואר',
-      stop3Label: 'מכס', stop3Place: 'אלכסנדריה, מצרים', stop3Meta: 'בשחרור כעת',
-      stop4Label: 'הצי שלכם', stop4Place: 'קהיר, מצרים', stop4Meta: 'הגעה משוערת · 3 פבר׳',
+      stop3Label: 'מכס', stop3Place: 'אשדוד, ישראל', stop3Meta: 'בשחרור כעת',
+      stop4Label: 'הצי שלכם', stop4Place: 'חיפה, ישראל', stop4Meta: 'הגעה משוערת · 3 פבר׳',
       scene3Kicker: 'חלפים',
       scene3Title1: 'כל חלף,',
       scene3Title2: 'אפס השבתה',
@@ -170,7 +170,7 @@ export const he: Dictionary = {
     catalogUnavailableLead:
       'לא הצלחנו להתחבר לחנות ברגע זה. נסו שוב בעוד רגע, או פנו אלינו ונבדוק זמינות עבורכם.',
     catalogEmpty: 'עדיין לא פורסמו חלפים',
-    catalogEmptyLead: 'הקטלוג בהכנה. פנו אלינו ונשיג את החלק ש����תם צריכים.',
+    catalogEmptyLead: '��קטלוג בהכנה. פנו אלינו ונשיג את החלק ש����תם צריכים.',
     untranslatedNotice:
       'חלק משמות המוצרים מוצגים בעברית המקורית עד להשלמת התרגום.',
   },
@@ -339,7 +339,7 @@ export const he: Dictionary = {
     signOut: 'התנתקות',
     myAccount: 'החשבון שלי',
     required: 'שדה חובה',
-    optional: 'אופציונלי',
+    optional: 'אופצי��נלי',
     nav: {
       dashboard: 'סקירה כללית',
       orders: 'הזמנות',
@@ -517,7 +517,7 @@ export const he: Dictionary = {
       email_exists: 'קיים כבר חשבון עם כתובת אימייל זו.',
       username_exists: 'שם המשתמש הזה תפוס.',
       weak_password: 'נא להשתמש בסיסמה של 8 תווים לפחות.',
-      password_mismatch: 'שתי הסיסמאות אינן תואמות.',
+      password_mismatch: 'שתי הסיס��אות אינן תואמות.',
       registration_disabled:
         'ה��רשמה הציבורית כרגע מושבתת בחנות. צרו איתנו קשר ונפתח לכם חשבון.',
       session_expired: 'הפעלת ההתחברות פגה. נא להתחבר מחדש.',

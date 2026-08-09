@@ -122,8 +122,8 @@ export const en = {
       trackingLabel: 'Shipment Tracking',
       stop1Label: 'Factory', stop1Place: 'Stuttgart, DE', stop1Meta: 'Departed · Jan 12',
       stop2Label: 'Port of Origin', stop2Place: 'Hamburg, DE', stop2Meta: 'Loaded · Jan 18',
-      stop3Label: 'Customs', stop3Place: 'Alexandria, EG', stop3Meta: 'Clearing now',
-      stop4Label: 'Your Fleet', stop4Place: 'Cairo, EG', stop4Meta: 'ETA · Feb 03',
+      stop3Label: 'Customs', stop3Place: 'Ashdod, IL', stop3Meta: 'Clearing now',
+      stop4Label: 'Your Fleet', stop4Place: 'Haifa, IL', stop4Meta: 'ETA · Feb 03',
       // Scene 03
       scene3Kicker: 'Spare Parts',
       scene3Title1: 'Every part,',
