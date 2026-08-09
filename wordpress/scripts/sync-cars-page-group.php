@@ -43,15 +43,40 @@ if (!$incoming) {
 }
 
 /*
- * `acf_import_field_group()` matches on the group key and updates the existing
- * post in place when one exists, so the group keeps its ID and any page still
- * bound to it stays bound. Passing the ID explicitly avoids ACF inserting a
- * duplicate post when the group currently resolves from a JSON file (local
- * groups report ID 0, which is what created the duplicate we just cleaned up).
+ * `acf_get_field_group()` resolves the JSON-backed copy first on this install,
+ * and local groups report ID 0. Handing that 0 to the importer makes ACF insert
+ * a brand new post every run, which is exactly how the duplicate groups appeared.
+ * Query postmeta directly instead so we always target the real DB row, and fold
+ * any leftover duplicates into the oldest one before importing.
  */
-$existing = acf_get_field_group('group_import_page');
-if ($existing && !empty($existing['ID'])) {
-    $incoming['ID'] = $existing['ID'];
+$posts = get_posts([
+    'post_type' => 'acf-field-group',
+    'post_status' => 'any',
+    'posts_per_page' => -1,
+    'name' => 'group_import_page',
+    'orderby' => 'ID',
+    'order' => 'ASC',
+]);
+
+$canonical = $posts ? array_shift($posts) : null;
+
+foreach ($posts as $stray) {
+    // Field definitions get replaced wholesale by the import below, so the
+    // stray's children can go with it rather than lingering as orphans.
+    foreach (get_posts([
+        'post_type' => 'acf-field',
+        'post_status' => 'any',
+        'posts_per_page' => -1,
+        'post_parent' => $stray->ID,
+    ]) as $child) {
+        wp_delete_post($child->ID, true);
+    }
+    wp_delete_post($stray->ID, true);
+    echo "removed duplicate group post #{$stray->ID}\n";
+}
+
+if ($canonical) {
+    $incoming['ID'] = $canonical->ID;
 }
 
 $result = acf_import_field_group($incoming);
