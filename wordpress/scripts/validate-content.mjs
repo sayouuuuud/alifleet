@@ -396,7 +396,7 @@ const SEED_TARGETS = [
     groupsFor: (page) =>
       ({
         home: ['group_home_page'],
-        import: ['group_import_page'],
+        cars: ['group_import_page'],
         products: ['group_products_page'],
         blog: ['group_blog_page'],
         cart: ['group_cart_page'],

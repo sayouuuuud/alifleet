@@ -6,16 +6,20 @@ import { Paginator } from '@/components/paginator'
 import type { CarOrigin, CarStatus, ImportCar } from '@/lib/data/import-cars'
 import type { VehiclesStatus } from '@/lib/wp/vehicles'
 import { useLanguage } from '@/lib/i18n/language-context'
+import { resolveCopy } from '@/lib/i18n/copy-block'
+import type { CarsPageCopy } from '@/lib/wp/cars-page'
 import { ImportCarCard } from '@/components/import-car-card'
 import Link from 'next/link'
 
 type Props = {
   cars: ImportCar[]
   status: VehiclesStatus
+  /** CMS overrides for the section heading; falls back to the dictionary. */
+  copy?: CarsPageCopy['importHeader']
 }
 
-export function ImportBrowser({ cars, status }: Props) {
-  const { t } = useLanguage()
+export function ImportBrowser({ cars, status, copy }: Props) {
+  const { t, locale } = useLanguage()
   const [origin, setOrigin] = useState<CarOrigin | 'all'>('all')
   const [carStatus, setCarStatus] = useState<CarStatus | 'all'>('all')
   const [page, setPage] = useState(1)
@@ -103,13 +107,13 @@ export function ImportBrowser({ cars, status }: Props) {
   return (
     <section id="available" className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-        {t.import.listEyebrow}
+        {resolveCopy(copy?.eyebrow, locale, t.import.listEyebrow)}
       </p>
       <h2 className="mt-3 max-w-2xl text-balance font-serif text-3xl leading-tight tracking-tight text-foreground md:text-4xl">
-        {t.import.listTitle}
+        {resolveCopy(copy?.title, locale, t.import.listTitle)}
       </h2>
       <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-        {t.import.listLead}
+        {resolveCopy(copy?.lead, locale, t.import.listLead)}
       </p>
 
       <div className="mt-10 flex flex-col gap-5 border-y border-border py-6">

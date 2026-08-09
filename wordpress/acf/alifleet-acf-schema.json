@@ -3520,7 +3520,7 @@
     },
     {
         "key": "group_import_page",
-        "title": "Car Import Page Fields",
+        "title": "Cars Page Fields",
         "fields": [
             {
                 "key": "field_import_page_hero",
@@ -3967,12 +3967,78 @@
                     }
                 ]
             },
-            {
-                "key": "field_import_page_available",
-                "label": "Available Cars Section Header",
-                "name": "available_cars_header",
-                "type": "group",
-                "layout": "block",
+                {
+                    "key": "field_cars_page_sale_header",
+                    "label": "Cars For Sale Section Header",
+                    "name": "sale_cars_header",
+                    "type": "group",
+                    "layout": "block",
+                    "sub_fields": [
+                        {
+                            "key": "field_cars_sale_eyebrow_ar",
+                            "label": "Eyebrow (AR)",
+                            "name": "sale_eyebrow_ar",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_cars_sale_eyebrow_en",
+                            "label": "Eyebrow (EN)",
+                            "name": "sale_eyebrow_en",
+                            "type": "text",
+                            "default_value": "In our showroom"
+                        },
+                        {
+                            "key": "field_cars_sale_eyebrow_he",
+                            "label": "Eyebrow (HE)",
+                            "name": "sale_eyebrow_he",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_cars_sale_title_ar",
+                            "label": "Title (AR)",
+                            "name": "sale_title_ar",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_cars_sale_title_en",
+                            "label": "Title (EN)",
+                            "name": "sale_title_en",
+                            "type": "text",
+                            "default_value": "Cars available to buy today"
+                        },
+                        {
+                            "key": "field_cars_sale_title_he",
+                            "label": "Title (HE)",
+                            "name": "sale_title_he",
+                            "type": "text"
+                        },
+                        {
+                            "key": "field_cars_sale_lead_ar",
+                            "label": "Lead Text (AR)",
+                            "name": "sale_lead_ar",
+                            "type": "textarea"
+                        },
+                        {
+                            "key": "field_cars_sale_lead_en",
+                            "label": "Lead Text (EN)",
+                            "name": "sale_lead_en",
+                            "type": "textarea",
+                            "default_value": "Every car below is physically with us, inspected and ready to hand over. Prices include transfer of ownership."
+                        },
+                        {
+                            "key": "field_cars_sale_lead_he",
+                            "label": "Lead Text (HE)",
+                            "name": "sale_lead_he",
+                            "type": "textarea"
+                        }
+                    ]
+                },
+                {
+                    "key": "field_import_page_available",
+                    "label": "Available Cars Section Header",
+                    "name": "available_cars_header",
+                    "type": "group",
+                    "layout": "block",
                 "sub_fields": [
                     {
                         "key": "field_import_avail_eyebrow_ar",
@@ -4101,13 +4167,6 @@
             }
         ],
         "location": [
-            [
-                {
-                    "param": "page_slug",
-                    "operator": "==",
-                    "value": "import"
-                }
-            ],
             [
                 {
                     "param": "page_slug",
