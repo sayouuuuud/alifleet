@@ -7,11 +7,15 @@ import type { SaleCar, SaleCarCondition, SaleCarStatus } from '@/lib/data/sale-c
 import type { SaleCarsStatus } from '@/lib/wp/sale-cars'
 import { Paginator } from '@/components/paginator'
 import { useLanguage } from '@/lib/i18n/language-context'
+import { resolveCopy } from '@/lib/i18n/copy-block'
+import type { CarsPageCopy } from '@/lib/wp/cars-page'
 import { SaleCarCard } from '@/components/sale-car-card'
 
 type Props = {
   cars: SaleCar[]
   status: SaleCarsStatus
+  /** CMS overrides for the section heading; falls back to the dictionary. */
+  copy?: CarsPageCopy['saleHeader']
 }
 
 /**
@@ -20,8 +24,8 @@ type Props = {
  * page read as one product rather than two bolted-together pages. The filters
  * differ because the data does: condition and availability instead of origin.
  */
-export function SaleBrowser({ cars, status }: Props) {
-  const { t } = useLanguage()
+export function SaleBrowser({ cars, status, copy }: Props) {
+  const { t, locale } = useLanguage()
   const [condition, setCondition] = useState<SaleCarCondition | 'all'>('all')
   const [carStatus, setCarStatus] = useState<SaleCarStatus | 'all'>('all')
   const [page, setPage] = useState(1)
@@ -55,13 +59,13 @@ export function SaleBrowser({ cars, status }: Props) {
   const Shell = ({ children }: { children: React.ReactNode }) => (
     <section id="for-sale" className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
       <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent">
-        {t.cars.saleEyebrow}
+        {resolveCopy(copy?.eyebrow, locale, t.cars.saleEyebrow)}
       </p>
       <h2 className="mt-3 max-w-2xl text-balance font-serif text-3xl leading-tight tracking-tight text-foreground md:text-4xl">
-        {t.cars.saleTitle}
+        {resolveCopy(copy?.title, locale, t.cars.saleTitle)}
       </h2>
       <p className="mt-4 max-w-2xl text-pretty leading-relaxed text-muted-foreground">
-        {t.cars.saleLead}
+        {resolveCopy(copy?.lead, locale, t.cars.saleLead)}
       </p>
       {children}
     </section>
