@@ -291,6 +291,59 @@ add_filter(
 );
 
 /* -------------------------------------------------------------------------
+ * 3b. Attach page_slug-located field groups to the GraphQL `Page` type
+ *
+ * WPGraphQL for ACF decides which GraphQL types a field group hangs off by
+ * reading its location rules. It understands rules that name a type
+ * (`post_type == page`, `page_type == front_page`) but it cannot resolve the
+ * custom `page_slug` rule registered above, because a slug is a row in the
+ * database, not a type. When the inference finds nothing the group is dropped
+ * from the schema *silently* — `show_in_graphql` still reads 1, which is why
+ * `Page.importPageFields` (and cart / contact / blog / products) looked
+ * configured while none of them existed in the schema.
+ *
+ * Fixing this per group (in the database or in acf-json) does not hold: every
+ * later re-save from the admin UI or from an acf_import_field_group() run
+ * writes the two GraphQL keys back to null. Deriving them here instead means
+ * the rule that creates the problem and the rule that repairs it live in the
+ * same file, and any new page group works without extra steps.
+ * ---------------------------------------------------------------------- */
+
+add_filter(
+	'acf/load_field_group',
+	/**
+	 * @param array<string,mixed> $group The field group being loaded.
+	 * @return array<string,mixed>
+	 */
+	static function ( array $group ): array {
+		if ( empty( $group['show_in_graphql'] ) ) {
+			return $group;
+		}
+
+		$uses_page_slug = false;
+		foreach ( (array) ( $group['location'] ?? [] ) as $rule_group ) {
+			foreach ( (array) $rule_group as $rule ) {
+				if ( 'page_slug' === ( $rule['param'] ?? '' ) ) {
+					$uses_page_slug = true;
+					break 2;
+				}
+			}
+		}
+
+		if ( ! $uses_page_slug ) {
+			return $group;
+		}
+
+		// Stop the inference that cannot see `page_slug`, and name the type.
+		$group['map_graphql_types_from_location'] = 0;
+		$group['graphql_types']                   = [ 'Page' ];
+
+		return $group;
+	},
+	20
+);
+
+/* -------------------------------------------------------------------------
  * 4. Expose the post excerpt and a stable slug for every content type
  * ---------------------------------------------------------------------- */
 
