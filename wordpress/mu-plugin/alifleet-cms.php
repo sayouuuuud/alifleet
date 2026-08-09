@@ -79,6 +79,123 @@ add_action(
 );
 
 /* -------------------------------------------------------------------------
+ * 1b. Repair the GraphQL names of the ACF-UI registered post types
+ *
+ * `cars` (Cars For Sale) and `trucks` were created through the ACF 6 post-type
+ * UI, which ticked "Show in GraphQL" but left both name boxes empty. WPGraphQL
+ * then falls back to '_' for every one of them, so the two types collide and
+ * the schema reports `DUPLICATE_TYPE: _IdType` — at which point neither type is
+ * queryable at all.
+ *
+ * Filtering register_post_type_args fixes it in code rather than in the UI, so
+ * a future click in the ACF screen cannot silently break the frontend again.
+ * This is exactly the failure mode described in the file header.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * The GraphQL names the ACF-UI post types should have had.
+ *
+ * @return array<string,array{0:string,1:string}>
+ */
+function alifleet_graphql_post_type_names(): array {
+	return [
+		// The "Cars For Sale" inventory rendered by the /cars page.
+		'cars'   => [ 'saleCar', 'saleCars' ],
+		'trucks' => [ 'truck', 'trucks' ],
+		// המלצות — customer testimonials.
+		'testi'  => [ 'testimonial', 'testimonials' ],
+	];
+}
+
+add_filter(
+	'register_post_type_args',
+	/**
+	 * @param array<string,mixed> $args      Arguments the post type is registered with.
+	 * @param string              $post_type Post type key.
+	 * @return array<string,mixed>
+	 */
+	static function ( array $args, string $post_type ): array {
+		$names = alifleet_graphql_post_type_names();
+
+		if ( ! isset( $names[ $post_type ] ) ) {
+			return $args;
+		}
+
+		[ $single, $plural ] = $names[ $post_type ];
+
+		$args['show_in_graphql']     = true;
+		$args['graphql_single_name'] = $single;
+		$args['graphql_plural_name'] = $plural;
+
+		return $args;
+	},
+	// Deliberately last: ACF's own integration also filters these args and would
+	// otherwise put its empty values back, which is the state that produced the
+	// '_' type names in the first place.
+	PHP_INT_MAX,
+	2
+);
+
+/**
+ * Belt and braces for the filter above.
+ *
+ * A filter on register_post_type_args only wins while the post type is being
+ * registered. Anything that mutates $wp_post_types afterwards would silently
+ * reintroduce the '_' names, and the symptom (a schema-wide DUPLICATE_TYPE that
+ * takes every custom type down with it) is far too destructive to leave to one
+ * hook — so the object itself is corrected once registration has happened.
+ */
+add_action(
+	'registered_post_type',
+	static function ( string $post_type, WP_Post_Type $object ): void {
+		$names = alifleet_graphql_post_type_names();
+
+		if ( ! isset( $names[ $post_type ] ) ) {
+			return;
+		}
+
+		[ $single, $plural ] = $names[ $post_type ];
+
+		$object->show_in_graphql     = true;
+		$object->graphql_single_name = $single;
+		$object->graphql_plural_name = $plural;
+
+		// register_post_type() stores the object in the global registry, and some
+		// integrations read from there rather than from the passed object.
+		global $wp_post_types;
+		if ( isset( $wp_post_types[ $post_type ] ) ) {
+			$wp_post_types[ $post_type ]->show_in_graphql     = true;
+			$wp_post_types[ $post_type ]->graphql_single_name = $single;
+			$wp_post_types[ $post_type ]->graphql_plural_name = $plural;
+		}
+	},
+	PHP_INT_MAX,
+	2
+);
+
+/**
+ * Last line of defence, run immediately before WPGraphQL builds its type
+ * registry: whatever happened earlier in the request, the names are correct by
+ * the time they are actually read.
+ */
+add_action(
+	'graphql_register_types',
+	static function (): void {
+		global $wp_post_types;
+
+		foreach ( alifleet_graphql_post_type_names() as $post_type => [ $single, $plural ] ) {
+			if ( ! isset( $wp_post_types[ $post_type ] ) ) {
+				continue;
+			}
+			$wp_post_types[ $post_type ]->show_in_graphql     = true;
+			$wp_post_types[ $post_type ]->graphql_single_name = $single;
+			$wp_post_types[ $post_type ]->graphql_plural_name = $plural;
+		}
+	},
+	-9999
+);
+
+/* -------------------------------------------------------------------------
  * 2. ACF options page: Site Settings
  *
  * ACF options pages store their values in wp_options, not wp_posts. That is
@@ -139,7 +256,7 @@ add_filter(
 		// Keep the slugs the frontend expects selectable even before the pages
 		// have been created, otherwise importing the schema on a fresh install
 		// drops the rule value.
-		foreach ( [ 'import', 'products', 'blog', 'cart', 'contact' ] as $slug ) {
+		foreach ( [ 'cars', 'import', 'products', 'blog', 'cart', 'contact' ] as $slug ) {
 			$choices[ $slug ] = $choices[ $slug ] ?? $slug;
 		}
 
@@ -561,7 +678,10 @@ add_action(
 					};
 
 					$home_id     = $page_id_for( 'home' ) ?: (int) get_option( 'page_on_front', 0 );
-					$import_id   = $page_id_for( 'import' ) ?: $page_id_for( 'car-import' );
+					// The frontend route is /cars, so a `cars` page wins; `import` and
+					// `car-import` stay supported so an existing install keeps working
+					// without anyone having to rename the page first.
+					$import_id   = $page_id_for( 'cars' ) ?: $page_id_for( 'import' ) ?: $page_id_for( 'car-import' );
 					$products_id = $page_id_for( 'products' ) ?: $page_id_for( 'spare-parts' );
 					$blog_id     = $page_id_for( 'blog' ) ?: (int) get_option( 'page_for_posts', 0 );
 					$contact_id  = $page_id_for( 'contact' ) ?: $page_id_for( 'contact-us' );
