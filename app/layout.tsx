@@ -10,6 +10,7 @@ import {
 import { cookies } from 'next/headers'
 import './globals.css'
 import { MetaPixel } from '@/components/analytics/meta-pixel'
+import { BackToTop } from '@/components/back-to-top'
 import { LanguageProvider } from '@/lib/i18n/language-context'
 import { CartProvider } from '@/lib/cart-context'
 import { AuthProvider } from '@/lib/auth/auth-context'
@@ -91,6 +92,7 @@ export default async function RootLayout({
             </AuthProvider>
           </StoreProvider>
         </LanguageProvider>
+        <BackToTop />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
