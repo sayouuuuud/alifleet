@@ -323,23 +323,18 @@ if (existing >= 0) {
 }
 
 /*
- * The page that carries the import-section copy is reached at /cars now, so its
- * field group has to show up on a page whose slug is `cars` as well. ACF treats
- * the outer array as OR, so this adds a second rule group rather than replacing
- * the existing one — an install where the page is still called `import` keeps
- * working untouched.
+ * The page carrying the import-section copy lives at the `cars` slug, so its
+ * field group binds to exactly that one page. An earlier revision kept a second
+ * `page_slug == import` rule alive during the rename; leaving it in place would
+ * silently re-attach the whole group to any future page called "import", so the
+ * location is normalised down to the single live rule.
  */
-const importPage = groups.find((g) => g.key === 'group_import_page')
-if (importPage) {
-  const slugs = new Set(
-    importPage.location.flat().map((rule) => rule.value)
-  )
-  if (!slugs.has('cars')) {
-    importPage.location.push([
-      { param: 'page_slug', operator: '==', value: 'cars' },
-    ])
-    console.log('Added a `cars` page-slug rule to group_import_page.')
-  }
+const carsPage = groups.find((g) => g.key === 'group_import_page')
+if (carsPage) {
+  carsPage.title = 'Cars Page Fields'
+  carsPage.location = [
+    [{ param: 'page_slug', operator: '==', value: 'cars' }],
+  ]
 }
 
 writeFileSync(schemaPath, `${JSON.stringify(groups, null, 4)}\n`)

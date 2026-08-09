@@ -484,8 +484,8 @@
       }
     },
     {
-      "slug": "import",
-      "title": "Car Import",
+      "slug": "cars",
+      "title": "Cars",
       "acf": {
         "import_hero": {
           "eyebrow_ar": "استيراد السيارات",
@@ -545,7 +545,7 @@
           "list_eyebrow_ar": "متاح الآن",
           "list_eyebrow_en": "Available now",
           "list_eyebrow_he": "זמין כעת",
-          "list_title_ar": "سيارات متاحة للاستيراد حاليًا",
+          "list_title_ar": "سيارات متاحة للاستي��اد حاليًا",
           "list_title_en": "Cars currently open for import",
           "list_title_he": "רכבים הפתוחים לייבוא כרגע",
           "list_lead_ar": "كل سيارة بالأسفل موثقة ومتاحة للحجز. الأسعار تقديرية وتشمل الوصول.",
@@ -1195,7 +1195,7 @@
         "gallery_image_6": {},
         "gallery_image_7": {},
         "gallery_image_8": {},
-        "description_ar": "خيار اقتصادي وموثوق لخدمات النقل السياحي وشركات الفنادق: تسعة مقاعد بمساحة أرجل واسعة، تكييف ثلاثي المناطق، وباب جانبي كهربائي.",
+        "description_ar": "خيار اقتصادي وموثوق لخدمات النقل السياحي وشركات الفنا��ق: تسعة مقاعد بمساحة أرجل واسعة، تكييف ثلاثي المناطق، وباب جانبي كهربائي.",
         "description_en": "A dependable, economical choice for shuttle and hotel transfer work: nine seats with generous legroom, tri-zone climate and a powered sliding door.",
         "description_he": "בחירה אמינה וחסכונית להסעות ולמלונות: תשעה מושבים עם מרווח רגליים נדיב, מיזוג תלת-אזורי ודלת הזזה חשמלית.",
         "highlight_1": {
@@ -1544,7 +1544,7 @@
         "part_category": "engine",
         "brand": "Mahle",
         "featured": false,
-        "description_ar": "طقم عمرة كامل بمقاسات مصنعية دقيقة، مع بساتم مطلية بالجرافيت لتقليل الاحتكاك في أول ساعات التشغيل.",
+        "description_ar": "طقم عمرة كامل بمقاسات مصنعية دقيقة، مع بساتم مطلي�� بالجرافيت لتقليل الاحتكاك في أول ساعات التشغيل.",
         "description_en": "Complete overhaul kit machined to factory tolerances, with graphite-coated pistons that cut friction during the critical break-in hours.",
         "description_he": "ערכת שיפוץ מלאה בסבילות מקוריות, עם בוכנות מצופות גרפיט להפחתת חיכוך בשעות ההרצה.",
         "spec_1": {

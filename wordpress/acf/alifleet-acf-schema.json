@@ -3520,7 +3520,7 @@
     },
     {
         "key": "group_import_page",
-        "title": "Car Import Page Fields",
+        "title": "Cars Page Fields",
         "fields": [
             {
                 "key": "field_import_page_hero",
@@ -4101,13 +4101,6 @@
             }
         ],
         "location": [
-            [
-                {
-                    "param": "page_slug",
-                    "operator": "==",
-                    "value": "import"
-                }
-            ],
             [
                 {
                     "param": "page_slug",
