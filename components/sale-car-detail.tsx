@@ -1,0 +1,253 @@
+'use client'
+
+import { useState } from 'react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { ArrowLeft, Check, MessageCircle, Phone } from 'lucide-react'
+import type { SaleCar } from '@/lib/data/sale-cars'
+import { useLanguage } from '@/lib/i18n/language-context'
+import { formatNumber, formatPrice } from '@/lib/format'
+import { whatsappLink } from '@/lib/site-config'
+import { useStore } from '@/lib/store-context'
+import { proxied } from '@/lib/img-proxy'
+import { SaleCarCard } from '@/components/sale-car-card'
+
+/**
+ * Detail page for a car on the lot. Same visual grammar as the import detail —
+ * gallery left, sticky-feeling summary right, specs below — but with the import
+ * timeline removed, because a car already in the yard has no shipment stages to
+ * show. Its place is taken by the ownership/condition facts a used-car buyer
+ * actually asks about.
+ */
+export function SaleCarDetail({
+  car,
+  related,
+}: {
+  car: SaleCar
+  related: SaleCar[]
+}) {
+  const { t, locale } = useLanguage()
+  const store = useStore()
+  const images = [{ src: car.image, alt: car.alt }, ...car.gallery]
+  const [active, setActive] = useState(0)
+
+  const showMileage = car.condition !== 'new'
+
+  const specs = [
+    { label: t.import.year, value: String(car.year), ltr: true },
+    ...(showMileage
+      ? [
+          {
+            label: t.import.mileage,
+            value: `${formatNumber(car.mileage)} km`,
+            ltr: true,
+          },
+        ]
+      : []),
+    ...(car.previousOwners !== null
+      ? [
+          {
+            label: t.cars.previousOwners,
+            value:
+              car.previousOwners === 0
+                ? t.cars.firstOwner
+                : String(car.previousOwners),
+            ltr: car.previousOwners !== 0,
+          },
+        ]
+      : []),
+    { label: t.import.engine, value: car.specs.engine, ltr: true },
+    { label: t.import.transmission, value: car.specs.transmission[locale] },
+    { label: t.import.fuel, value: car.specs.fuel[locale] },
+    { label: t.import.drivetrain, value: car.specs.drivetrain, ltr: true },
+    { label: t.import.colorLabel, value: car.specs.color[locale] },
+    { label: t.import.seats, value: String(car.specs.seats), ltr: true },
+  ].filter((spec) => spec.value)
+
+  const enquiry = `${t.saleDetail.whatsappIntro}\n\n${car.model} · ${car.year}\n${t.cars.conditions[car.condition]}\n${typeof window === 'undefined' ? '' : window.location.href}`
+
+  return (
+    <>
+      <div className="mx-auto max-w-7xl px-4 pt-28 md:px-8 md:pt-36">
+        <Link
+          href="/cars#for-sale"
+          className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" aria-hidden="true" data-flip-rtl />
+          {t.saleDetail.backToCars}
+        </Link>
+      </div>
+
+      <section className="mx-auto max-w-7xl px-4 py-10 md:px-8 md:py-14">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_1fr] lg:gap-14">
+          {/* Gallery */}
+          <div>
+            <div className="relative aspect-16/10 overflow-hidden rounded-3xl bg-secondary ring-1 ring-border">
+              <Image
+                src={proxied(images[active].src)}
+                alt={images[active].alt[locale]}
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 60vw"
+                className="object-cover"
+              />
+            </div>
+            {images.length > 1 && (
+              <div className="mt-4 flex flex-wrap gap-3">
+                {images.map((image, index) => (
+                  <button
+                    key={image.src}
+                    type="button"
+                    onClick={() => setActive(index)}
+                    aria-label={`${t.saleDetail.gallery} ${index + 1}`}
+                    aria-current={index === active}
+                    className={
+                      index === active
+                        ? 'relative aspect-4/3 w-24 overflow-hidden rounded-xl ring-2 ring-accent'
+                        : 'relative aspect-4/3 w-24 overflow-hidden rounded-xl ring-1 ring-border transition-opacity hover:opacity-80'
+                    }
+                  >
+                    <Image
+                      src={proxied(image.src)}
+                      alt={image.alt[locale]}
+                      fill
+                      sizes="100px"
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Summary */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">
+              {t.cars.conditions[car.condition]} · {car.bodyType[locale]}
+            </p>
+            <h1 className="mt-3 text-balance font-serif text-3xl leading-tight tracking-tight text-foreground md:text-5xl">
+              {car.model}
+            </h1>
+            <p className="mt-3 text-pretty leading-relaxed text-muted-foreground">
+              {car.subtitle[locale]}
+            </p>
+
+            <div className="mt-7 rounded-3xl bg-card p-6 ring-1 ring-border">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                {t.cars.askingPrice}
+              </p>
+              <p className="mt-1.5 font-serif text-4xl text-foreground" dir="ltr">
+                {car.price === null
+                  ? t.common.onRequest
+                  : formatPrice(car.price, store.currency)}
+              </p>
+              <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                <span className="size-2 rounded-full bg-accent" aria-hidden="true" />
+                {t.cars.saleStatus[car.status]}
+                {car.availability[locale] && ` · ${car.availability[locale]}`}
+              </p>
+
+              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                {store.whatsapp && (
+                  <a
+                    href={whatsappLink(enquiry, store.whatsapp)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+                  >
+                    <MessageCircle className="size-4" aria-hidden="true" />
+                    {t.saleDetail.requestThisCar}
+                  </a>
+                )}
+                {store.phoneHref && (
+                  <a
+                    href={store.phoneHref}
+                    className="flex items-center justify-center gap-2 rounded-full bg-secondary px-5 py-3 text-sm font-semibold text-foreground ring-1 ring-border transition-colors hover:bg-muted"
+                  >
+                    <Phone className="size-4" aria-hidden="true" />
+                    {t.common.callUs}
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {car.highlights.length > 0 && (
+              <>
+                <h2 className="mt-9 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {t.saleDetail.highlights}
+                </h2>
+                <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                  {car.highlights.map((item) => (
+                    <li
+                      key={item.en}
+                      className="flex items-start gap-2 text-sm text-foreground"
+                    >
+                      <Check
+                        className="mt-0.5 size-4 shrink-0 text-accent"
+                        aria-hidden="true"
+                      />
+                      {item[locale]}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Overview + specs */}
+      <section className="border-y border-border bg-secondary/40">
+        <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:px-8 lg:grid-cols-2 lg:gap-14">
+          <div>
+            <h2 className="font-serif text-2xl tracking-tight text-foreground md:text-3xl">
+              {t.saleDetail.overview}
+            </h2>
+            <p className="mt-5 text-pretty leading-relaxed text-muted-foreground">
+              {car.description[locale]}
+            </p>
+          </div>
+
+          <div>
+            <h2 className="font-serif text-2xl tracking-tight text-foreground md:text-3xl">
+              {t.common.specifications}
+            </h2>
+            <dl className="mt-5 overflow-hidden rounded-3xl bg-card ring-1 ring-border">
+              {specs.map((spec, index) => (
+                <div
+                  key={spec.label}
+                  className={
+                    index % 2 === 0
+                      ? 'flex items-center justify-between gap-4 px-5 py-3.5'
+                      : 'flex items-center justify-between gap-4 bg-secondary/50 px-5 py-3.5'
+                  }
+                >
+                  <dt className="text-sm text-muted-foreground">{spec.label}</dt>
+                  <dd
+                    className="text-sm font-semibold text-foreground"
+                    dir={spec.ltr ? 'ltr' : undefined}
+                  >
+                    {spec.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </div>
+      </section>
+
+      {related.length > 0 && (
+        <section className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-20">
+          <h2 className="font-serif text-2xl tracking-tight text-foreground md:text-3xl">
+            {t.saleDetail.similar}
+          </h2>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((item) => (
+              <SaleCarCard key={item.slug} car={item} />
+            ))}
+          </div>
+        </section>
+      )}
+    </>
+  )
+}

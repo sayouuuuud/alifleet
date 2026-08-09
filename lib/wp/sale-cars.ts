@@ -1,11 +1,7 @@
 import 'server-only'
 
-import type {
-  CarOrigin,
-  CarStatus,
-  ImportCar,
-} from '@/lib/data/import-cars'
-import { carOrigins, carStatuses } from '@/lib/data/import-cars'
+import type { SaleCar, SaleCarCondition, SaleCarStatus } from '@/lib/data/sale-cars'
+import { saleCarConditions, saleCarStatuses } from '@/lib/data/sale-cars'
 import { stripHtml } from '@/lib/i18n/machine-translations'
 import { CATALOG_REVALIDATE, isWpConfigured } from './config'
 import { wpFetch } from './client'
@@ -21,6 +17,7 @@ import {
   highlights,
   int,
   localized,
+  nullableCount,
   nullableNumber,
   plain,
   specs,
@@ -28,34 +25,23 @@ import {
 } from './car-fields'
 
 /**
- * The live import-vehicle inventory, read from the `import_car` post type.
+ * The cars-for-sale inventory, read from the `cars` post type.
  *
- * Unlike the spare-parts catalog, a vehicle carries almost no useful data in
- * core WordPress fields — the title and featured image are all core gives us.
- * Year, mileage, price, origin, status and every localized string live in the
- * `importCarFields` ACF group (see `wordpress/acf/alifleet-acf-schema.json`).
- *
- * That makes ACF a hard dependency here, so the failure is reported rather than
- * hidden: if `wpgraphql-acf` is inactive the whole query fails and the page
- * says the inventory is unavailable, instead of rendering a grid of cars with
- * blank prices and no year.
- *
- * Everything this shares with the for-sale listings lives in `car-fields.ts`;
- * only the import-specific fields (`origin`, `stage`, `eta_*`) are here.
+ * As with imports, core WordPress only supplies the title and thumbnail —
+ * price, year, condition and every localized string live in the
+ * `saleCarFields` ACF group (see `wordpress/acf/build-sale-car-group.mjs`).
+ * That makes ACF a hard dependency, so a missing plugin is surfaced as its own
+ * status rather than rendering a grid of cars with blank prices.
  */
 
 const PAGE_SIZE = 50
 const MAX_PAGES = 10
 
-/* ------------------------------------------------------------------ queries */
+/* ------------------------------------------------------------------ query */
 
-/**
- * A single request, because ACF is not optional for vehicles. `importCarFields`
- * only exists once the ACF schema is imported and `wpgraphql-acf` is active.
- */
-const VEHICLES_QUERY = /* GraphQL */ `
-  query AliFleetVehicles($first: Int!, $after: String) {
-    importCars(first: $first, after: $after, where: { status: PUBLISH }) {
+const SALE_CARS_QUERY = /* GraphQL */ `
+  query AliFleetSaleCars($first: Int!, $after: String) {
+    saleCars(first: $first, after: $after, where: { status: PUBLISH }) {
       pageInfo {
         hasNextPage
         endCursor
@@ -70,13 +56,13 @@ const VEHICLES_QUERY = /* GraphQL */ `
             altText
           }
         }
-        importCarFields {
+        saleCarFields {
           ${commonCarFields()}
-          origin
-          stage
-          etaAr
-          etaEn
-          etaHe
+          condition
+          previousOwners
+          availabilityAr
+          availabilityEn
+          availabilityHe
         }
       }
     }
@@ -85,65 +71,65 @@ const VEHICLES_QUERY = /* GraphQL */ `
 
 /* -------------------------------------------------------------- wire shapes */
 
-type WireCarFields = WireCommonFields & {
-  origin?: string | string[] | null
-  stage?: number | string | null
-  etaAr?: string | null
-  etaEn?: string | null
-  etaHe?: string | null
+type WireSaleFields = WireCommonFields & {
+  condition?: string | string[] | null
+  previousOwners?: number | string | null
+  availabilityAr?: string | null
+  availabilityEn?: string | null
+  availabilityHe?: string | null
 }
 
-type WireCar = {
+type WireSaleCar = {
   databaseId: number
   slug: string | null
   title: string | null
   featuredImage?: WireImage
-  importCarFields: WireCarFields | null
+  saleCarFields: WireSaleFields | null
 }
 
-type PagedCars = {
-  importCars: {
+type PagedSaleCars = {
+  saleCars: {
     pageInfo: { hasNextPage: boolean; endCursor: string | null }
-    nodes: WireCar[]
+    nodes: WireSaleCar[]
   } | null
 }
 
-export type VehiclesStatus =
+export type SaleCarsStatus =
   | 'ok'
   | 'not_configured'
   | 'unreachable'
   | 'empty'
-  /** Reached WordPress, but `importCarFields` is missing from the schema. */
+  /** Reached WordPress, but `saleCarFields` is missing from the schema. */
   | 'acf_missing'
 
-export type VehicleInventory = {
-  cars: ImportCar[]
-  status: VehiclesStatus
+export type SaleInventory = {
+  cars: SaleCar[]
+  status: SaleCarsStatus
 }
 
 /* ----------------------------------------------------------------- fetching */
 
 /**
- * Reads the published inventory. Never throws — a missing ACF plugin, an
- * unreachable store and an empty inventory are three different states the UI
+ * Reads the published for-sale inventory. Never throws — a missing ACF plugin,
+ * an unreachable store and an empty inventory are three different states the UI
  * needs to tell apart.
  */
-export async function getVehicles(): Promise<VehicleInventory> {
+export async function getSaleCars(): Promise<SaleInventory> {
   if (!isWpConfigured()) {
     return { cars: [], status: 'not_configured' }
   }
 
-  const collected: WireCar[] = []
+  const collected: WireSaleCar[] = []
   let after: string | null = null
 
   try {
     for (let page = 0; page < MAX_PAGES; page++) {
-      const data: PagedCars = await wpFetch<PagedCars>(
-        VEHICLES_QUERY,
+      const data: PagedSaleCars = await wpFetch<PagedSaleCars>(
+        SALE_CARS_QUERY,
         { first: PAGE_SIZE, after },
         { revalidate: CATALOG_REVALIDATE }
       )
-      const connection = data.importCars
+      const connection = data.saleCars
       if (!connection) break
 
       collected.push(...connection.nodes)
@@ -156,14 +142,14 @@ export async function getVehicles(): Promise<VehicleInventory> {
     const message = error instanceof Error ? error.message : String(error)
     // A schema error is a setup problem, not an outage, and the fix is
     // completely different — so it gets its own status.
-    if (/importCarFields|Cannot query field/i.test(message)) {
+    if (/saleCarFields|saleCars|Cannot query field/i.test(message)) {
       console.log(
-        '[v0] Vehicle inventory needs WPGraphQL for ACF — importCarFields is not in the schema:',
+        '[v0] Sale inventory needs WPGraphQL for ACF — saleCarFields is not in the schema:',
         message
       )
       return { cars: [], status: 'acf_missing' }
     }
-    console.log('[v0] Vehicle inventory fetch failed:', message)
+    console.log('[v0] Sale inventory fetch failed:', message)
     return { cars: [], status: 'unreachable' }
   }
 
@@ -172,14 +158,16 @@ export async function getVehicles(): Promise<VehicleInventory> {
   }
 
   const cars = collected
-    .map(mapCar)
-    .filter((car): car is ImportCar => car !== null)
+    .map(mapSaleCar)
+    .filter((car): car is SaleCar => car !== null)
+    // Featured listings are pinned, then the newest model years lead.
+    .sort((a, b) => Number(b.featured ?? false) - Number(a.featured ?? false))
 
   return { cars, status: cars.length > 0 ? 'ok' : 'empty' }
 }
 
-export async function getVehicle(slug: string): Promise<ImportCar | null> {
-  const { cars } = await getVehicles()
+export async function getSaleCar(slug: string): Promise<SaleCar | null> {
+  const { cars } = await getSaleCars()
   return cars.find((car) => car.slug === slug) ?? null
 }
 
@@ -187,11 +175,11 @@ export async function getVehicle(slug: string): Promise<ImportCar | null> {
  * Same body type first, then anything else, so the rail is never half empty
  * when a body type only holds one vehicle.
  */
-export async function getSimilarVehicles(
-  car: ImportCar,
+export async function getSimilarSaleCars(
+  car: SaleCar,
   limit = 3
-): Promise<ImportCar[]> {
-  const { cars } = await getVehicles()
+): Promise<SaleCar[]> {
+  const { cars } = await getSaleCars()
   const others = cars.filter((item) => item.slug !== car.slug)
   return [
     ...others.filter((item) => item.bodyType.en === car.bodyType.en),
@@ -201,13 +189,15 @@ export async function getSimilarVehicles(
 
 /* ------------------------------------------------------------------ mapping */
 
-function mapCar(node: WireCar): ImportCar | null {
+function mapSaleCar(node: WireSaleCar): SaleCar | null {
   const slug = node.slug?.trim()
-  const fields = node.importCarFields
+  const fields = node.saleCarFields
   if (!slug || !fields) return null
 
-  // The post title is the safety net: a vehicle with no ACF model name still
-  // needs something to render, and the title is what the editor typed.
+  // The post title is the safety net: a listing with no ACF model name still
+  // needs something to render, and the title is what the editor typed. The
+  // three seeded cars were created before the field group existed, so this
+  // path is the live one until they are filled in.
   const model = text(fields.carModel) || stripHtml(node.title ?? '')
   if (!model) return null
 
@@ -232,14 +222,18 @@ function mapCar(node: WireCar): ImportCar | null {
       en: 'Vehicle',
       he: 'רכב',
     }),
-    origin: enumValue<CarOrigin>(fields.origin, carOrigins, 'germany'),
-    status: enumValue<CarStatus>(fields.status, carStatuses, 'available'),
-    stage: stage(fields.stage),
+    condition: enumValue<SaleCarCondition>(
+      fields.condition,
+      saleCarConditions,
+      'used'
+    ),
+    status: enumValue<SaleCarStatus>(fields.status, saleCarStatuses, 'available'),
     year: int(fields.year, new Date().getFullYear()),
     mileage: int(fields.mileage, 0),
-    // Null is meaningful: the detail page renders "on request" for it, so an
-    // unpriced vehicle must not collapse to a misleading 0.
+    // Null is meaningful: the UI renders "on request" for it, so an unpriced
+    // listing must not collapse to a misleading 0.
     price: nullableNumber(fields.price),
+    previousOwners: nullableCount(fields.previousOwners),
     featured: fields.featured ?? undefined,
     image: heroNode?.sourceUrl || PLACEHOLDER_IMAGE,
     alt: heroAlt ? plain(heroAlt) : subtitle,
@@ -252,13 +246,11 @@ function mapCar(node: WireCar): ImportCar | null {
     ),
     highlights: highlights(fields),
     specs: specs(fields),
-    eta: localized(fields.etaAr, fields.etaEn, fields.etaHe, ''),
+    availability: localized(
+      fields.availabilityAr,
+      fields.availabilityEn,
+      fields.availabilityHe,
+      ''
+    ),
   }
-}
-
-/** The four import steps; anything outside 1–4 is meaningless. */
-function stage(value: unknown): ImportCar['stage'] {
-  const numeric = int(value, 1)
-  if (numeric >= 1 && numeric <= 4) return numeric as ImportCar['stage']
-  return 1
 }
