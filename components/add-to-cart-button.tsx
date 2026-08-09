@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { Check, Plus, ShoppingCart } from 'lucide-react'
+import { trackMetaEvent } from '@/lib/analytics/meta-pixel'
 import { useCart } from '@/lib/cart-context'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { cn } from '@/lib/utils'
@@ -41,6 +42,11 @@ export function AddToCartButton({
       disabled={disabled}
       onClick={() => {
         add(slug, quantity)
+        trackMetaEvent('AddToCart', {
+          content_type: 'product',
+          content_ids: [slug],
+          contents: [{ id: slug, quantity }],
+        })
         setJustAdded(true)
       }}
       className={cn(

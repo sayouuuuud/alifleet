@@ -208,7 +208,7 @@ function PortScene({ bgImage }: { bgImage?: string }) {
   const routeStops = [
     { code: 'FTY', label: s.stop1Label, place: s.stop1Place, status: 'done',    meta: s.stop1Meta },
     { code: 'PRT', label: s.stop2Label, place: s.stop2Place, status: 'done',    meta: s.stop2Meta },
-    { code: 'CAI', label: s.stop3Label, place: s.stop3Place, status: 'current', meta: s.stop3Meta },
+    { code: 'ASD', label: s.stop3Label, place: s.stop3Place, status: 'current', meta: s.stop3Meta },
     { code: 'FLT', label: s.stop4Label, place: s.stop4Place, status: 'pending', meta: s.stop4Meta },
   ]
 

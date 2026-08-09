@@ -9,6 +9,8 @@ import {
 } from 'next/font/google'
 import { cookies } from 'next/headers'
 import './globals.css'
+import { MetaPixel } from '@/components/analytics/meta-pixel'
+import { BackToTop } from '@/components/back-to-top'
 import { LanguageProvider } from '@/lib/i18n/language-context'
 import { CartProvider } from '@/lib/cart-context'
 import { AuthProvider } from '@/lib/auth/auth-context'
@@ -82,6 +84,7 @@ export default async function RootLayout({
       className={`bg-background ${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${cairo.variable} ${notoHebrew.variable}`}
     >
       <body className="antialiased">
+        <MetaPixel />
         <LanguageProvider initialLocale={locale}>
           <StoreProvider settings={storeSettings}>
             <AuthProvider viewer={viewer} backendReady={isWpConfigured()}>
@@ -89,6 +92,7 @@ export default async function RootLayout({
             </AuthProvider>
           </StoreProvider>
         </LanguageProvider>
+        <BackToTop />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
     </html>
