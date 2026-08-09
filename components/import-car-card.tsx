@@ -23,7 +23,7 @@ export function ImportCarCard({ car }: { car: ImportCar }) {
   return (
     <article className="group flex flex-col overflow-hidden rounded-3xl bg-card ring-1 ring-border transition-shadow hover:shadow-xl hover:shadow-foreground/5">
       <Link
-        href={`/import/${car.slug}`}
+        href={`/cars/import/${car.slug}`}
         className="relative block aspect-16/10 overflow-hidden bg-secondary"
       >
         <Image
@@ -49,7 +49,7 @@ export function ImportCarCard({ car }: { car: ImportCar }) {
         </p>
 
         <h3 className="mt-2 text-pretty text-lg font-semibold leading-snug text-foreground">
-          <Link href={`/import/${car.slug}`} className="hover:text-accent">
+          <Link href={`/cars/import/${car.slug}`} className="hover:text-accent">
             {car.model}
           </Link>
         </h3>
@@ -82,7 +82,7 @@ export function ImportCarCard({ car }: { car: ImportCar }) {
             </p>
           </div>
           <Link
-            href={`/import/${car.slug}`}
+            href={`/cars/import/${car.slug}`}
             className="flex items-center gap-1.5 rounded-full bg-foreground px-4 py-2.5 text-sm font-semibold text-background transition-opacity hover:opacity-90"
           >
             {t.common.viewDetails}

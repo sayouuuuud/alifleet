@@ -41,7 +41,7 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
     <>
       <div className="mx-auto max-w-7xl px-4 pt-28 md:px-8 md:pt-36">
         <Link
-          href="/import"
+          href="/cars#import"
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-4" aria-hidden="true" data-flip-rtl />
