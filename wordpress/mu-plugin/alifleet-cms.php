@@ -291,6 +291,59 @@ add_filter(
 );
 
 /* -------------------------------------------------------------------------
+ * 3b. Attach page_slug-located field groups to the GraphQL `Page` type
+ *
+ * WPGraphQL for ACF decides which GraphQL types a field group hangs off by
+ * reading its location rules. It understands rules that name a type
+ * (`post_type == page`, `page_type == front_page`) but it cannot resolve the
+ * custom `page_slug` rule registered above, because a slug is a row in the
+ * database, not a type. When the inference finds nothing the group is dropped
+ * from the schema *silently* — `show_in_graphql` still reads 1, which is why
+ * `Page.importPageFields` (and cart / contact / blog / products) looked
+ * configured while none of them existed in the schema.
+ *
+ * Fixing this per group (in the database or in acf-json) does not hold: every
+ * later re-save from the admin UI or from an acf_import_field_group() run
+ * writes the two GraphQL keys back to null. Deriving them here instead means
+ * the rule that creates the problem and the rule that repairs it live in the
+ * same file, and any new page group works without extra steps.
+ * ---------------------------------------------------------------------- */
+
+add_filter(
+	'acf/load_field_group',
+	/**
+	 * @param array<string,mixed> $group The field group being loaded.
+	 * @return array<string,mixed>
+	 */
+	static function ( array $group ): array {
+		if ( empty( $group['show_in_graphql'] ) ) {
+			return $group;
+		}
+
+		$uses_page_slug = false;
+		foreach ( (array) ( $group['location'] ?? [] ) as $rule_group ) {
+			foreach ( (array) $rule_group as $rule ) {
+				if ( 'page_slug' === ( $rule['param'] ?? '' ) ) {
+					$uses_page_slug = true;
+					break 2;
+				}
+			}
+		}
+
+		if ( ! $uses_page_slug ) {
+			return $group;
+		}
+
+		// Stop the inference that cannot see `page_slug`, and name the type.
+		$group['map_graphql_types_from_location'] = 0;
+		$group['graphql_types']                   = [ 'Page' ];
+
+		return $group;
+	},
+	20
+);
+
+/* -------------------------------------------------------------------------
  * 4. Expose the post excerpt and a stable slug for every content type
  * ---------------------------------------------------------------------- */
 
@@ -1265,4 +1318,110 @@ add_action(
 		exit;
 	},
 	5
+);
+
+/* -------------------------------------------------------------------------
+ * 9. Tell the frontend to drop its cache when content changes
+ *
+ * The Next.js site caches its WPGraphQL reads for ten minutes. Without a ping
+ * that window is also the *shortest* time an edit can take to appear, which
+ * reads as "the CMS is broken" rather than "the CMS is cached": the editor
+ * saves, reloads, sees the old text, and has no way to tell whether the change
+ * was even stored.
+ *
+ * Configure with WP-CLI — no wp-config.php edit required:
+ *   wp option update alifleet_revalidate_url "https://<site>/api/revalidate"
+ *   wp option update alifleet_revalidate_secret "<WORDPRESS_REVALIDATE_SECRET>"
+ *
+ * Leaving either unset just disables the ping and restores the old ten minute
+ * behaviour, so a half-configured install degrades instead of erroring.
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Ping the frontend's purge webhook.
+ */
+function alifleet_ping_revalidate(): void {
+	$url    = trim( (string) get_option( 'alifleet_revalidate_url', '' ) );
+	$secret = trim( (string) get_option( 'alifleet_revalidate_secret', '' ) );
+
+	if ( '' === $url || '' === $secret ) {
+		return;
+	}
+
+	// One ping per request. A single save fires save_post, acf/save_post and
+	// several option hooks; without this guard re-saving 165 products would
+	// aim hundreds of purges at the frontend.
+	static $sent = false;
+	if ( $sent ) {
+		return;
+	}
+	$sent = true;
+
+	wp_remote_post(
+		$url,
+		[
+			// Non-blocking: the editor must never wait on the frontend, and must
+			// never see a save appear to fail because the site answered slowly.
+			'blocking' => false,
+			'timeout'  => 5,
+			'headers'  => [
+				'x-alifleet-revalidate-secret' => $secret,
+				'Content-Type'                 => 'application/json',
+			],
+			'body'     => '{}',
+		]
+	);
+}
+
+/**
+ * Fire the ping only for content the frontend actually reads.
+ *
+ * @param int     $post_id The post being saved.
+ * @param WP_Post $post    The post object.
+ */
+function alifleet_maybe_ping_revalidate( int $post_id, $post ): void {
+	// Autosaves and revisions are not what the site serves, and throwing away a
+	// warm cache for them would mean every keystroke-triggered autosave purges.
+	if ( wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+		return;
+	}
+	if ( ! $post instanceof WP_Post ) {
+		return;
+	}
+
+	$watched = [ 'page', 'post', 'product', 'cars', 'trucks', 'import_car', 'testi' ];
+	if ( ! in_array( $post->post_type, $watched, true ) ) {
+		return;
+	}
+
+	// 'publish' covers edits to live content, 'trash' covers removing it — which
+	// also has to disappear from the cached lists.
+	if ( ! in_array( $post->post_status, [ 'publish', 'trash' ], true ) ) {
+		return;
+	}
+
+	alifleet_ping_revalidate();
+}
+
+add_action( 'save_post', 'alifleet_maybe_ping_revalidate', 20, 2 );
+add_action( 'trashed_post', 'alifleet_ping_revalidate', 20, 0 );
+
+// ACF writes its field values *after* save_post has run, so a save_post-only
+// hook would purge the cache a moment before the new values exist and then
+// cache the old ones straight back. This ping runs once they have landed.
+add_action( 'acf/save_post', 'alifleet_ping_revalidate', 20, 0 );
+
+// The Site Settings screen stores into wp_options and has no post to hang off,
+// so it needs its own trigger. Restricted to the rows the frontend reads —
+// WordPress updates transients and cron constantly, and pinging on those would
+// purge the cache every few seconds.
+add_action(
+	'updated_option',
+	static function ( string $option ): void {
+		if ( 0 === strpos( $option, 'options_' ) || 0 === strpos( $option, 'woocommerce_' ) ) {
+			alifleet_ping_revalidate();
+		}
+	},
+	20,
+	1
 );

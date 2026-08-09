@@ -52,6 +52,32 @@ export function wpStoreOrigin(): string {
 /** How long cached catalog reads stay fresh, in seconds. */
 export const CATALOG_REVALIDATE = 600
 
+/**
+ * Cache tag carried by every cached WordPress read.
+ *
+ * `CATALOG_REVALIDATE` alone means an editor waits up to ten minutes to see a
+ * change, with no way to hurry it along. Tagging the reads gives WordPress a
+ * way to purge them the moment content is saved (see `app/api/revalidate`),
+ * which turns the ten minutes into a ceiling for when nothing pings us rather
+ * than the normal wait.
+ *
+ * It is deliberately a single shared tag instead of one per content type: the
+ * ping arrives from a `save_post` hook that knows the post type but not which
+ * of our queries happened to embed it — a sale car shows up in the cars list,
+ * the sitemap and the home page. One tag cannot drift out of sync with the
+ * queries the way a hand-maintained mapping would.
+ */
+export const WP_CACHE_TAG = 'wp-content'
+
+/**
+ * Shared secret the revalidate webhook requires. Unset means the webhook is
+ * disabled and refuses every call, which is the correct default: an open purge
+ * endpoint lets anyone dump our cache and hammer the WordPress box.
+ */
+export function wpRevalidateSecret(): string {
+  return (process.env.WORDPRESS_REVALIDATE_SECRET ?? '').trim()
+}
+
 /** How long we keep the short-lived JWT access token in its cookie. */
 export const AUTH_TOKEN_MAX_AGE = 60 * 60 // 1 hour
 
