@@ -4,48 +4,77 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowLeft, Check, MessageCircle, Phone } from 'lucide-react'
-import type { ImportCar } from '@/lib/data/import-cars'
+import type { SaleCar } from '@/lib/data/sale-cars'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatNumber, formatPrice } from '@/lib/format'
 import { whatsappLink } from '@/lib/site-config'
 import { useStore } from '@/lib/store-context'
-import { ImportCarCard } from '@/components/import-car-card'
+import { proxied } from '@/lib/img-proxy'
+import { SaleCarCard } from '@/components/sale-car-card'
 
-export function ImportCarDetail({ car, related }: { car: ImportCar; related: ImportCar[] }) {
+/**
+ * Detail page for a car on the lot. Same visual grammar as the import detail —
+ * gallery left, sticky-feeling summary right, specs below — but with the import
+ * timeline removed, because a car already in the yard has no shipment stages to
+ * show. Its place is taken by the ownership/condition facts a used-car buyer
+ * actually asks about.
+ */
+export function SaleCarDetail({
+  car,
+  related,
+}: {
+  car: SaleCar
+  related: SaleCar[]
+}) {
   const { t, locale } = useLanguage()
   const store = useStore()
   const images = [{ src: car.image, alt: car.alt }, ...car.gallery]
   const [active, setActive] = useState(0)
 
-  const steps = [
-    t.import.step1Title,
-    t.import.step2Title,
-    t.import.step3Title,
-    t.import.step4Title,
-  ]
+  const showMileage = car.condition !== 'new'
 
   const specs = [
     { label: t.import.year, value: String(car.year), ltr: true },
-    { label: t.import.mileage, value: `${formatNumber(car.mileage)} km`, ltr: true },
+    ...(showMileage
+      ? [
+          {
+            label: t.import.mileage,
+            value: `${formatNumber(car.mileage)} km`,
+            ltr: true,
+          },
+        ]
+      : []),
+    ...(car.previousOwners !== null
+      ? [
+          {
+            label: t.cars.previousOwners,
+            value:
+              car.previousOwners === 0
+                ? t.cars.firstOwner
+                : String(car.previousOwners),
+            ltr: car.previousOwners !== 0,
+          },
+        ]
+      : []),
     { label: t.import.engine, value: car.specs.engine, ltr: true },
     { label: t.import.transmission, value: car.specs.transmission[locale] },
     { label: t.import.fuel, value: car.specs.fuel[locale] },
     { label: t.import.drivetrain, value: car.specs.drivetrain, ltr: true },
     { label: t.import.colorLabel, value: car.specs.color[locale] },
     { label: t.import.seats, value: String(car.specs.seats), ltr: true },
-  ]
+  ].filter((spec) => spec.value)
 
-  const enquiry = `${t.importDetail.whatsappIntro}\n\n${car.model} · ${car.year}\n${t.import.origins[car.origin]}\n${typeof window === 'undefined' ? '' : window.location.href}`
+  const enquiry = `${t.saleDetail.whatsappIntro}\n\n${car.model} · ${car.year}\n${t.cars.conditions[car.condition]}\n${typeof window === 'undefined' ? '' : window.location.href}`
 
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 pt-28 md:px-8 md:pt-36">
         <Link
-          href="/cars#import"
+          href="/cars#for-sale"
           className="inline-flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="size-4" aria-hidden="true" data-flip-rtl />
-          {t.common.backToImport}
+          {t.saleDetail.backToCars}
         </Link>
       </div>
 
@@ -55,7 +84,7 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
           <div>
             <div className="relative aspect-16/10 overflow-hidden rounded-3xl bg-secondary ring-1 ring-border">
               <Image
-                src={images[active].src || '/placeholder.svg'}
+                src={proxied(images[active].src)}
                 alt={images[active].alt[locale]}
                 fill
                 priority
@@ -64,13 +93,13 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
               />
             </div>
             {images.length > 1 && (
-              <div className="mt-4 flex gap-3">
+              <div className="mt-4 flex flex-wrap gap-3">
                 {images.map((image, index) => (
                   <button
                     key={image.src}
                     type="button"
                     onClick={() => setActive(index)}
-                    aria-label={`${t.importDetail.gallery} ${index + 1}`}
+                    aria-label={`${t.saleDetail.gallery} ${index + 1}`}
                     aria-current={index === active}
                     className={
                       index === active
@@ -79,7 +108,7 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
                     }
                   >
                     <Image
-                      src={image.src || '/placeholder.svg'}
+                      src={proxied(image.src)}
                       alt={image.alt[locale]}
                       fill
                       sizes="100px"
@@ -94,7 +123,7 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
           {/* Summary */}
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-accent">
-              {t.import.origins[car.origin]} · {car.bodyType[locale]}
+              {t.cars.conditions[car.condition]} · {car.bodyType[locale]}
             </p>
             <h1 className="mt-3 text-balance font-serif text-3xl leading-tight tracking-tight text-foreground md:text-5xl">
               {car.model}
@@ -105,7 +134,7 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
 
             <div className="mt-7 rounded-3xl bg-card p-6 ring-1 ring-border">
               <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-                {t.import.landedPrice}
+                {t.cars.askingPrice}
               </p>
               <p className="mt-1.5 font-serif text-4xl text-foreground" dir="ltr">
                 {car.price === null
@@ -114,7 +143,8 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
               </p>
               <p className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="size-2 rounded-full bg-accent" aria-hidden="true" />
-                {t.import.status[car.status]} · {car.eta[locale]}
+                {t.cars.saleStatus[car.status]}
+                {car.availability[locale] && ` · ${car.availability[locale]}`}
               </p>
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -126,7 +156,7 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
                     className="flex flex-1 items-center justify-center gap-2 rounded-full bg-foreground px-5 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
                   >
                     <MessageCircle className="size-4" aria-hidden="true" />
-                    {t.importDetail.requestThisCar}
+                    {t.saleDetail.requestThisCar}
                   </a>
                 )}
                 {store.phoneHref && (
@@ -141,17 +171,27 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
               </div>
             </div>
 
-            <h2 className="mt-9 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t.importDetail.highlights}
-            </h2>
-            <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
-              {car.highlights.map((item) => (
-                <li key={item.en} className="flex items-start gap-2 text-sm text-foreground">
-                  <Check className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden="true" />
-                  {item[locale]}
-                </li>
-              ))}
-            </ul>
+            {car.highlights.length > 0 && (
+              <>
+                <h2 className="mt-9 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {t.saleDetail.highlights}
+                </h2>
+                <ul className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                  {car.highlights.map((item) => (
+                    <li
+                      key={item.en}
+                      className="flex items-start gap-2 text-sm text-foreground"
+                    >
+                      <Check
+                        className="mt-0.5 size-4 shrink-0 text-accent"
+                        aria-hidden="true"
+                      />
+                      {item[locale]}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -161,48 +201,11 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 md:px-8 lg:grid-cols-2 lg:gap-14">
           <div>
             <h2 className="font-serif text-2xl tracking-tight text-foreground md:text-3xl">
-              {t.importDetail.overview}
+              {t.saleDetail.overview}
             </h2>
             <p className="mt-5 text-pretty leading-relaxed text-muted-foreground">
               {car.description[locale]}
             </p>
-
-            <h3 className="mt-10 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              {t.importDetail.timeline}
-            </h3>
-            <ol className="mt-5 flex flex-col gap-4">
-              {steps.map((step, index) => {
-                const done = index + 1 <= car.stage
-                return (
-                  <li key={step} className="flex items-center gap-3">
-                    <span
-                      className={
-                        done
-                          ? 'flex size-8 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground'
-                          : 'flex size-8 shrink-0 items-center justify-center rounded-full bg-card text-muted-foreground ring-1 ring-border'
-                      }
-                    >
-                      {done ? (
-                        <Check className="size-4" aria-hidden="true" />
-                      ) : (
-                        <span className="font-mono text-xs" dir="ltr">
-                          {index + 1}
-                        </span>
-                      )}
-                    </span>
-                    <span
-                      className={
-                        done
-                          ? 'text-sm font-semibold text-foreground'
-                          : 'text-sm text-muted-foreground'
-                      }
-                    >
-                      {step}
-                    </span>
-                  </li>
-                )
-              })}
-            </ol>
           </div>
 
           <div>
@@ -236,11 +239,11 @@ export function ImportCarDetail({ car, related }: { car: ImportCar; related: Imp
       {related.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-20">
           <h2 className="font-serif text-2xl tracking-tight text-foreground md:text-3xl">
-            {t.importDetail.similar}
+            {t.saleDetail.similar}
           </h2>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((item) => (
-              <ImportCarCard key={item.slug} car={item} />
+              <SaleCarCard key={item.slug} car={item} />
             ))}
           </div>
         </section>

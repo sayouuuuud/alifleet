@@ -14,16 +14,18 @@ export function SiteFooter() {
     {
       heading: t.footer.fleet,
       links: [
-        { label: t.footer.fleetLinks.trucks, href: '/import?type=truck' },
-        { label: t.footer.fleetLinks.vans, href: '/import?type=van' },
-        { label: t.footer.fleetLinks.luxury, href: '/import?type=luxury' },
-        { label: t.footer.fleetLinks.used, href: '/import' },
+        // These used to carry `?type=` params that nothing ever read. The two
+        // anchors are the real filters the page offers.
+        { label: t.footer.fleetLinks.trucks, href: '/cars#for-sale' },
+        { label: t.footer.fleetLinks.vans, href: '/cars#for-sale' },
+        { label: t.footer.fleetLinks.luxury, href: '/cars#import' },
+        { label: t.footer.fleetLinks.used, href: '/cars#for-sale' },
       ],
     },
     {
       heading: t.footer.services,
       links: [
-        { label: t.footer.servicesLinks.import, href: '/import' },
+        { label: t.footer.servicesLinks.import, href: '/cars#import' },
         { label: t.footer.servicesLinks.parts, href: '/products' },
         { label: t.footer.servicesLinks.consulting, href: '/contact' },
         { label: t.footer.servicesLinks.support, href: '/contact' },

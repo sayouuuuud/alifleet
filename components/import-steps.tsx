@@ -13,8 +13,10 @@ export function ImportSteps() {
     { icon: KeyRound, title: t.import.step4Title, desc: t.import.step4Desc },
   ]
 
+  // `#import` is the landing target for the hero's "import a car" CTA — the
+  // import half of /cars starts here.
   return (
-    <section className="border-y border-border bg-secondary/40">
+    <section id="import" className="border-y border-border bg-secondary/40">
       <div className="mx-auto max-w-7xl px-4 py-16 md:px-8 md:py-24">
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-accent text-start">
           {t.import.stepsEyebrow}
