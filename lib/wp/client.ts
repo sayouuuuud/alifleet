@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { isWpConfigured, wpEndpoint } from './config'
+import { WP_CACHE_TAG, isWpConfigured, wpEndpoint } from './config'
 import { WpError, classifyWpErrors } from './errors'
 
 type GraphQLResponse<T> = {
@@ -38,9 +38,16 @@ export async function wpFetch<T>(
   // stays uncached. Public catalog data opts in to the Next.js data cache by
   // passing `revalidate`, which keeps a 165-product storefront off the
   // WordPress box on every single request.
-  const caching: Pick<RequestInit, 'cache'> & { next?: { revalidate: number } } =
+  //
+  // Every cached read is tagged here rather than at the call sites so that a
+  // new cached query cannot be added without a purge path — forgetting the tag
+  // would strand that query on its full revalidate window with no way to
+  // flush it, and the omission would be invisible until an editor complained.
+  const caching: Pick<RequestInit, 'cache'> & {
+    next?: { revalidate: number; tags: string[] }
+  } =
     typeof options.revalidate === 'number'
-      ? { next: { revalidate: options.revalidate } }
+      ? { next: { revalidate: options.revalidate, tags: [WP_CACHE_TAG] } }
       : { cache: 'no-store' }
 
   let response: Response
