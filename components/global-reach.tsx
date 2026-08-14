@@ -141,8 +141,11 @@ export function GlobalReach() {
       globe.update({
         phi: phiRef.current + springOffset.get(),
         theta: thetaRef.current,
-        width: width * 2,
-        height: width * 2,
+        // Must match the canvas buffer size (width * dpr). Hardcoding `* 2`
+        // here while the canvas is sized by dpr renders the globe at the wrong
+        // scale on every display that is not exactly 2x.
+        width: width * dpr,
+        height: width * dpr,
       })
       raf = requestAnimationFrame(tick)
     }
@@ -248,8 +251,6 @@ export function GlobalReach() {
          they are created paused and only run while the section is in view —
          otherwise they keep compositing for the rest of the session and make
          the sections further down the page feel sticky. */
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
       const ambient = [
         gsap.to('[data-orbit-ring]', {
           rotate: 360,

@@ -121,22 +121,16 @@ html[lang='he'] {
     @apply border-border outline-ring/50;
   }
   html {
-    @apply bg-background;
-    /* Smooth scrolling is limited to anchor navigation (`scroll-behavior` only
-       affects programmatic/anchor jumps) but it still interacts badly with the
-       pinned scenes on some browsers, so it is opt-out under reduced motion. */
-    scroll-behavior: smooth;
+    @apply bg-background scroll-smooth;
   }
+  /* Reduced motion only disables smooth *scrolling*. It must NOT blanket-kill
+     animations and transitions: a global `animation-duration: 0.01ms
+     !important` also freezes the loading indicator, the fleet panel
+     transitions, and every hover state, which reads as a broken site rather
+     than a calmer one. */
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
     }
   }
   /* Faint blueprint dot grid. This used to use `background-attachment: fixed`,

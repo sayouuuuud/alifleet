@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 /**
  * Full-screen brand loader shown on the very first visit of a session.
@@ -18,13 +19,6 @@ export function SiteLoader() {
   const startRef = useRef(Date.now())
 
   useEffect(() => {
-    // Skip entirely for visitors who asked for less motion.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setDone(true)
-      setGone(true)
-      return
-    }
-
     let hideTimer: number
     const finish = () => {
       // Keep it on screen just long enough to read as intentional rather than
@@ -56,14 +50,15 @@ export function SiteLoader() {
     return () => window.clearTimeout(t)
   }, [done])
 
+  /* NOTE: this used to set `document.body.style.overflow = 'hidden'` while the
+     overlay was up. That locked the page during the exact window in which GSAP
+     ScrollTrigger measures the document, so every scroll-triggered reveal got
+     computed against a frozen page and sections stayed blank or fired at the
+     wrong point. The overlay covers the viewport anyway, so no lock is needed —
+     and once it is gone we tell ScrollTrigger to re-measure. */
   useEffect(() => {
-    // Prevent scrolling behind the overlay while it is visible.
-    if (gone) return
-    const previous = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = previous
-    }
+    if (!gone) return
+    ScrollTrigger.refresh()
   }, [gone])
 
   if (gone) return null

@@ -19,8 +19,6 @@ export function MarqueeStrip() {
 
   useGSAP(
     () => {
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
       const scroll = gsap.to('[data-marquee-track]', {
         xPercent: -50,
         repeat: -1,

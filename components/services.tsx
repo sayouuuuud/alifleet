@@ -86,7 +86,12 @@ function SceneShell({
         className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/70 to-transparent"
       />
       <CrosshairCorners />
-      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-20 md:pb-0">
+      {/* The scene is exactly one viewport tall and clips its overflow, so on
+          short viewports (laptops around 600–760px, and landscape phones) the
+          taller scene content used to get cut off at the bottom. Scaling the
+          content block down on those heights keeps the whole composition
+          visible instead of trimming it. */}
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-20 md:pb-0 [@media(max-height:680px)]:scale-[0.78] [@media(max-height:760px)]:scale-[0.88] [@media(max-height:760px)]:pb-6 origin-bottom md:origin-center">
         {children}
         <ChapterProgress active={index} />
       </div>
@@ -421,19 +426,20 @@ export function Services({ wpImages }: { wpImages?: import('@/lib/wp/page-images
   useGSAP(
     () => {
       const isRtl = document.documentElement.dir === 'rtl'
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
       const isSmallScreen = window.matchMedia('(max-width: 767px)').matches
       const panels = gsap.utils.toArray<HTMLElement>('[data-scene]')
 
       /* The videos autoplay normally; this only pauses the ones that are off
-         screen so we are never decoding three fullscreen MP4s at once. */
+         screen so we are never decoding three fullscreen MP4s at once.
+         Playback is deliberately NOT gated on `prefers-reduced-motion` —
+         gating it there left every scene frozen on the poster frame. */
       const videos = document.querySelectorAll<HTMLVideoElement>('[data-scene-video]')
       const videoObserver = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
             const video = entry.target as HTMLVideoElement
             if (entry.isIntersecting) {
-              if (!reduceMotion) video.play().catch(() => {})
+              video.play().catch(() => {})
             } else {
               video.pause()
             }
@@ -449,7 +455,7 @@ export function Services({ wpImages }: { wpImages?: import('@/lib/wp/page-images
            motion, where scaling a fullscreen video frame every scroll tick is
            the single most expensive thing on the page. */
         const bg = panel.querySelector('[data-scene-bg]')
-        if (bg && !reduceMotion && !isSmallScreen) {
+        if (bg && !isSmallScreen) {
           gsap.fromTo(
             bg,
             { scale: 1.12 },
@@ -573,7 +579,7 @@ export function Services({ wpImages }: { wpImages?: import('@/lib/wp/page-images
            scene is off screen — otherwise it keeps repainting for the rest of
            the session after the user has scrolled past. */
         const scanLine = panel.querySelector('[data-scanline]')
-        if (scanLine && !reduceMotion) {
+        if (scanLine) {
           const sweep = gsap.to(scanLine, {
             x: '100vw',
             duration: 3,

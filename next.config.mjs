@@ -8,6 +8,9 @@ const nextConfig = {
     // images arrive through the same-origin /api/img proxy, so both are now
     // resized and served as AVIF/WebP instead of the raw originals.
     formats: ['image/avif', 'image/webp'],
+    // Next.js 16 rejects any `quality` prop that is not declared here, so the
+    // per-image values used across the site must all be listed.
+    qualities: [70, 75, 80, 82],
     minimumCacheTTL: 604800,
   },
   async redirects() {
