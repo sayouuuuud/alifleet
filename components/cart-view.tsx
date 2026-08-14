@@ -14,6 +14,7 @@ import type { PartSummary } from '@/lib/data/parts'
 import { useCart } from '@/lib/cart-context'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatPrice } from '@/lib/format'
+import { proxied } from '@/lib/img-proxy'
 import { whatsappLink, wordpressCheckoutUrl } from '@/lib/site-config'
 import { useStore } from '@/lib/store-context'
 
@@ -106,7 +107,7 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
                 className="relative aspect-4/3 w-full shrink-0 overflow-hidden rounded-2xl bg-secondary sm:size-28 sm:aspect-auto"
               >
                 <Image
-                  src={part.image || '/placeholder.svg'}
+                  src={proxied(part.image)}
                   alt={part.alt[locale]}
                   fill
                   sizes="112px"

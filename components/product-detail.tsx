@@ -8,6 +8,7 @@ import type { Part, PartSummary } from '@/lib/data/parts'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { resolve } from '@/lib/i18n/localized'
 import { formatPrice } from '@/lib/format'
+import { proxied } from '@/lib/img-proxy'
 import { whatsappLink } from '@/lib/site-config'
 import { useStore } from '@/lib/store-context'
 import { AddToCartButton } from '@/components/add-to-cart-button'
@@ -50,7 +51,7 @@ export function ProductDetail({
             {/* Image */}
             <div className="relative aspect-4/3 overflow-hidden rounded-3xl bg-card ring-1 ring-border">
               <Image
-                src={part.image || '/placeholder.svg'}
+                src={proxied(part.image)}
                 alt={part.alt[locale]}
                 fill
                 priority
