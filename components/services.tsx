@@ -63,15 +63,15 @@ function SceneShell({
       className="sticky top-0 flex h-svh items-end overflow-hidden md:items-center"
       style={{ zIndex: index + 1 }}
     >
-      <div data-scene-bg className="absolute inset-0 will-change-transform">
+      <div data-scene-bg className="absolute inset-0">
         <video
           data-scene-video
-          src={video}
+          data-scene-src={video}
           poster={image}
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="none"
           className="h-full w-full object-cover"
           aria-label={alt}
         />
@@ -420,36 +420,50 @@ export function Services({ wpImages }: { wpImages?: import('@/lib/wp/page-images
   useGSAP(
     () => {
       const isRtl = document.documentElement.dir === 'rtl'
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const isSmallScreen = window.matchMedia('(max-width: 767px)').matches
       const panels = gsap.utils.toArray<HTMLElement>('[data-scene]')
 
-      /* Play each background video whenever its scene is actually visible. */
+      /* Videos are `preload="none"` with no src until their scene approaches,
+         so the page never downloads ~14 MB of MP4 up front. Each one is
+         attached and played on approach, paused when it leaves. */
       const videos = document.querySelectorAll<HTMLVideoElement>('[data-scene-video]')
       const videoObserver = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
             const video = entry.target as HTMLVideoElement
             if (entry.isIntersecting) {
-              video.play().catch(() => {})
+              const src = video.dataset.sceneSrc
+              if (src && !video.src) video.src = src
+              if (!reduceMotion) video.play().catch(() => {})
             } else {
               video.pause()
             }
           }
         },
-        { threshold: 0.05 }
+        // Warm up one viewport early so the first frame is ready on arrival.
+        { rootMargin: '100% 0px', threshold: 0 }
       )
       videos.forEach((video) => videoObserver.observe(video))
 
       panels.forEach((panel) => {
-        /* Parallax background zoom */
+        /* Parallax background zoom — skipped on phones and with reduced
+           motion, where scaling a fullscreen video frame every scroll tick is
+           the single most expensive thing on the page. */
         const bg = panel.querySelector('[data-scene-bg]')
-        if (bg) {
+        if (bg && !reduceMotion && !isSmallScreen) {
           gsap.fromTo(
             bg,
-            { scale: 1.15 },
+            { scale: 1.12 },
             {
               scale: 1,
               ease: 'none',
-              scrollTrigger: { trigger: panel, start: 'top bottom', end: 'bottom+=100% top', scrub: true },
+              scrollTrigger: {
+                trigger: panel,
+                start: 'top bottom',
+                end: 'bottom+=100% top',
+                scrub: 1,
+              },
             }
           )
         }
@@ -557,16 +571,24 @@ export function Services({ wpImages }: { wpImages?: import('@/lib/wp/page-images
           })
         }
 
-        /* Scene 03: scan-line sweep */
+        /* Scene 03: scan-line sweep. The infinite tween is paused whenever the
+           scene is off screen — otherwise it keeps repainting for the rest of
+           the session after the user has scrolled past. */
         const scanLine = panel.querySelector('[data-scanline]')
-        if (scanLine) {
-          gsap.to(scanLine, {
+        if (scanLine && !reduceMotion) {
+          const sweep = gsap.to(scanLine, {
             x: '100vw',
             duration: 3,
             ease: 'power1.inOut',
             repeat: -1,
             yoyo: true,
-            scrollTrigger: enter,
+            paused: true,
+          })
+          ScrollTrigger.create({
+            trigger: panel,
+            start: 'top bottom',
+            end: 'bottom top',
+            onToggle: (self) => (self.isActive ? sweep.play() : sweep.pause()),
           })
         }
 
@@ -596,26 +618,28 @@ export function Services({ wpImages }: { wpImages?: import('@/lib/wp/page-images
         })
       })
 
-      /* Dwell spacers: each scene gets a full viewport height of scroll before
-         the next panel takes over, giving time to read the content. */
-      panels.forEach((panel) => {
-        ScrollTrigger.create({
-          trigger: panel,
-          start: 'top top',
-          end: '+=100%',
-          pin: true,
-          pinSpacing: true,
-        })
-      })
+      /* NOTE: the scenes are stacked with CSS `position: sticky` (see
+         SceneShell) and each is followed by a dwell spacer. A GSAP `pin` used
+         to be added here as well, which was the main source of scroll jank:
+         pinning rewrites the element to `position: fixed` inside a generated
+         spacer while the class still says `sticky`, so the two mechanisms
+         fought over the same element on every scroll tick. CSS sticky alone is
+         compositor-driven and smooth. */
     },
     { scope: sectionRef }
   )
 
   return (
-    <section ref={sectionRef} aria-label="Services">
+    <section ref={sectionRef} aria-label="Services" className="relative">
+      {/* Each scene is `sticky top-0` and is followed by a viewport-height
+          spacer, so it stays put for one extra screen of scrolling before the
+          next scene slides over it. This replaces GSAP pinning. */}
       <ShowroomScene bgImage={wpImages?.serviceScene1} />
-      <PortScene     bgImage={wpImages?.serviceScene2} />
-      <PartsScene    bgImage={wpImages?.serviceScene3} />
+      <div aria-hidden="true" className="h-svh" />
+      <PortScene bgImage={wpImages?.serviceScene2} />
+      <div aria-hidden="true" className="h-svh" />
+      <PartsScene bgImage={wpImages?.serviceScene3} />
+      <div aria-hidden="true" className="h-svh" />
     </section>
   )
 }

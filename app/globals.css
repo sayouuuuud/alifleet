@@ -109,23 +109,44 @@ html[lang='he'] {
     @apply border-border outline-ring/50;
   }
   html {
-    @apply bg-background scroll-smooth;
+    @apply bg-background;
+    /* Smooth scrolling is limited to anchor navigation (`scroll-behavior` only
+       affects programmatic/anchor jumps) but it still interacts badly with the
+       pinned scenes on some browsers, so it is opt-out under reduced motion. */
+    scroll-behavior: smooth;
   }
-  /* Ambient aurora glows + faint blueprint dot grid painted directly on the body
-     so they sit ABOVE the base background color. background-attachment: fixed
-     keeps them anchored to the viewport while content scrolls. Transparent
-     sections reveal the glows; solid bg-secondary sections cover them, which
-     creates the alternating surface rhythm. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  /* Faint blueprint dot grid. This used to use `background-attachment: fixed`,
+     which forces the browser to repaint the gradient across the whole viewport
+     on every single scroll frame and cannot be GPU-composited — it was a major
+     source of scroll jank. It is now a fixed-position pseudo-element on its own
+     compositor layer, which looks identical but costs nothing while scrolling. */
   body {
     @apply text-foreground font-sans antialiased;
     background-color: var(--background);
-    background-image:
-      radial-gradient(
-        oklch(0.32 0.06 250 / 16%) 1px,
-        transparent 1px
-      );
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(
+      oklch(0.32 0.06 250 / 16%) 1px,
+      transparent 1px
+    );
     background-size: 26px 26px;
-    background-attachment: fixed;
   }
   /* Arabic and Hebrew read better with a slightly looser rhythm, and the
      serif display face has no RTL coverage — the html[lang] blocks above

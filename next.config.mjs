@@ -4,7 +4,11 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    unoptimized: true,
+    // Optimization is ON: the PNGs in /public are 0.5–2 MB each and WordPress
+    // images arrive through the same-origin /api/img proxy, so both are now
+    // resized and served as AVIF/WebP instead of the raw originals.
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 604800,
   },
   async redirects() {
     return [

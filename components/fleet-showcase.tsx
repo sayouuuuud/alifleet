@@ -102,7 +102,7 @@ export function FleetShowcase({ wpImages }: { wpImages?: PageImages }) {
                 onMouseEnter={() => setActive(i)}
                 onFocus={() => setActive(i)}
                 tabIndex={0}
-                className={`group relative cursor-pointer overflow-hidden rounded-2xl outline-none transition-[flex-grow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-accent ${
+                className={`group relative cursor-pointer overflow-hidden rounded-2xl outline-none transition-[flex-grow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-accent ${
                   isActive ? 'flex-[5]' : 'flex-[1]'
                 }`}
               >
@@ -110,8 +110,13 @@ export function FleetShowcase({ wpImages }: { wpImages?: PageImages }) {
                   src={vehicle.image}
                   alt={vehicle.alt}
                   fill
-                  className={`object-cover transition-transform duration-700 ease-out ${
-                    isActive ? 'scale-100' : 'scale-110'
+                  // Only the first panel is above the fold in most viewports;
+                  // the rest load lazily instead of pulling ~3 MB up front.
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  priority={i === 0}
+                  quality={80}
+                  className={`object-cover transition-transform duration-500 ease-out ${
+                    isActive ? 'scale-100' : 'scale-105'
                   }`}
                   sizes="(max-width: 768px) 100vw, 60vw"
                 />

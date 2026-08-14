@@ -19,12 +19,24 @@ export function MarqueeStrip() {
 
   useGSAP(
     () => {
-      gsap.to('[data-marquee-track]', {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+      const scroll = gsap.to('[data-marquee-track]', {
         xPercent: -50,
         repeat: -1,
         duration: 30,
         ease: 'none',
+        paused: true,
       })
+
+      // Only animate while the strip is visible — an always-on transform on a
+      // wide element forces the compositor to work during unrelated scrolling.
+      const observer = new IntersectionObserver(
+        ([entry]) => (entry.isIntersecting ? scroll.play() : scroll.pause()),
+        { threshold: 0 }
+      )
+      if (wrapRef.current) observer.observe(wrapRef.current)
+      return () => observer.disconnect()
     },
     { scope: wrapRef }
   )
