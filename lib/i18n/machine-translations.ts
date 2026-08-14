@@ -11,7 +11,7 @@ import translationFile from './product-translations.json'
  * is flagged `untranslated` so the markup can still declare `lang="he"`.
  */
 
-type Entry = { ar?: string; en?: string }
+type Entry = { ar?: string; en?: string; he?: string }
 
 const entries = (translationFile as { entries?: Record<string, Entry> })
   .entries ?? {}
@@ -42,9 +42,14 @@ export function stripHtml(html: string): string {
 }
 
 /**
- * Builds the three-language field the UI expects from a Hebrew source string.
+ * Builds the three-language field the UI expects from a WooCommerce source string.
  *
- * `overrides` wins over the generated dictionary — that is how the curated
+ * Most WooCommerce fields are originally Hebrew and use generated Arabic/English
+ * entries. The curated products are an exception: their original fields are
+ * Arabic, so their reviewed Hebrew dictionary entry is used instead of exposing
+ * Arabic text in the Hebrew storefront.
+ *
+ * `overrides` wins over generated Arabic/English values — that is how curated
  * products keep the hand-written copy stored in their ACF `name_ar` / `name_en`
  * fields instead of a machine translation.
  */
@@ -52,15 +57,16 @@ export function localizeHebrew(
   source: string,
   overrides: { ar?: string | null; en?: string | null } = {}
 ): { value: Localized; translated: boolean } {
-  const he = stripHtml(source)
+  const original = stripHtml(source)
   const generated = entries[translationKey(source)]
 
   const ar = firstFilled(overrides.ar, generated?.ar)
   const en = firstFilled(overrides.en, generated?.en)
+  const he = firstFilled(generated?.he, original) ?? original
 
   return {
-    value: { ar: ar ?? he, en: en ?? he, he },
-    translated: Boolean(ar && en),
+    value: { ar: ar ?? original, en: en ?? original, he },
+    translated: Boolean(ar && en) || Boolean(generated?.he?.trim()),
   }
 }
 
