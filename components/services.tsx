@@ -66,12 +66,13 @@ function SceneShell({
       <div data-scene-bg className="absolute inset-0">
         <video
           data-scene-video
-          data-scene-src={video}
+          src={video}
           poster={image}
           muted
           loop
           playsInline
-          preload="none"
+          autoPlay
+          preload="metadata"
           className="h-full w-full object-cover"
           aria-label={alt}
         />
@@ -424,25 +425,22 @@ export function Services({ wpImages }: { wpImages?: import('@/lib/wp/page-images
       const isSmallScreen = window.matchMedia('(max-width: 767px)').matches
       const panels = gsap.utils.toArray<HTMLElement>('[data-scene]')
 
-      /* Videos are `preload="none"` with no src until their scene approaches,
-         so the page never downloads ~14 MB of MP4 up front. Each one is
-         attached and played on approach, paused when it leaves. */
+      /* The videos autoplay normally; this only pauses the ones that are off
+         screen so we are never decoding three fullscreen MP4s at once. */
       const videos = document.querySelectorAll<HTMLVideoElement>('[data-scene-video]')
       const videoObserver = new IntersectionObserver(
         (entries) => {
           for (const entry of entries) {
             const video = entry.target as HTMLVideoElement
             if (entry.isIntersecting) {
-              const src = video.dataset.sceneSrc
-              if (src && !video.src) video.src = src
               if (!reduceMotion) video.play().catch(() => {})
             } else {
               video.pause()
             }
           }
         },
-        // Warm up one viewport early so the first frame is ready on arrival.
-        { rootMargin: '100% 0px', threshold: 0 }
+        // Start a little early so the scene is already moving on arrival.
+        { rootMargin: '50% 0px', threshold: 0 }
       )
       videos.forEach((video) => videoObserver.observe(video))
 

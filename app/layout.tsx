@@ -11,6 +11,7 @@ import { cookies } from 'next/headers'
 import './globals.css'
 import { MetaPixel } from '@/components/analytics/meta-pixel'
 import { BackToTop } from '@/components/back-to-top'
+import { SiteLoader } from '@/components/site-loader'
 import { LanguageProvider } from '@/lib/i18n/language-context'
 import { CartProvider } from '@/lib/cart-context'
 import { AuthProvider } from '@/lib/auth/auth-context'
@@ -52,6 +53,13 @@ export const metadata: Metadata = {
   description:
     'ALI FLEET delivers luxurious commercial vehicles — new and used — global importing of trucks and luxury vehicles, and genuine spare parts services worldwide.',
   generator: 'v0.app',
+  // app/icon.png and app/apple-icon.png are picked up automatically by the
+  // file convention; these entries also cover the shortcut/legacy slots.
+  icons: {
+    icon: '/icon.png',
+    shortcut: '/icon.png',
+    apple: '/apple-icon.png',
+  },
 }
 
 export const viewport: Viewport = {
@@ -84,6 +92,7 @@ export default async function RootLayout({
       className={`bg-background ${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${cairo.variable} ${notoHebrew.variable}`}
     >
       <body className="antialiased">
+        <SiteLoader />
         <MetaPixel />
         <LanguageProvider initialLocale={locale}>
           <StoreProvider settings={storeSettings}>

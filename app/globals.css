@@ -88,6 +88,18 @@
   --font-serif: var(--font-fraunces), var(--font-cairo),
     var(--font-noto-hebrew), 'Fraunces Fallback', serif;
   --font-mono: var(--font-geist-mono), 'Geist Mono Fallback', monospace;
+
+  /* Indeterminate bar for the first-paint site loader. */
+  --animate-loader-sweep: loader-sweep 1.1s ease-in-out infinite;
+
+  @keyframes loader-sweep {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(300%);
+    }
+  }
 }
 
 /* Per-language typefaces. Tailwind's `font-sans` / `font-serif` utilities
