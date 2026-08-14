@@ -52,6 +52,7 @@ export function GlobalReach() {
   const phiRef = useRef(locationToAngles(30.0444, 31.2357)[0])
   const thetaRef = useRef(0.3)
   const focusRef = useRef<[number, number] | null>(null)
+  const visibleRef = useRef(true)
   const draggingRef = useRef(false)
   const pointerStartX = useRef(0)
   const dragStartOffset = useRef(0)
@@ -77,24 +78,34 @@ export function GlobalReach() {
     const wrapper = wrapperRef.current
     if (!canvas || !wrapper) return
 
+    /* The globe is a WebGL canvas that re-renders every frame. Rendering it at
+       2x on an 820px box means a ~1640px buffer — very expensive on a laptop
+       GPU. Cap the pixel ratio and let a resize be debounced. */
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
     let width = wrapper.offsetWidth
-    const onResize = () => {
+    let resizeTimer: number | undefined
+    const applySize = () => {
       width = wrapper.offsetWidth
-      canvas.width = width * 2
-      canvas.height = width * 2
+      canvas.width = width * dpr
+      canvas.height = width * dpr
     }
-    onResize()
+    applySize()
+    const onResize = () => {
+      window.clearTimeout(resizeTimer)
+      resizeTimer = window.setTimeout(applySize, 150)
+    }
     window.addEventListener('resize', onResize)
 
     const globe = createGlobe(canvas, {
-      devicePixelRatio: 2,
-      width: width * 2,
-      height: width * 2,
+      devicePixelRatio: dpr,
+      width: width * dpr,
+      height: width * dpr,
       phi: phiRef.current,
       theta: thetaRef.current,
       dark: 0,
       diffuse: 0.9,
-      mapSamples: 22000,
+      // 22 000 samples is far more dot geometry than is readable at this size.
+      mapSamples: 14000,
       mapBrightness: 5,
       baseColor: [0.32, 0.44, 0.62],
       markerColor: [0.05, 0.35, 0.95],
@@ -106,6 +117,13 @@ export function GlobalReach() {
     // animation manually with requestAnimationFrame and globe.update().
     let raf = 0
     const tick = () => {
+      // The render loop only runs while the globe is actually on screen. It
+      // used to spin a WebGL draw call every frame for the whole session, which
+      // stole frames from every other section the user scrolled to.
+      if (!visibleRef.current) {
+        raf = requestAnimationFrame(tick)
+        return
+      }
       const focus = focusRef.current
       if (focus) {
         const [targetPhi, targetTheta] = focus
@@ -123,12 +141,23 @@ export function GlobalReach() {
       globe.update({
         phi: phiRef.current + springOffset.get(),
         theta: thetaRef.current,
-        width: width * 2,
-        height: width * 2,
+        // Must match the canvas buffer size (width * dpr). Hardcoding `* 2`
+        // here while the canvas is sized by dpr renders the globe at the wrong
+        // scale on every display that is not exactly 2x.
+        width: width * dpr,
+        height: width * dpr,
       })
       raf = requestAnimationFrame(tick)
     }
     raf = requestAnimationFrame(tick)
+
+    const visibility = new IntersectionObserver(
+      ([entry]) => {
+        visibleRef.current = entry.isIntersecting
+      },
+      { rootMargin: '200px 0px', threshold: 0 }
+    )
+    visibility.observe(wrapper)
 
     const timeout = setTimeout(() => setReady(true), 100)
 
@@ -170,6 +199,8 @@ export function GlobalReach() {
       cancelAnimationFrame(raf)
       globe.destroy()
       clearTimeout(timeout)
+      visibility.disconnect()
+      window.clearTimeout(resizeTimer)
       window.removeEventListener('resize', onResize)
       canvas.removeEventListener('pointerdown', onPointerDown)
       window.removeEventListener('pointermove', onPointerMove)
@@ -216,45 +247,63 @@ export function GlobalReach() {
         scrollTrigger: { trigger: sectionRef.current, start: 'top 75%' },
       })
 
-      // Continuous ambient motion
-      gsap.to('[data-orbit-ring]', {
-        rotate: 360,
-        duration: 40,
-        repeat: -1,
-        ease: 'none',
-        transformOrigin: '50% 50%',
-      })
-      gsap.to('[data-orbit-ring-2]', {
-        rotate: -360,
-        duration: 55,
-        repeat: -1,
-        ease: 'none',
-        transformOrigin: '50% 50%',
-      })
-      // Floating chips bob gently
-      gsap.utils.toArray<HTMLElement>('[data-globe-chip]').forEach((chip, i) => {
-        gsap.to(chip, {
-          y: i % 2 === 0 ? -12 : 12,
-          duration: 2.4 + i * 0.4,
+      /* Continuous ambient motion. Every one of these is an infinite tween, so
+         they are created paused and only run while the section is in view —
+         otherwise they keep compositing for the rest of the session and make
+         the sections further down the page feel sticky. */
+      const ambient = [
+        gsap.to('[data-orbit-ring]', {
+          rotate: 360,
+          duration: 40,
           repeat: -1,
-          yoyo: true,
-          ease: 'sine.inOut',
-        })
-      })
-      // Orbiting satellite container spins, icons counter-rotate to stay upright
-      gsap.to('[data-satellite-track]', {
-        rotate: 360,
-        duration: 22,
-        repeat: -1,
-        ease: 'none',
-        transformOrigin: '50% 50%',
-      })
-      gsap.to('[data-satellite]', {
-        rotate: -360,
-        duration: 22,
-        repeat: -1,
-        ease: 'none',
-        transformOrigin: '50% 50%',
+          ease: 'none',
+          transformOrigin: '50% 50%',
+          paused: true,
+        }),
+        gsap.to('[data-orbit-ring-2]', {
+          rotate: -360,
+          duration: 55,
+          repeat: -1,
+          ease: 'none',
+          transformOrigin: '50% 50%',
+          paused: true,
+        }),
+        // Floating chips bob gently
+        ...gsap.utils.toArray<HTMLElement>('[data-globe-chip]').map((chip, i) =>
+          gsap.to(chip, {
+            y: i % 2 === 0 ? -12 : 12,
+            duration: 2.4 + i * 0.4,
+            repeat: -1,
+            yoyo: true,
+            ease: 'sine.inOut',
+            paused: true,
+          })
+        ),
+        // Orbiting satellite container spins, icons counter-rotate to stay upright
+        gsap.to('[data-satellite-track]', {
+          rotate: 360,
+          duration: 22,
+          repeat: -1,
+          ease: 'none',
+          transformOrigin: '50% 50%',
+          paused: true,
+        }),
+        gsap.to('[data-satellite]', {
+          rotate: -360,
+          duration: 22,
+          repeat: -1,
+          ease: 'none',
+          transformOrigin: '50% 50%',
+          paused: true,
+        }),
+      ]
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: 'top bottom',
+        end: 'bottom top',
+        onToggle: (self) =>
+          ambient.forEach((tween) => (self.isActive ? tween.play() : tween.pause())),
       })
     },
     { scope: sectionRef }
@@ -335,7 +384,7 @@ export function GlobalReach() {
           <div className="order-1 flex items-center justify-center lg:order-2">
             <div
               data-globe-canvas
-              className="relative aspect-square w-[min(820px,96vw)] md:w-[720px] lg:w-[820px]"
+              className="relative aspect-square w-[min(620px,92vw)] md:w-[600px] lg:w-[660px]"
             >
               {/* Rotating orbit rings */}
               <svg

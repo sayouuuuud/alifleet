@@ -180,6 +180,7 @@ export function Hero({ wpImages }: { wpImages?: PageImages }) {
                 fill
                 className="scale-105 animate-in fade-in object-cover duration-500"
                 priority
+                quality={82}
                 sizes="(max-width: 1024px) 100vw, 60vw"
               />
             </div>
@@ -210,6 +211,9 @@ export function Hero({ wpImages }: { wpImages?: PageImages }) {
                           src={thumb.src || '/placeholder.svg'}
                           alt={thumb.alt}
                           fill
+                          // These render at ~112px — no need to ship the
+                          // full-size original for a thumbnail.
+                          quality={70}
                           className="object-cover transition-transform duration-300 group-hover:scale-105"
                           sizes="128px"
                         />

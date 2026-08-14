@@ -91,7 +91,7 @@ export function FleetShowcase({ wpImages }: { wpImages?: PageImages }) {
 
         <div
           data-fleet-panels
-          className="flex h-[520px] flex-col gap-3 md:h-[560px] md:flex-row"
+          className="flex h-[560px] flex-col gap-3 md:h-[560px] md:flex-row"
         >
           {vehicles.map((vehicle, i) => {
             const isActive = active === i
@@ -101,17 +101,29 @@ export function FleetShowcase({ wpImages }: { wpImages?: PageImages }) {
                 data-fleet-panel
                 onMouseEnter={() => setActive(i)}
                 onFocus={() => setActive(i)}
+                // Hover/focus alone never fire on touch devices, so without an
+                // explicit tap handler the second and third panels on mobile
+                // were permanently stuck collapsed with no way to open them.
+                onClick={() => setActive(i)}
+                role="button"
+                aria-expanded={isActive}
+                aria-label={vehicle.title}
                 tabIndex={0}
-                className={`group relative cursor-pointer overflow-hidden rounded-2xl outline-none transition-[flex-grow] duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-accent ${
+                className={`group relative flex cursor-pointer flex-col overflow-hidden rounded-2xl outline-none transition-[flex-grow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-visible:ring-2 focus-visible:ring-accent ${
                   isActive ? 'flex-[5]' : 'flex-[1]'
-                }`}
+                } ${isActive ? '' : 'min-h-16 md:min-h-0'}`}
               >
                 <Image
                   src={vehicle.image}
                   alt={vehicle.alt}
                   fill
-                  className={`object-cover transition-transform duration-700 ease-out ${
-                    isActive ? 'scale-100' : 'scale-110'
+                  // Only the first panel is above the fold in most viewports;
+                  // the rest load lazily instead of pulling ~3 MB up front.
+                  loading={i === 0 ? 'eager' : 'lazy'}
+                  priority={i === 0}
+                  quality={80}
+                  className={`object-cover transition-transform duration-500 ease-out ${
+                    isActive ? 'scale-100' : 'scale-105'
                   }`}
                   sizes="(max-width: 768px) 100vw, 60vw"
                 />
@@ -126,7 +138,11 @@ export function FleetShowcase({ wpImages }: { wpImages?: PageImages }) {
                   {vehicle.tag}
                 </span>
 
-                {/* Collapsed label — vertical title shown when the panel is idle */}
+                {/* Collapsed label. On desktop the panels collapse to a thin
+                    vertical strip, so the title rotates with
+                    [writing-mode:vertical-rl]. On mobile they collapse to a
+                    short horizontal bar instead, so the title stays flat and
+                    readable there. */}
                 <span
                   className={`pointer-events-none absolute bottom-6 left-1/2 hidden -translate-x-1/2 whitespace-nowrap text-lg font-semibold uppercase tracking-wide text-white transition-opacity duration-300 [writing-mode:vertical-rl] md:block ${
                     isActive ? 'opacity-0' : 'opacity-100'
@@ -134,13 +150,21 @@ export function FleetShowcase({ wpImages }: { wpImages?: PageImages }) {
                 >
                   {vehicle.title}
                 </span>
+                <span
+                  className={`pointer-events-none absolute inset-0 flex items-center justify-between px-5 text-base font-semibold uppercase tracking-wide text-white transition-opacity duration-300 md:hidden ${
+                    isActive ? 'opacity-0' : 'opacity-100'
+                  }`}
+                >
+                  {vehicle.title}
+                  <ArrowUpRight className="size-5 text-accent" />
+                </span>
 
                 {/* Expanded content */}
                 <div
                   className={`absolute inset-0 flex flex-col justify-end p-6 transition-all duration-500 md:p-8 ${
                     isActive
                       ? 'translate-y-0 opacity-100 delay-150'
-                      : 'pointer-events-none translate-y-4 opacity-0 md:opacity-0'
+                      : 'pointer-events-none translate-y-4 opacity-0'
                   }`}
                 >
                   <h3 className="flex items-center gap-2 text-2xl font-semibold text-white md:text-3xl">
