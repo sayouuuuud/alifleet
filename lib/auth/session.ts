@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 import { wpFetch } from '@/lib/wp/client'
 import { REFRESH_TOKEN } from '@/lib/wp/operations'
 import { AUTH_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from '@/lib/wp/config'
@@ -20,11 +20,33 @@ import { AUTH_TOKEN_MAX_AGE, REFRESH_TOKEN_MAX_AGE } from '@/lib/wp/config'
 const AUTH_COOKIE = 'alifleet_auth'
 const REFRESH_COOKIE = 'alifleet_refresh'
 
-const baseCookie = {
-  httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'lax' as const,
-  path: '/',
+/**
+ * Coolify currently exposes the storefront over HTTP, while production may
+ * later sit behind an HTTPS proxy. A hard-coded `secure: true` makes browsers
+ * silently discard the login cookies on the current HTTP origin. Prefer the
+ * proxy's protocol signal and keep a safe HTTP fallback for this deployment.
+ */
+async function sessionCookieOptions() {
+  const requestHeaders = await headers()
+  const forwardedProto = requestHeaders
+    .get('x-forwarded-proto')
+    ?.split(',')[0]
+    ?.trim()
+    .toLowerCase()
+
+  let secure = forwardedProto === 'https'
+  if (!forwardedProto) {
+    const forwarded = requestHeaders.get('forwarded') ?? ''
+    const protocol = forwarded.match(/(?:^|;)\s*proto=([^;]+)/i)?.[1]
+    secure = protocol?.trim().toLowerCase() === 'https'
+  }
+
+  return {
+    httpOnly: true,
+    secure,
+    sameSite: 'lax' as const,
+    path: '/',
+  }
 }
 
 export async function setSessionCookies(tokens: {
@@ -32,20 +54,22 @@ export async function setSessionCookies(tokens: {
   refreshToken: string
 }) {
   const jar = await cookies()
+  const cookieOptions = await sessionCookieOptions()
   jar.set(AUTH_COOKIE, tokens.authToken, {
-    ...baseCookie,
+    ...cookieOptions,
     maxAge: AUTH_TOKEN_MAX_AGE,
   })
   jar.set(REFRESH_COOKIE, tokens.refreshToken, {
-    ...baseCookie,
+    ...cookieOptions,
     maxAge: REFRESH_TOKEN_MAX_AGE,
   })
 }
 
 export async function clearSessionCookies() {
   const jar = await cookies()
-  jar.set(AUTH_COOKIE, '', { ...baseCookie, maxAge: 0 })
-  jar.set(REFRESH_COOKIE, '', { ...baseCookie, maxAge: 0 })
+  const cookieOptions = await sessionCookieOptions()
+  jar.set(AUTH_COOKIE, '', { ...cookieOptions, maxAge: 0 })
+  jar.set(REFRESH_COOKIE, '', { ...cookieOptions, maxAge: 0 })
 }
 
 /** Cheap check used by route protection — does NOT validate the token. */
@@ -80,8 +104,9 @@ export async function getAuthToken(): Promise<string | null> {
   if (!authToken) return null
 
   try {
+    const cookieOptions = await sessionCookieOptions()
     jar.set(AUTH_COOKIE, authToken, {
-      ...baseCookie,
+      ...cookieOptions,
       maxAge: AUTH_TOKEN_MAX_AGE,
     })
   } catch {
