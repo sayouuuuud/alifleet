@@ -1,6 +1,10 @@
 /** @type {import('next').NextConfig} */
 
 const nextConfig = {
+  // WooCommerce canonicalizes checkout with a trailing slash while the
+  // Next.js proxy route accepts both forms. Let the route handle that
+  // canonicalization instead of creating a redirect loop.
+  skipTrailingSlashRedirect: true,
   typescript: {
     ignoreBuildErrors: true,
   },

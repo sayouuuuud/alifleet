@@ -15,7 +15,8 @@ import { useCart } from '@/lib/cart-context'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { formatPrice } from '@/lib/format'
 import { proxied } from '@/lib/img-proxy'
-import { whatsappLink, wordpressCheckoutUrl } from '@/lib/site-config'
+import { whatsappLink } from '@/lib/site-config'
+import { prepareCheckoutAction } from '@/lib/checkout/actions'
 import { useStore } from '@/lib/store-context'
 
 /**
@@ -38,10 +39,10 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
 
   const subtotal = rows.reduce((total, row) => total + row.part.price * row.quantity, 0)
 
-  const checkoutHref = wordpressCheckoutUrl(
-    rows.map((row) => ({ wooId: row.part.wooId, quantity: row.quantity })),
-    store
-  )
+  const checkoutItems = rows
+    .map((row) => `${row.part.wooId}:${row.quantity}`)
+    .join(',')
+  const checkoutReady = Boolean(store.wordpress.baseUrl)
 
   const whatsappHref = whatsappLink(
     [
@@ -219,17 +220,22 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
               {t.cart.shippingNote}
             </p>
 
-            {/* Checkout hands off to WooCommerce, so the button only appears
-                once we know the store URL — never as a link to nowhere. */}
-            {checkoutHref && (
+            {/* The server action rebuilds the WooCommerce basket, hands off the
+                authenticated customer session, then redirects to /checkout on
+                this same Next.js origin. */}
+            {checkoutReady && (
               <>
-                <a
-                  href={checkoutHref}
-                  className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-full bg-foreground px-6 py-4 text-base font-semibold text-background transition-opacity hover:opacity-90"
-                >
-                  {t.cart.checkout}
-                  <ArrowRight className="size-4" aria-hidden="true" data-flip-rtl />
-                </a>
+                <form action={prepareCheckoutAction}>
+                  <input type="hidden" name="items" value={checkoutItems} />
+                  <input type="hidden" name="locale" value={locale} />
+                  <button
+                    type="submit"
+                    className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-full bg-foreground px-6 py-4 text-base font-semibold text-background transition-opacity hover:opacity-90"
+                  >
+                    {t.cart.checkout}
+                    <ArrowRight className="size-4" aria-hidden="true" data-flip-rtl />
+                  </button>
+                </form>
                 <p className="mt-2.5 text-center text-xs text-muted-foreground">
                   {t.cart.checkoutNote}
                 </p>

@@ -30,9 +30,11 @@ if ( ! defined( 'ALIFLEET_ALLOWED_ORIGINS' ) ) {
 	define(
 		'ALIFLEET_ALLOWED_ORIGINS',
 		[
-			'https://alifleet.com',
-			'https://www.alifleet.com',
-			'http://localhost:3000',
+							'https://alifleet.com',
+				'https://www.alifleet.com',
+				'http://rbzfx3doqcg2vx1hyichhewe.169.58.176.172.sslip.io',
+				'http://localhost:3000',
+
 		]
 	);
 }
@@ -1423,5 +1425,212 @@ add_action(
 		}
 	},
 	20,
+	1
+);
+
+
+/* -------------------------------------------------------------------------
+ * 10. Headless checkout session handoff
+ *
+ * The frontend authenticates with a JWT that is intentionally never sent to
+ * the browser's WooCommerce origin. This endpoint validates that JWT through
+ * the local GraphQL schema, creates the matching WooCommerce session, and
+ * returns a short-lived signed handoff cookie. The cookie lets subsequent
+ * server-side checkout proxy requests restore the same WordPress user without
+ * exposing a WordPress auth cookie or trusting customer data from the browser.
+ * ---------------------------------------------------------------------- */
+
+function alifleet_checkout_frontend_origin(): string {
+	$origin = isset( $_SERVER['HTTP_X_ALIFLEET_FRONTEND_ORIGIN'] )
+		? esc_url_raw( wp_unslash( $_SERVER['HTTP_X_ALIFLEET_FRONTEND_ORIGIN'] ) )
+		: '';
+
+	return in_array( rtrim( $origin, '/' ), ALIFLEET_ALLOWED_ORIGINS, true )
+		? rtrim( $origin, '/' )
+		: '';
+}
+
+function alifleet_checkout_bearer( WP_REST_Request $request ): string {
+	$header = trim( (string) $request->get_header( 'authorization' ) );
+	if ( 0 === stripos( $header, 'bearer ' ) ) {
+		return trim( substr( $header, 7 ) );
+	}
+	return '';
+}
+
+function alifleet_checkout_user_id( WP_REST_Request $request ) {
+	$token = alifleet_checkout_bearer( $request );
+	if ( '' === $token ) {
+		return new WP_Error( 'missing_token', 'A valid customer session is required.', [ 'status' => 401 ] );
+	}
+
+	$query = '{ viewer { databaseId } }';
+	$response = wp_remote_post(
+		home_url( '/graphql' ),
+		[
+			'timeout' => 15,
+			'headers' => [
+			'Content-Type'  => 'application/json',
+			'Authorization' => 'Bearer ' . $token,
+			],
+			'body'    => wp_json_encode( [ 'query' => $query ] ),
+		]
+	);
+
+	if ( is_wp_error( $response ) ) {
+		return new WP_Error( 'graphql_unreachable', 'Customer session could not be verified.', [ 'status' => 502 ] );
+	}
+
+	$payload = json_decode( wp_remote_retrieve_body( $response ), true );
+	$user_id = absint( $payload['data']['viewer']['databaseId'] ?? 0 );
+	if ( $user_id <= 0 || ! get_userdata( $user_id ) ) {
+		return new WP_Error( 'invalid_customer', 'Customer session could not be verified.', [ 'status' => 401 ] );
+	}
+
+	return $user_id;
+}
+
+function alifleet_customer_handoff_value( int $user_id, int $expires ): string {
+	$payload = $user_id . '|' . $expires;
+	$signature = hash_hmac( 'sha256', $payload, wp_salt( 'auth' ) );
+	return rtrim( strtr( base64_encode( $payload . '|' . $signature ), '+/', '-_' ), '=' );
+}
+
+function alifleet_customer_handoff_user_id() {
+	$encoded = isset( $_COOKIE['alifleet_customer_handoff'] )
+		? sanitize_text_field( wp_unslash( $_COOKIE['alifleet_customer_handoff'] ) )
+		: '';
+	if ( '' === $encoded ) {
+		return 0;
+	}
+
+	$decoded = base64_decode( strtr( $encoded, '-_', '+/' ), true );
+	$parts = $decoded ? explode( '|', $decoded ) : [];
+	if ( 3 !== count( $parts ) ) {
+		return 0;
+	}
+
+	[ $user_id, $expires, $signature ] = $parts;
+	$payload = $user_id . '|' . $expires;
+	if ( (int) $expires < time() || ! hash_equals( hash_hmac( 'sha256', $payload, wp_salt( 'auth' ) ), $signature ) ) {
+		return 0;
+	}
+
+	return get_userdata( absint( $user_id ) ) ? absint( $user_id ) : 0;
+}
+
+add_action(
+	'init',
+	static function (): void {
+		$user_id = alifleet_customer_handoff_user_id();
+		if ( $user_id > 0 && ! is_user_logged_in() ) {
+			wp_set_current_user( $user_id );
+		}
+	},
+	1
+);
+
+add_action(
+	'rest_api_init',
+	static function (): void {
+		register_rest_route(
+			'alifleet/v1',
+			'/session',
+			[
+				'methods'             => WP_REST_Server::CREATABLE,
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
+					if ( '' === alifleet_checkout_frontend_origin() ) {
+						return new WP_Error( 'invalid_origin', 'Checkout origin is not allowed.', [ 'status' => 403 ] );
+					}
+
+					$user_id = alifleet_checkout_user_id( $request );
+					if ( is_wp_error( $user_id ) ) {
+						return $user_id;
+					}
+
+					wp_set_current_user( $user_id );
+					if ( function_exists( 'WC' ) && WC() ) {
+						if ( ! WC()->session && method_exists( WC(), 'initialize_session' ) ) {
+							WC()->initialize_session();
+						}
+						if ( WC()->session ) {
+							WC()->session->destroy_session();
+							WC()->session->set_customer_session_cookie( true );
+						}
+					}
+
+					$expires = time() + 2 * DAY_IN_SECONDS;
+					$value = alifleet_customer_handoff_value( $user_id, $expires );
+					setcookie(
+						'alifleet_customer_handoff',
+						$value,
+						[
+							'expires'  => $expires,
+							'path'     => '/',
+							'secure'   => is_ssl(),
+							'httponly' => true,
+							'samesite' => 'Lax',
+						]
+					);
+
+					return rest_ensure_response( [ 'ok' => true ] );
+				},
+			]
+		);
+	}
+);
+
+
+/* -------------------------------------------------------------------------
+ * 11. Keep WooCommerce navigation on the headless frontend
+ * ---------------------------------------------------------------------- */
+
+function alifleet_frontend_path( string $path ): string {
+	$origin = alifleet_checkout_frontend_origin();
+	return '' !== $origin ? $origin . '/' . ltrim( $path, '/' ) : '';
+}
+
+add_filter(
+	'woocommerce_get_checkout_url',
+	static function ( string $url ): string {
+		$frontend = alifleet_frontend_path( 'checkout/' );
+		return '' !== $frontend ? $frontend : $url;
+	}
+);
+
+add_filter(
+	'woocommerce_get_cart_url',
+	static function ( string $url ): string {
+		$frontend = alifleet_frontend_path( 'cart/' );
+		return '' !== $frontend ? $frontend : $url;
+	}
+);
+
+add_filter(
+	'woocommerce_return_to_shop_redirect',
+	static function ( string $url ): string {
+		$frontend = alifleet_frontend_path( 'products/' );
+		return '' !== $frontend ? $frontend : $url;
+	}
+);
+
+add_filter(
+	'woocommerce_login_redirect',
+	static function ( string $redirect, WP_User $user ): string {
+		$frontend = alifleet_frontend_path( 'account/' );
+		return '' !== $frontend ? $frontend : $redirect;
+	},
+	10,
+	2
+);
+
+add_filter(
+	'logout_redirect',
+	static function ( string $redirect ): string {
+		$frontend = alifleet_frontend_path( 'account/login/' );
+		return '' !== $frontend ? $frontend : $redirect;
+	},
+	10,
 	1
 );
