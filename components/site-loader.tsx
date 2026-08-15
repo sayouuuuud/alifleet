@@ -84,6 +84,7 @@ export function SiteLoader() {
           width={72}
           height={72}
           priority
+          unoptimized
           className="size-16 animate-pulse [animation-duration:1.8s]"
         />
       </div>
