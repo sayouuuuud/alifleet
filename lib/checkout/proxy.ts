@@ -11,6 +11,9 @@ function escapeRegExp(value: string) {
 }
 
 function localeFromRequest(request: Request): Locale {
+  const requested = new URL(request.url).searchParams.get('locale') ?? new URL(request.url).searchParams.get('lang')
+  if (isLocale(requested)) return requested
+
   const cookie = request.headers.get('cookie') ?? ''
   const match = cookie.match(new RegExp(`${escapeRegExp(LOCALE_STORAGE_KEY)}=([^;]+)`))
   return isLocale(match?.[1]) ? match[1] : 'en'
@@ -85,19 +88,35 @@ export function rewriteCmsUrl(value: string, request: Request): string {
   return `${mappedUrl.pathname}${mappedUrl.search}${parsed.hash || mappedUrl.hash}`
 }
 
-function rewriteHtml(html: string, request: Request) {
-  const attributePattern = /\b(href|src|action|formaction|poster)=(["'])(.*?)\2/gi
+function rewriteHtml(html: string, request: Request, isCheckoutPath = false) {
+  const attributePattern = /\b(href|src|action|formaction|poster)=("|')(.*?)\2/gi
   const rewritten = html.replace(attributePattern, (_match, name: string, quote: string, value: string) => {
     return `${name}=${quote}${rewriteCmsUrl(value, request)}${quote}`
   })
 
   const cmsOrigin = wpStoreOrigin()
-  if (!cmsOrigin) return rewritten
+  const withLocalLinks = cmsOrigin
+    ? rewritten.replace(
+        new RegExp(`${escapeRegExp(cmsOrigin)}([^\\s"'<>)]*)`, 'g'),
+        (_match, suffix: string) => rewriteCmsUrl(`${cmsOrigin}${suffix}`, request)
+      )
+    : rewritten
 
-  const absolutePattern = new RegExp(`${escapeRegExp(cmsOrigin)}([^\\s"'<>)]*)`, 'g')
-  return rewritten.replace(absolutePattern, (_match, suffix: string) => {
-    return rewriteCmsUrl(`${cmsOrigin}${suffix}`, request)
-  })
+  if (!isCheckoutPath) return withLocalLinks
+
+  const locale = localeFromRequest(request)
+  const labels = {
+    en: 'Back to home',
+    ar: 'العودة إلى الصفحة الرئيسية',
+    he: 'חזרה לדף הבית',
+  } as const
+  const direction = locale === 'en' ? 'ltr' : 'rtl'
+  const returnControl = `<div data-alifleet-checkout-return style="box-sizing:border-box;max-width:1100px;margin:0 auto;padding:24px 24px 0;direction:${direction};"><a href="/?locale=${locale}" style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(45,58,107,.18);border-radius:999px;padding:11px 18px;color:#2d3a6b;background:#fff;text-decoration:none;font:600 14px/1.2 Arial,sans-serif;">${labels[locale]}</a></div>`
+  const withoutWordPressChrome = withLocalLinks
+    .replace(/<header\b[^>]*>[\s\S]*?<\/header>/gi, '')
+    .replace(/<footer\b[^>]*>[\s\S]*?<\/footer>/gi, '')
+
+  return withoutWordPressChrome.replace(/<body\b[^>]*>/i, (bodyTag) => `${bodyTag}${returnControl}`)
 }
 
 function copyResponseHeaders(source: Headers) {
@@ -140,17 +159,27 @@ export async function proxyWooRequest(request: Request, path: string[]) {
   const incomingUrl = new URL(request.url)
   const joinedPath = `/${path.filter(Boolean).join('/')}`
   const isCheckoutPath = path[0] === 'checkout'
+  const locale = localeFromRequest(request)
   const targetPath = isCheckoutPath && !joinedPath.endsWith('/') ? `${joinedPath}/` : joinedPath
   const target = new URL(targetPath, cmsOrigin)
   target.search = incomingUrl.search
+  if (isCheckoutPath) {
+    // Polylang understands `lang`; the storefront uses `locale`. Normalize the
+    // request so WooCommerce renders the same language as the Next.js site.
+    target.searchParams.delete('locale')
+    target.searchParams.set('lang', locale)
+  }
 
   const requestHeaders = new Headers()
   const incomingCookie = request.headers.get('cookie') ?? ''
   if (incomingCookie) requestHeaders.set('cookie', incomingCookie)
   requestHeaders.set('accept', request.headers.get('accept') ?? '*/*')
-  requestHeaders.set('accept-language', request.headers.get('accept-language') ?? '')
+  requestHeaders.set(
+    'accept-language',
+    isCheckoutPath ? `${locale},en;q=0.8` : request.headers.get('accept-language') ?? ''
+  )
   requestHeaders.set('x-alifleet-frontend-origin', frontendOrigin(request))
-  requestHeaders.set('x-alifleet-locale', localeFromRequest(request))
+  requestHeaders.set('x-alifleet-locale', locale)
   requestHeaders.set('accept-encoding', 'identity')
 
   const method = request.method.toUpperCase()
@@ -191,7 +220,7 @@ export async function proxyWooRequest(request: Request, path: string[]) {
   if (contentType.includes('text/html')) {
     const html = await upstream.text()
     responseHeaders.delete('content-length')
-    return new Response(rewriteHtml(html, request), {
+    return new Response(rewriteHtml(html, request, isCheckoutPath), {
       status: upstream.status,
       headers: responseHeaders,
     })
