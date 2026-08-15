@@ -23,9 +23,28 @@ function frontendOrigin(request: Request) {
 function mapCmsPath(pathname: string) {
   const path = pathname || '/'
 
+  // WordPress theme navigation points at legacy pages. Keep those links on
+  // the native Next.js site instead of exposing the CMS fallback under /cms.
+  if (path === '/' || path === '') return '/'
   if (path === '/shop' || path === '/shop/') return '/products'
   if (path === '/cart' || path === '/cart/') return '/cart'
   if (path === '/checkout' || path.startsWith('/checkout/')) return path
+  if (path === '/blog-he' || path === '/blog-he/' || path === '/he/blog-he' || path === '/he/blog-he/') return '/blog'
+  if (path === '/contact-he' || path === '/contact-he/' || path === '/he/contact-he' || path === '/he/contact-he/') return '/contact'
+  if (
+    path === '/car-import-he' ||
+    path === '/car-import-he/' ||
+    path === '/he/car-import-he' ||
+    path === '/he/car-import-he/' ||
+    path === '/personal-import-he' ||
+    path === '/personal-import-he/' ||
+    path === '/he/personal-import-he' ||
+    path === '/he/personal-import-he/'
+  ) return '/cars'
+  if (path === '/en/home-en' || path === '/en/home-en/') return '/?locale=en'
+  if (path === '/ar/home-ar' || path === '/ar/home-ar/') return '/?locale=ar'
+  if (path === '/he/home-he' || path === '/he/home-he/') return '/?locale=he'
+  if (path === '/about-he' || path === '/about-he/' || path === '/he/about-he' || path === '/he/about-he/') return '/'
   if (path === '/my-account' || path === '/my-account/') return '/account'
   if (path.startsWith('/my-account/')) {
     const rest = path.slice('/my-account/'.length)
@@ -59,7 +78,11 @@ export function rewriteCmsUrl(value: string, request: Request): string {
   if (!isCmsOrigin && !isRelative) return value
 
   const mapped = mapCmsPath(parsed.pathname)
-  return `${mapped}${parsed.search}${parsed.hash}`
+  const mappedUrl = new URL(mapped, 'http://next.local')
+  for (const [key, value] of parsed.searchParams) {
+    if (!mappedUrl.searchParams.has(key)) mappedUrl.searchParams.append(key, value)
+  }
+  return `${mappedUrl.pathname}${mappedUrl.search}${parsed.hash || mappedUrl.hash}`
 }
 
 function rewriteHtml(html: string, request: Request) {
