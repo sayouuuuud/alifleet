@@ -144,7 +144,23 @@ export async function proxyWooRequest(request: Request, path: string[]) {
 
   const location = upstream.headers.get('location')
   if (location && upstream.status >= 300 && upstream.status < 400) {
-    responseHeaders.set('location', rewriteCmsUrl(location, request))
+    // WooCommerce normally sends an empty checkout back to the cart. On this
+    // install WordPress currently emits /wp-admin/ instead; following that
+    // redirect through the proxy creates an avoidable /cms/wp-admin loop.
+    // Keep this fallback scoped to checkout requests so genuine CMS/admin
+    // redirects elsewhere are not changed.
+    let rewrittenLocation = rewriteCmsUrl(location, request)
+    if (isCheckoutPath) {
+      try {
+        const locationUrl = new URL(location, cmsOrigin)
+        if (locationUrl.pathname === '/wp-admin' || locationUrl.pathname === '/wp-admin/') {
+          rewrittenLocation = `/cart${locationUrl.search}${locationUrl.hash}`
+        }
+      } catch {
+        // Keep the generic CMS rewrite when WordPress returns a malformed URL.
+      }
+    }
+    responseHeaders.set('location', rewrittenLocation)
     return new Response(null, { status: upstream.status, headers: responseHeaders })
   }
 
