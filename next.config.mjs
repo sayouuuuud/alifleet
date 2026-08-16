@@ -14,12 +14,14 @@ const nextConfig = {
     formats: ['image/avif', 'image/webp'],
     // Next.js 16 rejects any quality that is not declared here.
     qualities: [70, 75, 80, 82],
-    // HTTP image URLs are served through the same-origin proxy. Allow only
-    // this route (with its encoded query string), never arbitrary local paths.
+    // HTTP image URLs are served through the same-origin proxy. Declaring
+    // `localPatterns` at all opts every other local path out of optimization,
+    // so the bundled artwork under /images has to be listed too — without it
+    // Next.js answered the footer logo with `"url" parameter is not allowed`
+    // and the logo rendered broken (QA-07).
     localPatterns: [
-      {
-        pathname: '/api/img',
-      },
+      { pathname: '/api/img' },
+      { pathname: '/images/**' },
     ],
     minimumCacheTTL: 604800,
   },

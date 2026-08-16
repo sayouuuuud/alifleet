@@ -201,6 +201,8 @@ export const en = {
     checkoutPending: 'Opening checkout…',
     checkoutUnavailable:
       'We could not open checkout just now. Please try again, or send your order on WhatsApp.',
+    checkoutExpired:
+      'Your cart changed since checkout was opened, so we brought you back here. Please continue to checkout again.',
     checkoutNote: 'You will be redirected to our secure store to pay.',
     orderViaWhatsapp: 'Order via WhatsApp',
     continueShopping: 'Continue shopping',
