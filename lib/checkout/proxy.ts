@@ -19,8 +19,43 @@ function localeFromRequest(request: Request): Locale {
   return isLocale(match?.[1]) ? match[1] : 'en'
 }
 
+/**
+ * The origin the *browser* is on.
+ *
+ * `new URL(request.url).origin` cannot be trusted here: behind the production
+ * reverse proxy Next.js reconstructs that URL from the internal listener, so it
+ * resolves to `http://localhost:3000`. WordPress then renders the checkout form
+ * with `action="http://localhost:3000/checkout/"` and submitting the order
+ * leaves the site entirely (QA-02). The forwarded headers describe the public
+ * request, so they win, and an explicit env override wins over everything.
+ */
+const CONFIGURED_ORIGIN = (
+  process.env.SITE_ORIGIN ??
+  process.env.NEXT_PUBLIC_SITE_ORIGIN ??
+  ''
+)
+  .trim()
+  .replace(/\/+$/, '')
+
+function isInternalHost(host: string) {
+  return /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/i.test(host)
+}
+
 function frontendOrigin(request: Request) {
-  return new URL(request.url).origin
+  if (CONFIGURED_ORIGIN) return CONFIGURED_ORIGIN
+
+  const forwardedHost = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim()
+  const host = forwardedHost || request.headers.get('host')?.trim() || ''
+  if (host && !isInternalHost(host)) {
+    const forwardedProto = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim()
+    return `${forwardedProto || 'https'}://${host}`
+  }
+
+  try {
+    return new URL(request.url).origin
+  } catch {
+    return ''
+  }
 }
 
 function mapCmsPath(pathname: string) {
@@ -88,6 +123,38 @@ export function rewriteCmsUrl(value: string, request: Request): string {
   return `${mappedUrl.pathname}${mappedUrl.search}${parsed.hash || mappedUrl.hash}`
 }
 
+/**
+ * WooCommerce emits its AJAX endpoints as root-relative `/?wc-ajax=<action>`.
+ * Served from the Next.js origin those hit the storefront home page instead of
+ * WordPress, which silently kills checkout.js: no order review refresh, no
+ * inline validation, and "place order" degrades into a raw form POST. Point
+ * them at the dedicated proxy route instead.
+ */
+function rewriteAjaxEndpoints(html: string) {
+  return html
+    .replace(/\/\?wc-ajax=/g, '/wc-ajax?wc-ajax=')
+    .replace(/\\\/\?wc-ajax=/g, '\\/wc-ajax?wc-ajax=')
+    .replace(/(?<!\/cms)\/wp-admin\/admin-ajax\.php/g, '/cms/wp-admin/admin-ajax.php')
+    .replace(/(?<!\\\/cms)\\\/wp-admin\\\/admin-ajax\.php/g, '\\/cms\\/wp-admin\\/admin-ajax.php')
+}
+
+/**
+ * Any absolute link back to this storefront becomes relative, so a stale or
+ * wrong origin baked into WordPress output (localhost, or the origin of an
+ * earlier deploy) can never send a customer off the live site mid-checkout.
+ */
+function stripFrontendOrigins(html: string, origin: string) {
+  const withoutInternal = html
+    .replace(/https?:\/\/localhost(?::\d+)?/gi, '')
+    .replace(/https?:\\\/\\\/localhost(?::\d+)?/gi, '')
+
+  if (!origin) return withoutInternal
+  const escaped = escapeRegExp(origin)
+  return withoutInternal
+    .replace(new RegExp(escaped, 'g'), '')
+    .replace(new RegExp(escapeRegExp(origin.replace(/\//g, '\\/')), 'g'), '')
+}
+
 function rewriteHtml(html: string, request: Request, isCheckoutPath = false) {
   const attributePattern = /\b(href|src|action|formaction|poster)=("|')(.*?)\2/gi
   const rewritten = html.replace(attributePattern, (_match, name: string, quote: string, value: string) => {
@@ -95,12 +162,16 @@ function rewriteHtml(html: string, request: Request, isCheckoutPath = false) {
   })
 
   const cmsOrigin = wpStoreOrigin()
-  const withLocalLinks = cmsOrigin
+  const withCmsLinks = cmsOrigin
     ? rewritten.replace(
         new RegExp(`${escapeRegExp(cmsOrigin)}([^\\s"'<>)]*)`, 'g'),
         (_match, suffix: string) => rewriteCmsUrl(`${cmsOrigin}${suffix}`, request)
       )
     : rewritten
+
+  const withLocalLinks = rewriteAjaxEndpoints(
+    stripFrontendOrigins(withCmsLinks, frontendOrigin(request))
+  )
 
   if (!isCheckoutPath) return withLocalLinks
 
@@ -184,7 +255,16 @@ export async function proxyWooRequest(request: Request, path: string[]) {
 
   const method = request.method.toUpperCase()
   const init: RequestInit = { method, headers: requestHeaders, redirect: 'manual' }
-  if (method !== 'GET' && method !== 'HEAD') init.body = await request.arrayBuffer()
+  if (method !== 'GET' && method !== 'HEAD') {
+    // Without the original content type WordPress cannot parse the body, so a
+    // checkout submission arrives with every field empty and the order is
+    // rejected for reasons the customer cannot see (QA-03).
+    const contentType = request.headers.get('content-type')
+    if (contentType) requestHeaders.set('content-type', contentType)
+    const requestedWith = request.headers.get('x-requested-with')
+    if (requestedWith) requestHeaders.set('x-requested-with', requestedWith)
+    init.body = await request.arrayBuffer()
+  }
 
   const upstream = await fetch(target, init)
   const upstreamCookies = setCookiesFrom(upstream)
@@ -224,6 +304,98 @@ export async function proxyWooRequest(request: Request, path: string[]) {
       status: upstream.status,
       headers: responseHeaders,
     })
+  }
+
+  return new Response(await upstream.arrayBuffer(), {
+    status: upstream.status,
+    headers: responseHeaders,
+  })
+}
+
+/**
+ * Rewrites WordPress URLs inside a JSON payload, including the `\/`-escaped
+ * form `wp_send_json()` produces. WooCommerce returns the order-received URL in
+ * the checkout AJAX response, so without this the browser is redirected onto
+ * the WordPress origin the moment an order succeeds.
+ */
+function rewriteJsonUrls(text: string, request: Request) {
+  const cmsOrigin = wpStoreOrigin()
+  if (!cmsOrigin) return text
+
+  const plain = text.replace(
+    new RegExp(`${escapeRegExp(cmsOrigin)}([^"'\\s\\\\]*)`, 'g'),
+    (_match, suffix: string) => rewriteCmsUrl(`${cmsOrigin}${suffix}`, request)
+  )
+
+  const escapedOrigin = cmsOrigin.replace(/\//g, '\\/')
+  return plain.replace(
+    new RegExp(`${escapeRegExp(escapedOrigin)}((?:\\\\/|[^"'\\s\\\\])*)`, 'g'),
+    (_match, suffix: string) => {
+      const rewritten = rewriteCmsUrl(`${cmsOrigin}${suffix.replace(/\\\//g, '/')}`, request)
+      return rewritten.replace(/\//g, '\\/')
+    }
+  )
+}
+
+/**
+ * Proxies WooCommerce's `/?wc-ajax=<action>` endpoints (order review refresh,
+ * coupons, and the actual "place order" call) so checkout.js keeps working from
+ * the Next.js origin instead of posting cross-site without cookies.
+ */
+export async function proxyWcAjaxRequest(request: Request) {
+  const cmsOrigin = wpStoreOrigin()
+  if (!cmsOrigin) return new Response('WordPress checkout is not configured.', { status: 503 })
+
+  const incomingUrl = new URL(request.url)
+  const action = incomingUrl.searchParams.get('wc-ajax')
+  if (!action) return new Response('Missing wc-ajax action.', { status: 400 })
+
+  const locale = localeFromRequest(request)
+  const target = new URL('/', cmsOrigin)
+  for (const [key, value] of incomingUrl.searchParams) {
+    if (key !== 'locale' && key !== 'lang') target.searchParams.append(key, value)
+  }
+  target.searchParams.set('lang', locale)
+
+  const requestHeaders = new Headers()
+  const incomingCookie = request.headers.get('cookie') ?? ''
+  if (incomingCookie) requestHeaders.set('cookie', incomingCookie)
+  requestHeaders.set('accept', request.headers.get('accept') ?? '*/*')
+  requestHeaders.set('accept-language', `${locale},en;q=0.8`)
+  requestHeaders.set('x-requested-with', request.headers.get('x-requested-with') ?? 'XMLHttpRequest')
+  requestHeaders.set('x-alifleet-frontend-origin', frontendOrigin(request))
+  requestHeaders.set('x-alifleet-locale', locale)
+  requestHeaders.set('accept-encoding', 'identity')
+
+  const method = request.method.toUpperCase()
+  const init: RequestInit = { method, headers: requestHeaders, redirect: 'manual' }
+  if (method !== 'GET' && method !== 'HEAD') {
+    const contentType = request.headers.get('content-type')
+    if (contentType) requestHeaders.set('content-type', contentType)
+    init.body = await request.arrayBuffer()
+  }
+
+  const upstream = await fetch(target, init)
+  const responseHeaders = copyResponseHeaders(upstream.headers)
+  for (const cookie of setCookiesFrom(upstream)) {
+    const normalized = frontendSetCookie(cookie)
+    if (normalized) responseHeaders.append('set-cookie', normalized)
+  }
+
+  const location = upstream.headers.get('location')
+  if (location && upstream.status >= 300 && upstream.status < 400) {
+    responseHeaders.set('location', rewriteCmsUrl(location, request))
+    return new Response(null, { status: upstream.status, headers: responseHeaders })
+  }
+
+  const contentType = upstream.headers.get('content-type') ?? ''
+  if (/json|text\//i.test(contentType)) {
+    const body = await upstream.text()
+    responseHeaders.delete('content-length')
+    const rewritten = rewriteAjaxEndpoints(
+      stripFrontendOrigins(rewriteJsonUrls(body, request), frontendOrigin(request))
+    )
+    return new Response(rewritten, { status: upstream.status, headers: responseHeaders })
   }
 
   return new Response(await upstream.arrayBuffer(), {

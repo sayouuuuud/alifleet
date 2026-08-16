@@ -38,13 +38,27 @@ function itemsQuery(formData: FormData) {
   return items.join(',')
 }
 
+/**
+ * Rebuilds the browser's request so the proxy layer can derive the *public*
+ * origin from it. The forwarded headers are copied through deliberately: behind
+ * the production reverse proxy `host` is the internal listener, and WordPress
+ * would render checkout with a `localhost` form action (QA-02).
+ */
 async function requestFromAction() {
   const requestHeaders = await headers()
-  const host = requestHeaders.get('host')
+  const forwardedHost = requestHeaders.get('x-forwarded-host')?.split(',')[0]?.trim()
+  const host = forwardedHost || requestHeaders.get('host')?.trim()
   if (!host) throw new Error('Missing checkout host.')
+
   const forwardedProto = requestHeaders.get('x-forwarded-proto')?.split(',')[0]?.trim()
   const protocol = forwardedProto || (process.env.NODE_ENV === 'production' ? 'https' : 'http')
-  return new Request(`${protocol}://${host}/checkout`)
+
+  const proxied = new Headers()
+  for (const name of ['host', 'x-forwarded-host', 'x-forwarded-proto']) {
+    const value = requestHeaders.get(name)
+    if (value) proxied.set(name, value)
+  }
+  return new Request(`${protocol}://${host}/checkout`, { headers: proxied })
 }
 
 export async function prepareCheckoutAction(formData: FormData) {

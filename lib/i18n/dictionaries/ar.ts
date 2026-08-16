@@ -193,10 +193,13 @@ export const ar: Dictionary = {
     browseParts: 'استعرض قطع الغيار',
     item: 'المنتج',
     price: 'السعر',
-    lineTotal: 'الإجم��لي',
+    lineTotal: 'الإجمالي',
     subtotal: 'المجموع الفرعي',
     shippingNote: 'يتم حساب الشحن والضرائب عند إتمام الطلب.',
     checkout: 'متابعة إلى الدفع',
+    checkoutPending: 'جارٍ تحضير صفحة الدفع…',
+    checkoutUnavailable:
+      'لم نتمكن من فتح صفحة الدفع الآن. حاول مرة أخرى، أو أرسل طلبك عبر واتساب.',
     checkoutNote: 'سيتم تحويلك إلى متجرنا الآمن لإتمام الدفع.',
     orderViaWhatsapp: 'اطلب عبر واتساب',
     continueShopping: 'متابعة التسوق',
@@ -299,7 +302,7 @@ export const ar: Dictionary = {
     seats: 'المقاعد',
     landedPrice: 'السعر التقديري بعد الوصول',
     customTitle: 'تبحث عن سيارة معينة؟',
-    customLead: 'أخبرنا بالسيارة التي تريدها وسنجدها ونفحصها ونوصلها إلى بابك.',
+    customLead: 'أخبرنا بالسيارة التي تر��دها وسنجدها ونفحصها ونوصلها إلى بابك.',
     customCta: 'اطلب استيرادًا مخصصًا',
     inventoryUnavailable: 'قائمة المركبات غير متاحة مؤقتًا',
     inventoryUnavailableLead:

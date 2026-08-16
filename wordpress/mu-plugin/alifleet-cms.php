@@ -1591,6 +1591,31 @@ function alifleet_frontend_path( string $path ): string {
 	return '' !== $origin ? $origin . '/' . ltrim( $path, '/' ) : '';
 }
 
+/**
+ * Let `wp_safe_redirect()` reach the headless storefront.
+ *
+ * Every WooCommerce redirect in a headless setup targets the Next.js host, which
+ * `wp_safe_redirect()` treats as external and silently replaces with
+ * `/wp-admin/`. That is exactly what a guest saw after the cart handoff: the
+ * "continue to checkout" button appeared to do nothing because WordPress had
+ * bounced the request to the dashboard instead of the checkout page (QA-01).
+ *
+ * Only the origins already whitelisted in ALIFLEET_ALLOWED_ORIGINS are added, so
+ * this does not turn wp_safe_redirect into an open redirect.
+ */
+add_filter(
+	'allowed_redirect_hosts',
+	static function ( array $hosts ): array {
+		foreach ( ALIFLEET_ALLOWED_ORIGINS as $origin ) {
+			$host = wp_parse_url( $origin, PHP_URL_HOST );
+			if ( is_string( $host ) && '' !== $host ) {
+				$hosts[] = $host;
+			}
+		}
+		return array_values( array_unique( $hosts ) );
+	}
+);
+
 add_filter(
 	'woocommerce_get_checkout_url',
 	static function ( string $url ): string {

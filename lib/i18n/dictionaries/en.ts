@@ -198,6 +198,9 @@ export const en = {
     subtotal: 'Subtotal',
     shippingNote: 'Shipping and taxes are calculated at checkout.',
     checkout: 'Continue to checkout',
+    checkoutPending: 'Opening checkout…',
+    checkoutUnavailable:
+      'We could not open checkout just now. Please try again, or send your order on WhatsApp.',
     checkoutNote: 'You will be redirected to our secure store to pay.',
     orderViaWhatsapp: 'Order via WhatsApp',
     continueShopping: 'Continue shopping',
