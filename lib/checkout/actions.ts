@@ -87,8 +87,13 @@ export async function prepareCheckoutAction(formData: FormData) {
     }
   }
 
+  // Build the upstream header independently of mutation semantics in Next's
+  // cookie store. In particular, a guest request must never forward either a
+  // WooCommerce session or the signed customer handoff, even if a runtime still
+  // exposes a cookie in getAll() after delete() scheduled its response expiry.
   let cookieHeader = cookieStore
     .getAll()
+    .filter(({ name }) => Boolean(authToken) || !isWooStateCookie(name))
     .map(({ name, value }) => `${name}=${value}`)
     .join('; ')
 
