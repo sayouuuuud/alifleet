@@ -1509,6 +1509,71 @@ add_filter(
 );
 
 /**
+ * The stored `date_format` option is a Hebrew pattern containing the literal
+ * prefix "ב". Switching the locale translates the month name but not that
+ * literal, so an English order confirmation showed the hybrid "16 באugust 2026".
+ * Use an unambiguous numeric-month pattern whenever a non-Hebrew locale was
+ * requested (QA-05).
+ */
+add_filter(
+	'option_date_format',
+	static function ( $format ) {
+		$requested = alifleet_requested_locale();
+		if ( '' === $requested || 'he_IL' === $requested ) {
+			return $format;
+		}
+
+		return 'F j, Y';
+	},
+	20
+);
+
+/**
+ * Polylang only translates `auto-listing` posts, so the WooCommerce checkout,
+ * cart and order-received pages resolve to their Hebrew page objects for every
+ * language. The body text follows the switched locale, but the document title
+ * still came from that page object — an English checkout titled
+ * "תשלום - צי עלי" (QA-05). Supply the title from the requested locale instead.
+ */
+add_filter(
+	'pre_get_document_title',
+	static function ( $title ) {
+		$requested = alifleet_requested_locale();
+		if ( '' === $requested || ! function_exists( 'is_checkout' ) ) {
+			return $title;
+		}
+
+		$titles = [
+			'en_US' => [ 'checkout' => 'Checkout', 'received' => 'Order received', 'cart' => 'Cart' ],
+			'ar'    => [ 'checkout' => 'إتمام الشراء', 'received' => 'تم استلام الطلب', 'cart' => 'سلة التسوق' ],
+			'he_IL' => [ 'checkout' => 'תשלום', 'received' => 'ההזמנה נתקבלה', 'cart' => 'סל הקניות' ],
+		];
+
+		if ( ! isset( $titles[ $requested ] ) ) {
+			return $title;
+		}
+
+		$strings = $titles[ $requested ];
+		$page    = '';
+
+		if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
+			$page = 'received';
+		} elseif ( is_checkout() ) {
+			$page = 'checkout';
+		} elseif ( function_exists( 'is_cart' ) && is_cart() ) {
+			$page = 'cart';
+		}
+
+		if ( '' === $page ) {
+			return $title;
+		}
+
+		return $strings[ $page ] . ' — ALI FLEET';
+	},
+	20
+);
+
+/**
  * The proxied checkout markup is injected into the storefront shell, which sets
  * its own direction — but the WooCommerce stylesheet keys off the `rtl` body
  * class, so it has to agree with the requested locale rather than the site

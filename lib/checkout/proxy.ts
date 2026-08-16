@@ -218,6 +218,22 @@ function frontendSetCookie(raw: string) {
   return [pair, 'Path=/', ...kept].join('; ')
 }
 
+/**
+ * Forces Polylang's language cookie to agree with the locale the storefront
+ * asked for. Polylang prefers `pll_language` over the `lang` query parameter,
+ * so a cookie left behind by an earlier visit made WordPress render checkout in
+ * the wrong language — Hebrew chrome on an English order (QA-05).
+ */
+function alignPolylangCookie(cookie: string, locale: Locale) {
+  const pairs = cookie
+    .split(';')
+    .map((part) => part.trim())
+    .filter((part) => part && !/^pll_language=/i.test(part))
+
+  pairs.push(`pll_language=${locale}`)
+  return pairs.join('; ')
+}
+
 function cookieHeader(existing: string, setCookies: string[]) {
   const pairs = setCookies.map((cookie) => cookie.split(';', 1)[0]).filter(Boolean)
   return [existing, ...pairs].filter(Boolean).join('; ')
@@ -243,7 +259,10 @@ export async function proxyWooRequest(request: Request, path: string[]) {
 
   const requestHeaders = new Headers()
   const incomingCookie = request.headers.get('cookie') ?? ''
-  if (incomingCookie) requestHeaders.set('cookie', incomingCookie)
+  const forwardedCookie = isCheckoutPath
+    ? alignPolylangCookie(incomingCookie, locale)
+    : incomingCookie
+  if (forwardedCookie) requestHeaders.set('cookie', forwardedCookie)
   requestHeaders.set('accept', request.headers.get('accept') ?? '*/*')
   requestHeaders.set(
     'accept-language',
@@ -358,7 +377,7 @@ export async function proxyWcAjaxRequest(request: Request) {
   target.searchParams.set('lang', locale)
 
   const requestHeaders = new Headers()
-  const incomingCookie = request.headers.get('cookie') ?? ''
+  const incomingCookie = alignPolylangCookie(request.headers.get('cookie') ?? '', locale)
   if (incomingCookie) requestHeaders.set('cookie', incomingCookie)
   requestHeaders.set('accept', request.headers.get('accept') ?? '*/*')
   requestHeaders.set('accept-language', `${locale},en;q=0.8`)
