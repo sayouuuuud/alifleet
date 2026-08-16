@@ -133,7 +133,7 @@ WordPress بيخزن `post_title` و `post_excerpt` بلغة **واحدة** بس
 
 ## 2) اللي هعمله بالظبط (المخرجات)
 
-### أ) ملف ACF واح�� مدمج ومصلَّح
+### أ) ملف ACF واحد مدمج ومصلَّح
 **`wordpress/acf/alifleet-acf-schema.json`**
 
 - الأساس: `acf-schema-multilingual.json`
@@ -147,7 +147,7 @@ WordPress بيخزن `post_title` و `post_excerpt` بلغة **واحدة** بس
 ### ب) ملفات الاستيراد — ملف لكل نوع
 ```
 wordpress/import/
-├── pages.csv              6 ����فوف  (Home / Import / Products / Blog / Cart / Contact)
+├── pages.csv              6 صفوف  (Home / Import / Products / Blog / Cart / Contact)
 ├── import-cars.csv        7 صفوف  ← مولّدة من lib/data/import-cars.ts
 ├── spare-parts.csv       12 صف   ← مولّدة من lib/data/parts.ts
 ├── blog-posts.csv         6 صفوف  ← مولّدة من lib/data/blog.ts
@@ -263,7 +263,7 @@ node wordpress/scripts/validate-content.mjs
 
 ---
 
-## 5) حاجات محتاج أعرفها منك (مش موقفة ��لشغل)
+## 5) حاجات محتاج أعرفها منك (مش موقفة للشغل)
 
 هكمّل بافتراضات معقولة، وقولّي لو حاجة غلط:
 

@@ -111,7 +111,7 @@ export const ar: Dictionary = {
       spec4Label: 'التسليم', spec4Value: 'يُسلَّم لباب منزلك',
       specSheetTitle: 'بطاقة مواصفات المركبة',
       specSheetCode: 'ALI-FLEET / 01',
-      specAvailable: 'الاستيراد متاح ال��ن',
+      specAvailable: 'الاستيراد متاح الآن',
       stat1Label: 'مركبة تم توريدها',
       stat2Label: 'سوق تصدير',
       stat3Label: 'مطابقة للمواصفات',
@@ -171,7 +171,7 @@ export const ar: Dictionary = {
       'لم نتمكن من الوصول إلى المتجر الآن. جرّب مرة أخرى بعد قليل، أو تواصل معنا وسنتحقق من التوفر بدلًا منك.',
     catalogEmpty: 'لم يتم نشر أي قطع بعد',
     catalogEmptyLead:
-      'الكتالوج قيد التحضير. تواصل معنا وسنوفّر لك القطعة التي ت��تاجها.',
+      'الكتالوج قيد التحضير. تواصل معنا وسنوفّر لك القطعة التي تحتاجها.',
     untranslatedNotice:
       'بعض أسماء المنتجات لا تزال معروضة بالعبرية الأصلية إلى أن تكتمل الترجمة.',
   },
@@ -304,7 +304,7 @@ export const ar: Dictionary = {
     seats: 'المقاعد',
     landedPrice: 'السعر التقديري بعد الوصول',
     customTitle: 'تبحث عن سيارة معينة؟',
-    customLead: 'أخبرنا بالسيارة التي تر��دها وسنجدها ونفحصها ونوصلها إلى بابك.',
+    customLead: 'أخبرنا بالسيارة التي تريدها وسنجدها ونفحصها ونوصلها إلى بابك.',
     customCta: 'اطلب استيرادًا مخصصًا',
     inventoryUnavailable: 'قائمة المركبات غير متاحة مؤقتًا',
     inventoryUnavailableLead:
@@ -358,7 +358,7 @@ export const ar: Dictionary = {
     required: 'مطلوب',
     successTitle: 'الرسالة جاهزة',
     successLead:
-      'سيتم فتح برنامج البريد لديك بالرسالة. يمكنك أيضًا التواصل معنا عبر واتساب ��رد أسرع.',
+      'سيتم فتح برنامج البريد لديك بالرسالة. يمكنك أيضًا التواصل معنا عبر واتساب لرد أسرع.',
     mapAlt: 'خريطة توضح موقع مقر علي فليت',
   },
   blog: {
@@ -370,7 +370,7 @@ export const ar: Dictionary = {
     minRead: 'دقيقة للقراءة',
     allPosts: 'جميع المقالات',
     categories: {
-      news: 'أخبا��',
+      news: 'أخبار',
       import: 'استيراد',
       fleet: 'الأسطول',
       parts: 'قطع الغيار',
@@ -536,7 +536,7 @@ export const ar: Dictionary = {
       shippingTitle: 'عنوان الشحن',
       shippingLead: 'العنوان الذي تُوصَّل إليه قطعك.',
       sameAsBilling: 'نسخ عنوان الفاتورة',
-      save: 'حفظ ال��ناوين',
+      save: 'حفظ العناوين',
       saving: 'جارٍ الحفظ…',
       saved: 'تم حفظ عناوينك.',
     },
