@@ -1450,6 +1450,199 @@ function alifleet_checkout_frontend_origin(): string {
 		: '';
 }
 
+/**
+ * Maps a storefront locale onto the WordPress locale that owns the translation
+ * files. Polylang is configured to translate `auto-listing` posts only, so it
+ * never touches the WooCommerce checkout strings — the checkout inherits the
+ * site default (he_IL) no matter which language the customer picked (QA-04).
+ * Switching the WordPress locale per request is what actually translates the
+ * proxied checkout markup.
+ */
+const ALIFLEET_LOCALE_MAP = [
+	'en' => 'en_US',
+	'ar' => 'ar',
+	'he' => 'he_IL',
+];
+
+function alifleet_requested_locale(): string {
+	$raw = '';
+
+	if ( isset( $_SERVER['HTTP_X_ALIFLEET_LOCALE'] ) ) {
+		$raw = sanitize_key( wp_unslash( $_SERVER['HTTP_X_ALIFLEET_LOCALE'] ) );
+	}
+
+	if ( '' === $raw && isset( $_GET['alifleet-locale'] ) ) {
+		$raw = sanitize_key( wp_unslash( $_GET['alifleet-locale'] ) );
+	}
+
+	if ( '' === $raw && isset( $_GET['lang'] ) ) {
+		$raw = sanitize_key( wp_unslash( $_GET['lang'] ) );
+	}
+
+	$raw = strtolower( substr( $raw, 0, 2 ) );
+
+	return isset( ALIFLEET_LOCALE_MAP[ $raw ] ) ? ALIFLEET_LOCALE_MAP[ $raw ] : '';
+}
+
+/**
+ * Applied to both filters on purpose: `determine_locale` decides which
+ * translation files load on the initial request, while `locale` covers code
+ * that re-reads the locale later in the request (WooCommerce does, when it
+ * builds the checkout fields and country lists).
+ */
+add_filter(
+	'determine_locale',
+	static function ( $locale ) {
+		$requested = alifleet_requested_locale();
+		return '' !== $requested ? $requested : $locale;
+	},
+	20
+);
+
+add_filter(
+	'locale',
+	static function ( $locale ) {
+		$requested = alifleet_requested_locale();
+		return '' !== $requested ? $requested : $locale;
+	},
+	20
+);
+
+/**
+ * The stored `date_format` option is a Hebrew pattern containing the literal
+ * prefix "ב". Switching the locale translates the month name but not that
+ * literal, so an English order confirmation showed the hybrid "16 באugust 2026".
+ * Use an unambiguous numeric-month pattern whenever a non-Hebrew locale was
+ * requested (QA-05).
+ */
+add_filter(
+	'option_date_format',
+	static function ( $format ) {
+		$requested = alifleet_requested_locale();
+		if ( '' === $requested || 'he_IL' === $requested ) {
+			return $format;
+		}
+
+		return 'F j, Y';
+	},
+	20
+);
+
+/**
+ * Polylang only translates `auto-listing` posts, so the WooCommerce checkout,
+ * cart and order-received pages resolve to their Hebrew page objects for every
+ * language. The body text follows the switched locale, but the document title
+ * still came from that page object — an English checkout titled
+ * "תשלום - צי עלי" (QA-05). Supply the title from the requested locale instead.
+ */
+add_filter(
+	'pre_get_document_title',
+	static function ( $title ) {
+		$requested = alifleet_requested_locale();
+		if ( '' === $requested || ! function_exists( 'is_checkout' ) ) {
+			return $title;
+		}
+
+		$titles = [
+			'en_US' => [ 'checkout' => 'Checkout', 'received' => 'Order received', 'cart' => 'Cart' ],
+			'ar'    => [ 'checkout' => 'إتمام الشراء', 'received' => 'تم استلام الطلب', 'cart' => 'سلة التسوق' ],
+			'he_IL' => [ 'checkout' => 'תשלום', 'received' => 'ההזמנה נתקבלה', 'cart' => 'סל הקניות' ],
+		];
+
+		if ( ! isset( $titles[ $requested ] ) ) {
+			return $title;
+		}
+
+		$strings = $titles[ $requested ];
+		$page    = '';
+
+		if ( function_exists( 'is_order_received_page' ) && is_order_received_page() ) {
+			$page = 'received';
+		} elseif ( is_checkout() ) {
+			$page = 'checkout';
+		} elseif ( function_exists( 'is_cart' ) && is_cart() ) {
+			$page = 'cart';
+		}
+
+		if ( '' === $page ) {
+			return $title;
+		}
+
+		return $strings[ $page ] . ' — ALI FLEET';
+	},
+	20
+);
+
+/**
+ * The proxied checkout markup is injected into the storefront shell, which sets
+ * its own direction — but the WooCommerce stylesheet keys off the `rtl` body
+ * class, so it has to agree with the requested locale rather than the site
+ * default.
+ */
+add_filter(
+	'body_class',
+	static function ( array $classes ): array {
+		$requested = alifleet_requested_locale();
+		if ( '' === $requested ) {
+			return $classes;
+		}
+
+		$classes = array_values( array_diff( $classes, [ 'rtl', 'ltr' ] ) );
+		$classes[] = alifleet_locale_is_rtl( $requested ) ? 'rtl' : 'ltr';
+
+		return $classes;
+	}
+);
+
+function alifleet_locale_is_rtl( string $locale ): bool {
+	return in_array( $locale, [ 'ar', 'he_IL' ], true );
+}
+
+/**
+ * `is_rtl()` reads the text direction that was resolved when the translations
+ * first loaded, so switching the locale mid-request leaves it reporting the site
+ * default. That is why an English checkout still rendered `<html dir="rtl">`
+ * (QA-04) and pulled in the RTL stylesheet over LTR content.
+ */
+add_filter(
+	'is_rtl',
+	static function ( $is_rtl ) {
+		$requested = alifleet_requested_locale();
+		return '' !== $requested ? alifleet_locale_is_rtl( $requested ) : $is_rtl;
+	},
+	20
+);
+
+/**
+ * WordPress builds the `<html>` attributes from the *global* locale rather than
+ * the filtered one, so `dir` and `lang` are corrected here directly.
+ */
+add_filter(
+	'language_attributes',
+	static function ( string $output ): string {
+		$requested = alifleet_requested_locale();
+		if ( '' === $requested ) {
+			return $output;
+		}
+
+		$dir  = alifleet_locale_is_rtl( $requested ) ? 'rtl' : 'ltr';
+		$lang = str_replace( '_', '-', $requested );
+
+		$output = preg_replace( '/\bdir="[^"]*"/', 'dir="' . $dir . '"', $output, 1, $dir_count );
+		if ( ! $dir_count ) {
+			$output = 'dir="' . $dir . '" ' . $output;
+		}
+
+		$output = preg_replace( '/\blang="[^"]*"/', 'lang="' . esc_attr( $lang ) . '"', (string) $output, 1, $lang_count );
+		if ( ! $lang_count ) {
+			$output .= ' lang="' . esc_attr( $lang ) . '"';
+		}
+
+		return (string) $output;
+	},
+	20
+);
+
 function alifleet_checkout_bearer( WP_REST_Request $request ): string {
 	$header = trim( (string) $request->get_header( 'authorization' ) );
 	if ( 0 === stripos( $header, 'bearer ' ) ) {
@@ -1530,6 +1723,42 @@ add_action(
 	1
 );
 
+/**
+ * Rebind `WC()->customer` to the handed-off user.
+ *
+ * WooCommerce instantiates its customer object early in its own bootstrap, so by
+ * the time the handoff cookie is read the object is already bound to user 0.
+ * Checkout then prefills the e-mail (which it reads from the current WP user)
+ * while leaving address and phone blank, because those come from the stale guest
+ * customer (QA-08). Re-creating the object once binds it to the real customer and
+ * restores the saved billing and shipping details.
+ */
+add_action(
+	'woocommerce_init',
+	static function (): void {
+		if ( ! function_exists( 'WC' ) || ! WC() ) {
+			return;
+		}
+
+		$user_id = get_current_user_id();
+		if ( $user_id <= 0 || ! WC()->customer ) {
+			return;
+		}
+
+		if ( WC()->customer->get_id() === $user_id ) {
+			return;
+		}
+
+		try {
+			WC()->customer = new WC_Customer( $user_id, true );
+		} catch ( Exception $e ) {
+			// A missing customer record must never take checkout down.
+			return;
+		}
+	},
+	20
+);
+
 add_action(
 	'rest_api_init',
 	static function (): void {
@@ -1590,6 +1819,69 @@ function alifleet_frontend_path( string $path ): string {
 	$origin = alifleet_checkout_frontend_origin();
 	return '' !== $origin ? $origin . '/' . ltrim( $path, '/' ) : '';
 }
+
+/**
+ * Let `wp_safe_redirect()` reach the headless storefront.
+ *
+ * Every WooCommerce redirect in a headless setup targets the Next.js host, which
+ * `wp_safe_redirect()` treats as external and silently replaces with
+ * `/wp-admin/`. That is exactly what a guest saw after the cart handoff: the
+ * "continue to checkout" button appeared to do nothing because WordPress had
+ * bounced the request to the dashboard instead of the checkout page (QA-01).
+ *
+ * Only the origins already whitelisted in ALIFLEET_ALLOWED_ORIGINS are added, so
+ * this does not turn wp_safe_redirect into an open redirect.
+ */
+add_filter(
+	'allowed_redirect_hosts',
+	static function ( array $hosts ): array {
+		foreach ( ALIFLEET_ALLOWED_ORIGINS as $origin ) {
+			$host = wp_parse_url( $origin, PHP_URL_HOST );
+			if ( is_string( $host ) && '' !== $host ) {
+				$hosts[] = $host;
+			}
+		}
+		return array_values( array_unique( $hosts ) );
+	}
+);
+
+/**
+ * Give required checkout fields the native `required` attribute.
+ *
+ * WooCommerce marks them with a `*` and `aria-required="true"` only, so the
+ * browser never blocks an empty submission: QA-03 found 15 aria-required fields
+ * and zero real ones, and pressing "place order" with everything blank left the
+ * page instead of showing a validation message. `required` makes the browser
+ * refuse the submit and focus the first empty field, in the customer's own
+ * language, before any request is made.
+ */
+add_filter(
+	'woocommerce_form_field_args',
+	static function ( array $args, string $key, $value ): array {
+		unset( $key, $value );
+
+		if ( empty( $args['required'] ) ) {
+			return $args;
+		}
+
+		// Checkboxes for terms are handled by WooCommerce's own validation, and
+		// select fields are populated by JS after load — forcing `required` on
+		// those produces a browser error the customer cannot act on.
+		$type = $args['type'] ?? 'text';
+		if ( in_array( $type, [ 'checkbox', 'select', 'state', 'country' ], true ) ) {
+			return $args;
+		}
+
+		$args['custom_attributes'] = is_array( $args['custom_attributes'] ?? null )
+			? $args['custom_attributes']
+			: [];
+		$args['custom_attributes']['required'] = 'required';
+
+		return $args;
+	},
+	10,
+	3
+);
 
 add_filter(
 	'woocommerce_get_checkout_url',

@@ -82,7 +82,12 @@ export async function loginAction(
 
   // Outside the try block: redirect() signals by throwing, and must not be
   // swallowed by the error handler above.
-  revalidatePath('/account')
+  //
+  // No revalidatePath here on purpose. Account pages are already fetched with
+  // `cache: 'no-store'`, so there is nothing cached to purge — but the call
+  // still forces Next.js to render the destination *inside* the action before
+  // the browser is allowed to navigate. That is what left the sign-in button
+  // spinning for over 30 seconds with no error and no transition (QA-05).
   redirect(sanitizeRedirect(redirectTo))
 }
 
@@ -148,7 +153,7 @@ export async function registerAction(
     )
   }
 
-  revalidatePath('/account')
+  // See the note in loginAction: revalidating here only delays the redirect.
   // `registered=1` makes the sign-in page explain that the account is ready and
   // only the automatic sign-in step was skipped.
   redirect(signedIn ? '/account' : '/account/login?registered=1')

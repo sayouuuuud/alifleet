@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Check, Plus, ShoppingCart } from 'lucide-react'
+import { Check, Loader2, Plus, ShoppingCart } from 'lucide-react'
 import { trackMetaEvent } from '@/lib/analytics/meta-pixel'
 import { useCart } from '@/lib/cart-context'
 import { useLanguage } from '@/lib/i18n/language-context'
@@ -20,7 +20,7 @@ export function AddToCartButton({
   size?: 'sm' | 'md' | 'lg'
   className?: string
 }) {
-  const { add } = useCart()
+  const { add, ready } = useCart()
   const { t } = useLanguage()
   const [justAdded, setJustAdded] = useState(false)
 
@@ -39,7 +39,11 @@ export function AddToCartButton({
   return (
     <button
       type="button"
-      disabled={disabled}
+      // Until the cart has read localStorage the click cannot be honoured
+      // reliably, so the button reports that it is still initialising instead of
+      // silently dropping the item (QA-06).
+      disabled={disabled || !ready}
+      aria-busy={!ready}
       onClick={() => {
         add(slug, quantity)
         trackMetaEvent('AddToCart', {
@@ -58,7 +62,12 @@ export function AddToCartButton({
         className
       )}
     >
-      {justAdded ? (
+      {!ready ? (
+        <>
+          <Loader2 className="size-4 shrink-0 animate-spin" aria-hidden="true" />
+          {t.common.addToCart}
+        </>
+      ) : justAdded ? (
         <>
           <Check className="size-4 shrink-0" aria-hidden="true" />
           {t.common.added}

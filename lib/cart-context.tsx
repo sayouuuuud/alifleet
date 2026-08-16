@@ -55,7 +55,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    setLines(parseStored(window.localStorage.getItem(CART_STORAGE_KEY)))
+    const stored = parseStored(window.localStorage.getItem(CART_STORAGE_KEY))
+    // Merge rather than replace. A click that lands before this effect runs
+    // would otherwise be thrown away by the stored snapshot, which is why an
+    // item added straight from the catalogue sometimes never appeared in the
+    // cart (QA-06).
+    setLines((pending) => {
+      if (pending.length === 0) return stored
+      const merged = [...stored]
+      for (const line of pending) {
+        const existing = merged.find((entry) => entry.slug === line.slug)
+        if (existing) {
+          existing.quantity = Math.min(99, existing.quantity + line.quantity)
+        } else {
+          merged.push(line)
+        }
+      }
+      return merged
+    })
     setReady(true)
   }, [])
 

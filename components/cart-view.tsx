@@ -2,8 +2,12 @@
 
 import Image from 'next/image'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useFormStatus } from 'react-dom'
 import {
+  AlertCircle,
   ArrowRight,
+  Loader2,
   MessageCircle,
   Minus,
   Plus,
@@ -25,8 +29,43 @@ import { useStore } from '@/lib/store-context'
  * That means prices, stock and — critically — WooCommerce product ids are read
  * fresh instead of trusting whatever was cached in the browser.
  */
+/**
+ * Split into its own component because `useFormStatus` only reports the status
+ * of the form it is rendered inside. Without a pending state the button stayed
+ * clickable and silent while the server action rebuilt the WooCommerce basket,
+ * which read as "nothing happened" (QA-06).
+ */
+function CheckoutSubmit({ label, pendingLabel }: { label: string; pendingLabel: string }) {
+  const { pending } = useFormStatus()
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      aria-busy={pending}
+      className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-full bg-foreground px-6 py-4 text-base font-semibold text-background transition-opacity hover:opacity-90 disabled:cursor-progress disabled:opacity-70"
+    >
+      {pending ? (
+        <>
+          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          {pendingLabel}
+        </>
+      ) : (
+        <>
+          {label}
+          <ArrowRight className="size-4" aria-hidden="true" data-flip-rtl />
+        </>
+      )}
+    </button>
+  )
+}
+
 export function CartView({ catalog }: { catalog: PartSummary[] }) {
   const { t, locale } = useLanguage()
+  const searchParams = useSearchParams()
+  // The server action redirects back here with this flag when WooCommerce could
+  // not be handed the basket, so the failure is visible instead of silent.
+  const checkoutFailed = searchParams.get('checkout') === 'unavailable'
   const store = useStore()
   const { lines, setQuantity, remove, clear, ready } = useCart()
 
@@ -223,18 +262,25 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
             {/* The server action rebuilds the WooCommerce basket, hands off the
                 authenticated customer session, then redirects to /checkout on
                 this same Next.js origin. */}
+            {checkoutFailed && (
+              <p
+                role="alert"
+                className="mt-6 flex items-start gap-2.5 rounded-2xl bg-destructive/10 p-4 text-sm leading-relaxed text-destructive"
+              >
+                <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                {t.cart.checkoutUnavailable}
+              </p>
+            )}
+
             {checkoutReady && (
               <>
                 <form action={prepareCheckoutAction}>
                   <input type="hidden" name="items" value={checkoutItems} />
                   <input type="hidden" name="locale" value={locale} />
-                  <button
-                    type="submit"
-                    className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-full bg-foreground px-6 py-4 text-base font-semibold text-background transition-opacity hover:opacity-90"
-                  >
-                    {t.cart.checkout}
-                    <ArrowRight className="size-4" aria-hidden="true" data-flip-rtl />
-                  </button>
+                  <CheckoutSubmit
+                    label={t.cart.checkout}
+                    pendingLabel={t.cart.checkoutPending}
+                  />
                 </form>
                 <p className="mt-2.5 text-center text-xs text-muted-foreground">
                   {t.cart.checkoutNote}
