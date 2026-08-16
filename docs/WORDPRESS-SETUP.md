@@ -142,7 +142,7 @@ usermod -aG sudo deploy
 rsync --archive --chown=deploy:deploy ~/.ssh /home/deploy
 ```
 
-من ��نا ورايح اشتغل بـ `deploy`:
+من هنا ورايح اشتغل بـ `deploy`:
 
 ```bash
 exit
@@ -363,7 +363,7 @@ wp plugin activate wpgraphql-acf wp-graphql-woocommerce
 | **ارفع ACF PRO** ([advancedcustomfields.com](https://www.advancedcustomfields.com/pro/)) وفعّلها بدل المجانية | قايمة **Site Settings** تظهر في لوحة التحكم وتعدّل الـ 29 خانة منها |
 | **ابقى على المجانية** | الإعدادات بتتكتب في `wp_options` بسكربت الاستيراد أو بأمر `wp eval` (القسم 7.ب.3) وبتقراها من GraphQL عادي. للتعديل بعد كده: عدّل `seed-data.json` وأعد السكربت، أو `wp eval 'update_field("company_info", [...], "option");'` |
 
-الفرونت مش فارق عنده — `siteOptions` في GraphQL بيقرأ من `wp_options` في الحالتين. الفرق ��س إنك تعدّل من شاشة ولا من الـ CLI.
+الفرونت مش فارق عنده — `siteOptions` في GraphQL بيقرأ من `wp_options` في الحالتين. الفرق بس إنك تعدّل من شاشة ولا من الـ CLI.
 
 ### 3.3 تحقق من الترتيب
 
@@ -392,7 +392,7 @@ wp plugin install updraftplus --activate          # نسخ احتياطي
 wp plugin install redis-cache                     # كاش (بعد تنصيب redis-server)
 ```
 
-> **متنصّبش** أي إضافة كاش صفحات (WP Super Cache / LiteSpeed Cache). WordPress هنا هيدّي JSON مش صفحات، وكاش الصفحات بيرجّع ردود GraphQL قديمة أو م��فوظة غلط.
+> **متنصّبش** أي إضافة كاش صفحات (WP Super Cache / LiteSpeed Cache). WordPress هنا هيدّي JSON مش صفحات، وكاش الصفحات بيرجّع ردود GraphQL قديمة أو محفوظة غلط.
 
 ---
 
@@ -427,7 +427,7 @@ wp config set WP_ENVIRONMENT_TYPE 'production' --type=constant
 
 `DISALLOW_FILE_EDIT` بيقفل محرر الملفات في لوحة التحكم — أشهر باب لسحب صلاحيات كامل السيرفر لو حساب أدمن اتسرّب.
 
-### 4.3 تأكي��
+### 4.3 تأكيد
 
 ```bash
 wp config list --fields=name,value | grep -E 'JWT|MEMORY|ENVIRONMENT'
@@ -467,7 +467,7 @@ cp /tmp/alifleet-cms.php wp-content/mu-plugins/
 php -l wp-content/mu-plugins/alifleet-cms.php   # لازم: No syntax errors detected
 ```
 
-مجلد `mu-plugins` معناه must-use — بتتحم��ل تلقائيًا ومستحيل حد يوقفها بالغلط من لوحة التحكم.
+مجلد `mu-plugins` معناه must-use — بتتحمّل تلقائيًا ومستحيل حد يوقفها بالغلط من لوحة التحكم.
 
 ### عدّل الدومينات المسموحة
 
@@ -521,7 +521,7 @@ wp acf import --json_file=/tmp/alifleet-acf-schema.json
 | # | المجموعة | مكانها في لوحة التحكم | اسمها في GraphQL |
 |---|---|---|---|
 | 1 | Site Options & Global Settings | Site Settings (صفحة إعدادات) | `siteOptionsFields` |
-| 2 | Home Page Fields | الصفح���� المعيّنة كصفحة رئيسية | `homePageFields` |
+| 2 | Home Page Fields | الصفحة المعيّنة كصفحة رئيسية | `homePageFields` |
 | 3 | Car Import Page Fields | الصفحة `import` | `importPageFields` |
 | 4 | Spare Parts Catalog Page Fields | الصفحة `products` | `sparePartsPageFields` |
 | 5 | Blog Archive Page Fields | الصفحة `blog` | `blogPageFields` |
@@ -607,7 +607,7 @@ wp eval-file /tmp/alifleet-import.php \
 `--dry-run` بيطبع كل حاجة كان هيعملها **من غير ما يكتب أي حرف**. اقرأ الناتج:
 
 - `would create page "home"` → صح، أول مرة
-- `would update page "home"` → صح، الصفحة مو��ودة وهيحدّثها
+- `would update page "home"` → صح، الصفحة موجودة وهيحدّثها
 - `Image not found` → مسار الصور غلط، صلّح `--images`
 
 > `--images=/tmp` مع الصور في `/tmp/nextjs-public-images` **غلط**. السكربت بيدوّر على `<images>/images/<file>.png` لأن الـ seed بيقول `/images/hero-truck.png`. رتّبها كده:
@@ -639,7 +639,7 @@ Success: created 31, updated 0, media uploaded 24, skipped 0
 | 1. الصفحات | ٦ صفحات (`home` / `import` / `products` / `blog` / `cart` / `contact`) + كتابة كل حقول ACF + تعيين `home` كصفحة رئيسية + `blog` كصفحة المقالات |
 | 2. إعدادات الموقع | كتابة `company_info` و `social_links` و `commerce_settings` و `footer_content` في `wp_options` عن طريق `update_field(..., 'option')` |
 | 3. العربيات | ٧ منشورات `import_car` + الجاليري والمواصفات والمميزات + الصورة البارزة |
-| 4. قطع الغيار | ١٢ منتج WooCommerce بـ `set_regular_price()` و `set_stock_status()` و `set_sku()` — عن طريق ��اجهة Woo نفسها مش meta خام، عشان الأسعار والمخزون يفضلوا متزامنين مع السلة |
+| 4. قطع الغيار | ١٢ منتج WooCommerce بـ `set_regular_price()` و `set_stock_status()` و `set_sku()` — عن طريق واجهة Woo نفسها مش meta خام، عشان الأسعار والمخزون يفضلوا متزامنين مع السلة |
 | 5. المقالات | ٦ مقالات + تواريخ النشر + الصور + تصنيفات WordPress حقيقية مطابقة لتصنيف ACF |
 
 > **ليه الأسعار والمخزون مش في ACF؟** لأنهم موجودين أصلًا في WooCommerce. لو كانوا في المكانين، أول عملية شراء تخلي رقم ACF قديم وصفحة القطعة تعرض سعر غير سعر السلة. الفرونت بيقرأ `price` و `stockStatus` من WooGraphQL — بالشكل ده المخزون بيتحدّث لوحده مع كل بيعة.
@@ -744,7 +744,7 @@ wordpress/import/
 
 #### 7.ب.3 إعدادات الموقع (`site-settings.json`)
 
-الملف ده **مش CSV** بشكل مقصود. صفحة إعدادات ACF بتخزّن قيمها في جدول `wp_options` مش `wp_posts`، وأي أداة استيراد CSV بتنشئ **منشورات** بس. لو حاولت تستور��ها كصف، هتطلع صفحة فاضية اسمها "Site Settings" والبيانات مش هتوصل لمكانها.
+الملف ده **مش CSV** بشكل مقصود. صفحة إعدادات ACF بتخزّن قيمها في جدول `wp_options` مش `wp_posts`، وأي أداة استيراد CSV بتنشئ **منشورات** بس. لو حاولت تستوردها كصف، هتطلع صفحة فاضية اسمها "Site Settings" والبيانات مش هتوصل لمكانها.
 
 اكتبها بأمر واحد:
 
@@ -895,7 +895,7 @@ services_section (group)
 |---|---|---|
 | `car_model` | `Sprinter 519 CDI` | اسم موديل تجاري |
 | `specs.engine` | `2.1L` | رقم فني |
-| `specs.drivetrain` | `RWD` | اختصار ��المي |
+| `specs.drivetrain` | `RWD` | اختصار عالمي |
 | `sku` | `AF-BRK-330V` | كود مخزون |
 | `brand` | `Brembo` | اسم علامة |
 | `compatibility.model_name` | `Actros 1845` | اسم موديل |
@@ -972,7 +972,7 @@ wp option update woocommerce_registration_generate_password "no"
 https://cms.alifleet.com/cart/?add-to-cart=101:2,105:1
 ```
 
-يعني الدفع والطلبات كلها جوه WordPress، والفرونت مسؤول عن العرض واختيار المنتجات. لما تحوّل الدومين، **حدّث `store_base_url`** في إعداد��ت ACF ↔ `siteConfig.wordpress.baseUrl` — ولازم يكون `https://cms.alifleet.com`.
+يعني الدفع والطلبات كلها جوه WordPress، والفرونت مسؤول عن العرض واختيار المنتجات. لما تحوّل الدومين، **حدّث `store_base_url`** في إعدادات ACF ↔ `siteConfig.wordpress.baseUrl` — ولازم يكون `https://cms.alifleet.com`.
 
 ### 9.6 تحقق
 
@@ -980,11 +980,11 @@ https://cms.alifleet.com/cart/?add-to-cart=101:2,105:1
 wp wc product list --user=alifleet_admin --fields=id,name,sku,price,stock_status
 ```
 
-المفروض ١٢ منتج ��أسعار ومخزون. لو الأسعار فاضية، شغّل سكربت الاستيراد تاني — أو المنتجات اتعملت بـ CSV من غير ربط `regular_price`.
+المفروض ١٢ منتج بأسعار ومخزون. لو الأسعار فاضية، شغّل سكربت الاستيراد تاني — أو المنتجات اتعملت بـ CSV من غير ربط `regular_price`.
 
 ---
 
-## 10. رفع Next.js و��بطه
+## 10. رفع Next.js وربطه
 
 > ## ⛔ نهاية نطاق الـ agent — القسم ده للمستخدم بنفسه
 >
@@ -1240,7 +1240,7 @@ add_header Strict-Transport-Security "max-age=63072000" always;
 >
 > `wp search-replace`، تغيير `siteurl` / `home`، تحويل DNS — **ولا أمر واحد منهم**.
 > `search-replace` بيعدّل آلاف الصفوف في قاعدة البيانات في خطوة واحدة، ومفيش undo غير النسخة الاحتياطية.
-> المستخدم هو اللي ينفّذ القسم ده ب��فسه، **بعد** نسخة احتياطية.
+> المستخدم هو اللي ينفّذ القسم ده بنفسه، **بعد** نسخة احتياطية.
 
 لو الوردبريس شغال حاليًا على `alifleet.com` وعايز تنقله لـ `cms.alifleet.com` وتحط Next مكانه:
 
@@ -1269,7 +1269,7 @@ wp rewrite flush --hard
 wp cache flush
 ```
 
-### الحاجات اللي **لازم** تتغ��ر معاه
+### الحاجات اللي **لازم** تتغير معاه
 
 | المكان | من | لـ |
 |---|---|---|
@@ -1331,7 +1331,7 @@ curl -s -X POST https://cms.alifleet.com/graphql \
 
 ### 13.3 حقول ACF واصلة
 
-> **قبل أي حاجة:** افتح **GraphQL → GraphiQL IDE** في لوحة التحكم وأكّد أسماء الحقول. WPGraphQL بيحوّل `hero_line1_ar` لـ camelCase (`heroLine1Ar`)، وحسب نسخة WPGraphQL for ACF ش��ل التعشيش بيختلف شوية. الاستعلامات دي مكتوبة على شكل v2.x — استخدم الإكمال ا��تلقائي في GraphiQL لتأكيدها.
+> **قبل أي حاجة:** افتح **GraphQL → GraphiQL IDE** في لوحة التحكم وأكّد أسماء الحقول. WPGraphQL بيحوّل `hero_line1_ar` لـ camelCase (`heroLine1Ar`)، وحسب نسخة WPGraphQL for ACF شكل التعشيش بيختلف شوية. الاستعلامات دي مكتوبة على شكل v2.x — استخدم الإكمال التلقائي في GraphiQL لتأكيدها.
 
 **الصفحة الرئيسية:**
 
@@ -1491,7 +1491,7 @@ curl -s -X POST https://cms.alifleet.com/graphql \
 wp user delete testuser01 --yes
 ```
 
-### 13.5 م�� الفرونت نفسه
+### 13.5 من الفرونت نفسه
 
 ```bash
 curl -sI https://alifleet.com | head -5              # 200
@@ -1532,7 +1532,7 @@ node wordpress/scripts/validate-content.mjs
 
 ---
 
-## 14. حل ا��مشاكل
+## 14. حل المشاكل
 
 ### حقول ACF مش ظاهرة في GraphQL
 
@@ -1570,7 +1570,7 @@ foreach (get_post_meta($id) as $key => $value) {
 ```
 
 - مفتاح فيه `hero_slides_0_` أو `hero_slides` لوحده = داتا بنمط PRO قديم، ACF مش بتقراها → أعد تشغيل سكربت الاستيراد بـ `seed-data.json` الحالي
-- مفتاح `hero_section_hero_slide_1_slide_label_en` موجود وفيه قيمة = التخزين سل��م، فالمشكلة في الفرونت أو في الكاش → `wp cache flush` و `pm2 restart alifleet-web`
+- مفتاح `hero_section_hero_slide_1_slide_label_en` موجود وفيه قيمة = التخزين سليم، فالمشكلة في الفرونت أو في الكاش → `wp cache flush` و `pm2 restart alifleet-web`
 - خانات عالية فاضية (`hero_slide_4` / `hero_slide_5`) = مقصود، مش عطل
 
 لو المدقّق المحلي طلع `has only N fixed slots`، يعني الداتا فيها عناصر أكتر من الخانات — زوّد الـ schema (القسم 8.4) قبل الاستيراد، وإلا الزيادة بتتضيّع في سكوت.

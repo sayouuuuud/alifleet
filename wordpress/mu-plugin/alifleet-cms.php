@@ -1759,6 +1759,153 @@ add_action(
 	20
 );
 
+/**
+ * Prefill checkout from the customer's saved address.
+ *
+ * Rebinding `WC()->customer` above is not enough on its own. Constructing a
+ * customer with `$is_session = true` makes WooCommerce overlay the guest
+ * session's `customer` payload on top of the stored user meta, and that payload
+ * carries empty address strings — so the freshly read address is wiped before
+ * checkout renders. The e-mail still appeared only because `WC_Checkout` falls
+ * back to the logged-in WP user for that one field, which is exactly the
+ * asymmetry QA saw (RT-08: address blank, e-mail filled).
+ *
+ * `woocommerce_checkout_get_value` is the documented short-circuit: returning
+ * anything non-null wins over WooCommerce's own lookup. Reading straight from
+ * user meta sidesteps the session overlay entirely, so the saved address shows
+ * up regardless of what the guest session happens to hold. Returning null for
+ * an unknown or genuinely empty field leaves WooCommerce's default behaviour
+ * untouched, which keeps accounts with no saved address working as before.
+ */
+add_filter(
+	'woocommerce_checkout_get_value',
+	static function ( $value, $input ) {
+		if ( null !== $value ) {
+			return $value;
+		}
+
+		$user_id = get_current_user_id();
+		if ( $user_id <= 0 || ! is_string( $input ) ) {
+			return $value;
+		}
+
+		// Only address/contact fields; anything else keeps core's behaviour.
+		if ( ! preg_match( '/^(billing|shipping)_[a-z0-9_]+$/', $input ) ) {
+			return $value;
+		}
+
+		$stored = get_user_meta( $user_id, $input, true );
+		if ( is_string( $stored ) && '' !== trim( $stored ) ) {
+			return $stored;
+		}
+
+		// Shipping falls back to billing, mirroring how the account page treats
+		// an empty shipping address as "same as billing".
+		if ( 0 === strpos( $input, 'shipping_' ) ) {
+			$billing = get_user_meta( $user_id, 'billing_' . substr( $input, strlen( 'shipping_' ) ), true );
+			if ( is_string( $billing ) && '' !== trim( $billing ) ) {
+				return $billing;
+			}
+		}
+
+		// The e-mail and name live on the WP user record, not in billing meta,
+		// for accounts that registered without ever completing checkout.
+		$user = get_userdata( $user_id );
+		if ( $user ) {
+			if ( 'billing_email' === $input && $user->user_email ) {
+				return $user->user_email;
+			}
+			if ( 'billing_first_name' === $input && $user->first_name ) {
+				return $user->first_name;
+			}
+			if ( 'billing_last_name' === $input && $user->last_name ) {
+				return $user->last_name;
+			}
+		}
+
+		return $value;
+	},
+	10,
+	2
+);
+
+/**
+ * Which ACF product-name field backs a storefront locale.
+ *
+ * Product titles are authored in Hebrew, with the Arabic and English copy stored
+ * alongside in ACF (`name_ar` / `name_en`). WooCommerce renders `post_title`, so
+ * the order review table stayed Hebrew/Arabic even on English checkout (RT-10).
+ */
+function alifleet_product_name_meta_key( string $locale ): string {
+	if ( 'ar' === $locale ) {
+		return 'name_ar';
+	}
+	if ( 0 === strpos( $locale, 'en' ) ) {
+		return 'name_en';
+	}
+	return '';
+}
+
+/**
+ * Translate product names on checkout to the requested locale.
+ *
+ * Filtering the CRUD getter covers every surface at once — the review table,
+ * order items, and e-mails — instead of patching each template. Guarded to
+ * front-end requests that actually asked for a locale so wp-admin, the REST
+ * API, and Hebrew (the authored language) keep the original titles.
+ */
+add_filter(
+	'woocommerce_product_get_name',
+	static function ( $name, $product ) {
+		if ( is_admin() || ! $product instanceof WC_Product ) {
+			return $name;
+		}
+
+		$key = alifleet_product_name_meta_key( alifleet_requested_locale() );
+		if ( '' === $key ) {
+			return $name;
+		}
+
+		$translated = get_post_meta( $product->get_id(), $key, true );
+		return ( is_string( $translated ) && '' !== trim( $translated ) ) ? $translated : $name;
+	},
+	10,
+	2
+);
+
+/**
+ * Translate the tax label.
+ *
+ * The rate is named `מע״ם` in the WooCommerce tax table, so Hebrew leaked into
+ * the Arabic and English order summaries (RT-10). The rate itself is untouched —
+ * only its display label changes.
+ */
+add_filter(
+	'woocommerce_rate_label',
+	static function ( $label, $rate_id = null ) {
+		if ( ! is_string( $label ) || '' === trim( $label ) ) {
+			return $label;
+		}
+
+		// Match the configured Hebrew VAT label in its common spellings.
+		if ( ! preg_match( '/^מע("|״|”|\')?ם$/u', trim( $label ) ) ) {
+			return $label;
+		}
+
+		$locale = alifleet_requested_locale();
+		if ( 'ar' === $locale ) {
+			return 'ضريبة القيمة المضافة';
+		}
+		if ( 0 === strpos( $locale, 'en' ) ) {
+			return 'VAT';
+		}
+
+		return $label;
+	},
+	10,
+	2
+);
+
 add_action(
 	'rest_api_init',
 	static function (): void {

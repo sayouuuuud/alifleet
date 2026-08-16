@@ -127,7 +127,7 @@ sudo bash /tmp/agent-user.sh backup
 | **مسار WordPress** | `/var/www/html` **جوه الكونتينر**. `/var/www` على الهوست فاضي — ده طبيعي |
 | **ملفات المشروع** | موجودة local على جهاز المستخدم وانت شايفها. النقل **خطوتين**: `scp` للهوست ثم `sudo wp-agent put` للكونتينر |
 
-### ���� السيرفر مشترك — أهم قيد في الملف
+### 🔴 السيرفر مشترك — أهم قيد في الملف
 
 عليه **16 كونتينر**، منهم إنتاج مش تابع للمشروع ده: `usesend`، تطبيقين تانيين،
 4 قواعد PostgreSQL، Redis، وطبقة Coolify نفسها.
@@ -142,7 +142,7 @@ sudo bash /tmp/agent-user.sh backup
 |---|---|---|
 | البيئة | ✅ Docker + Coolify 4.1.2 | كل أوامر WP من خلال `sudo wp-agent` — مفيش `wp` على الهوست |
 | WordPress | ✅ منصَّب في كونتينر | متعملش `wp core install` ولا `wp config create` |
-| `wp-cli` | ⚠️ **مش منصّب** | أول خطوة في M0: `sudo wp-agent bootstrap`. ��بيروح مع أي rebuild من Coolify — اتحقق من وجوده في أول كل جلسة |
+| `wp-cli` | ⚠️ **مش منصّب** | أول خطوة في M0: `sudo wp-agent bootstrap`. وبيروح مع أي rebuild من Coolify — اتحقق من وجوده في أول كل جلسة |
 | قاعدة البيانات | ✅ MySQL 8 في كونتينر منفصل | ممنوع تلمس كونتينر الداتابيز. `wp db` مرفوض من `wp-agent` |
 | Traefik / الدومين / SSL | ✅ شغال، وبيتدار من Coolify | **مش شغلك.** بلّغ بالحالة وبس |
 | `nginx` / `php-fpm` / `mariadb` على الهوست | ✅ inactive (مقصود) | متحاولش تشغّلهم. القسم 11 في دليل التشغيل ملغي |
@@ -226,7 +226,7 @@ doctor` بيجيبهم كلهم. **ممنوع أي أمر كتابة قبل ما
 5. ❌ **Traefik / SSL:** أي تعديل على توجيه أو شهادات. (`nginx` و `certbot` مش موجودين شغالين أصلًا — القسم 11 في دليل التشغيل ملغي.)
 6. ❌ **تحويل الدومين:** `wp search-replace`, تغيير `siteurl` / `home`, أي حاجة في DNS. أخطر خطوة في المشروع كله.
 7. ❌ `rm -rf` بأي شكل، و`rm` على أي حاجة بره `/tmp`.
-8. ❌ `mysql` / `mysqldump` / `mariadb`, وأي `DROP` / `TRUNCATE` / `DELETE` �� سواء بأمر مباشر أو من جوه `wp eval`.
+8. ❌ `mysql` / `mysqldump` / `mariadb`, وأي `DROP` / `TRUNCATE` / `DELETE` — سواء بأمر مباشر أو من جوه `wp eval`.
 9. ❌ `sudo su`, `su -`, `visudo`, تعديل `/etc/sudoers*`, تعديل `/usr/local/bin/wp-agent`, إضافة يوزر, `authorized_keys`, `ufw`.
 10. ❌ **تسريب أسرار:** طبع محتوى `wp-config.php`, `wp config list --fields=name,value`, `wp config get DB_PASSWORD`, طبع `GRAPHQL_JWT_AUTH_SECRET_KEY` أو أي مفتاح. الأسرار تتولّد وتتحط في **نفس الأمر** من غير `echo`. للتحقق من الوجود: `sudo wp-agent wp config has <NAME>`.
 11. ❌ `git commit` / `git push`, أو تعديل `app/` أو `lib/` أو `components/` — الربط بالكود مرحلة تانية بتتعمل في v0، مش هنا.
@@ -345,7 +345,7 @@ sudo wp-agent doctor       # الجرد الكامل بعد ما wp-cli يبقى
 **بوابات الوقوف:**
 
 - أي `FAIL` من `validate-content.mjs` → **قف**.
-- لقيت ��اتا مستوردة قبل كده → **قف واسأل**.
+- لقيت داتا مستوردة قبل كده → **قف واسأل**.
 - **الـ volume بيغطي `wp-content` بس** → ⏸ قف. M2 كله (`wp config set`) هيروح مع أول rebuild، والثوابت لازم تتحوّل لمتغيرات بيئة في Coolify — **والمستخدم هو اللي يعملها**.
 - **`mu-plugins` بره الـ volume** → ⏸ قف. M3 و M4 مبنيين عليها.
 - **`siteurl` مش مطابق لدومين Traefik** → ⏸ قف وبلّغ بس. تصحيحه = تحويل دومين = 🔴 ممنوع.
@@ -514,7 +514,7 @@ sudo wp-agent wp eval-file /tmp/alifleet-stage/alifleet-import.php \
 **5.3 🚪 بوابة:** اعرض ملخص الجاف (كام create / كام update / كام `Image not found`) واستنى موافقة.
 أي `Image not found` → **صلّح المسار وأعد الجاف**. متكمّلش على التنفيذ الحقيقي.
 
-**5.4 التنفيذ** (بعد الم��افقة بس): نفس الأمر بدون `--dry-run`.
+**5.4 التنفيذ** (بعد الموافقة بس): نفس الأمر بدون `--dry-run`.
 المتوقع: `Success: created 31, updated 0, media uploaded 24, skipped 0`
 
 **5.5 تحقق:**
@@ -697,7 +697,7 @@ curl -s -X POST http://127.0.0.1/graphql -H 'Host: <الدومين-من-doctor>'
 
 ---
 
-### M8 — التسليم ⛔ وقوف ��هائي
+### M8 — التسليم ⛔ وقوف نهائي
 
 سلّم ده وقف. **متعملش ولا خطوة من رفع Next.js.**
 
@@ -717,7 +717,7 @@ curl -s -X POST http://127.0.0.1/graphql -H 'Host: <الدومين-من-doctor>'
    • لو الثوابت مش في volume → لازم تتحوّل لمتغيرات بيئة في Coolify (انت اللي تعملها)
 
 📌 محتاج لوحة تحكم (منك): مناطق الشحن في WooCommerce — الدومين والشهادة —
-   <أي ي��زر تجريبي اتعمل ومحتاج حذف>
+   <أي يوزر تجريبي اتعمل ومحتاج حذف>
 ⚠️ ملاحظات ومخاطر مفتوحة: <...>
 🔑 أسرار: مفيش سر واحد اتطبع في أي رسالة
 🧹 للتنظيف: sudo bash /tmp/agent-user.sh delete  ثم دوّر مفتاح الـ JWT وباسورد DB من Coolify

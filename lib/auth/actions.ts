@@ -2,6 +2,8 @@
 
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { cookies } from 'next/headers'
+import { HANDOFF_QUANTITY_COOKIE, isWooStateCookie } from '@/lib/checkout/gate'
 import { wpFetch } from '@/lib/wp/client'
 import { WpError, type AuthErrorCode } from '@/lib/wp/errors'
 import { isWpConfigured } from '@/lib/wp/config'
@@ -165,6 +167,17 @@ export async function registerAction(
 
 export async function logoutAction() {
   await clearSessionCookies()
+
+  // The WooCommerce session cookies survive their own lifetime and carry the
+  // customer's billing details, so signing out left the previous account's
+  // e-mail prefilled in guest checkout — a real privacy problem on a shared
+  // device (RT-09). Dropping them here forces the next handoff to build a
+  // fresh guest session.
+  const jar = await cookies()
+  for (const { name } of jar.getAll()) {
+    if (isWooStateCookie(name) || name === HANDOFF_QUANTITY_COOKIE) jar.delete(name)
+  }
+
   revalidatePath('/', 'layout')
   redirect('/account/login')
 }

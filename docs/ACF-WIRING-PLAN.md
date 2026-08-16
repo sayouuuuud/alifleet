@@ -347,7 +347,7 @@ query Parts($first: Int = 100) {
 | `wooId` | `databaseId` | لازم يكون رقم المنتج الحقيقي، وإلا الكارت بيوديك لمنتج غلط |
 | `price` | `price(format: RAW)` | ووكومرس هو صاحب السعر — عروض وضرايب وكله |
 | `inStock` | `stockStatus == IN_STOCK` | بيتحدّث تلقائي مع كل بيعة |
-| `image` / `alt` | `image` | الـ featured image بتاعت ��لمنتج |
+| `image` / `alt` | `image` | الـ featured image بتاعت المنتج |
 | `name` | ACF `nameAr/nameEn/nameHe` | ✅ **اتحدد — الاختيار (أ)**، شوف تحت |
 | `sku`, `brand`, `category`, `specs`, `compatibility`, `description` | ACF | مش موجودين في ووكومرس بالشكل اللي نحتاجه |
 
@@ -462,7 +462,7 @@ wordpress/scripts/compare-content.mjs
 قبل أي مرحلة تتعدّي:
 
 - [ ] `compare-content.mjs` مفيش فروق
-- [ ] الـ 3 لغات معروضة صح (ar / en / he) و��لاتجاه RTL سليم
+- [ ] الـ 3 لغات معروضة صح (ar / en / he) والاتجاه RTL سليم
 - [ ] كل الصور بتحمّل (مفيش 404 على `sourceUrl`)
 - [ ] بإطفاء الوردبريس تمامًا: الصفحة لسه بتفتح بالـ fallback
 - [ ] بإفراغ حقل واحد في ACF: الصفحة بترجع للقيمة الافتراضية مش نص فاضي
