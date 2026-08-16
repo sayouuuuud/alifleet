@@ -1773,17 +1773,14 @@ add_action(
  * `woocommerce_checkout_get_value` is the documented short-circuit: returning
  * anything non-null wins over WooCommerce's own lookup. Reading straight from
  * user meta sidesteps the session overlay entirely, so the saved address shows
- * up regardless of what the guest session happens to hold. Returning null for
- * an unknown or genuinely empty field leaves WooCommerce's default behaviour
- * untouched, which keeps accounts with no saved address working as before.
+ * up regardless of what the guest session happens to hold. WooCommerce often
+ * passes an empty string here (not null), so saved metadata must be checked
+ * before returning that original value. Unknown or genuinely empty fields still
+ * fall through unchanged, keeping accounts with no saved address unaffected.
  */
 add_filter(
 	'woocommerce_checkout_get_value',
 	static function ( $value, $input ) {
-		if ( null !== $value ) {
-			return $value;
-		}
-
 		$user_id = get_current_user_id();
 		if ( $user_id <= 0 || ! is_string( $input ) ) {
 			return $value;
@@ -1832,9 +1829,9 @@ add_filter(
 /**
  * Which ACF product-name field backs a storefront locale.
  *
- * Product titles are authored in Hebrew, with the Arabic and English copy stored
- * alongside in ACF (`name_ar` / `name_en`). WooCommerce renders `post_title`, so
- * the order review table stayed Hebrew/Arabic even on English checkout (RT-10).
+ * Product titles are authored in Arabic, with all three localized names stored
+ * alongside in ACF (`name_ar` / `name_en` / `name_he`). WooCommerce renders
+ * `post_title`, so the order review table stayed Arabic in other locales (RT-10).
  */
 function alifleet_short_locale(): string {
 	// alifleet_requested_locale() returns a WordPress locale ('en_US', 'ar',
@@ -1850,6 +1847,9 @@ function alifleet_product_name_meta_key( string $short_locale ): string {
 	if ( 'en' === $short_locale ) {
 		return 'name_en';
 	}
+	if ( 'he' === $short_locale ) {
+		return 'name_he';
+	}
 	return '';
 }
 
@@ -1859,7 +1859,7 @@ function alifleet_product_name_meta_key( string $short_locale ): string {
  * Filtering the CRUD getter covers every surface at once — the review table,
  * order items, and e-mails — instead of patching each template. Guarded to
  * front-end requests that actually asked for a locale so wp-admin, the REST
- * API, and Hebrew (the authored language) keep the original titles.
+ * API, and requests without a storefront locale keep the original titles.
  */
 add_filter(
 	'woocommerce_product_get_name',
@@ -1908,6 +1908,69 @@ add_filter(
 		}
 
 		return $label;
+	},
+	10,
+	2
+);
+
+/**
+ * Translate the configured shipping and payment methods in Arabic and Hebrew.
+ *
+ * These strings are settings stored in WooCommerce rather than gettext-backed
+ * theme copy, so switching WordPress locale cannot translate them by itself
+ * (RT-15). Match only the known built-in labels; custom merchant copy remains
+ * untouched unless it is one of these exact defaults.
+ */
+function alifleet_checkout_method_text( string $kind, string $value ): string {
+	$short = alifleet_short_locale();
+	if ( ! in_array( $short, [ 'ar', 'he' ], true ) ) {
+		return $value;
+	}
+
+	$translations = [
+		'ar' => [
+			'local_pickup'    => 'الاستلام المحلي',
+			'cod_title'       => 'الدفع عند الاستلام',
+			'cod_description' => 'الدفع نقدًا عند الاستلام.',
+		],
+		'he' => [
+			'local_pickup'    => 'איסוף עצמי',
+			'cod_title'       => 'תשלום במזומן בעת המסירה',
+			'cod_description' => 'תשלום במזומן בעת המסירה.',
+		],
+	];
+
+	return $translations[ $short ][ $kind ] ?? $value;
+}
+
+add_filter(
+	'woocommerce_cart_shipping_method_full_label',
+	static function ( $label, $method ) {
+		if ( ! is_object( $method ) || ! method_exists( $method, 'get_method_id' ) || 'local_pickup' !== $method->get_method_id() ) {
+			return $label;
+		}
+
+		$original = method_exists( $method, 'get_label' ) ? (string) $method->get_label() : 'Local pickup';
+		$translated = alifleet_checkout_method_text( 'local_pickup', $original );
+		return $original !== '' ? preg_replace( '/^' . preg_quote( $original, '/' ) . '/u', $translated, (string) $label, 1 ) : $translated;
+	},
+	10,
+	2
+);
+
+add_filter(
+	'woocommerce_gateway_title',
+	static function ( $title, $gateway_id ) {
+		return 'cod' === $gateway_id ? alifleet_checkout_method_text( 'cod_title', (string) $title ) : $title;
+	},
+	10,
+	2
+);
+
+add_filter(
+	'woocommerce_gateway_description',
+	static function ( $description, $gateway_id ) {
+		return 'cod' === $gateway_id ? alifleet_checkout_method_text( 'cod_description', (string) $description ) : $description;
 	},
 	10,
 	2

@@ -27,6 +27,11 @@ export const HANDOFF_QUANTITY_COOKIE = 'alifleet-checkout-quantity'
 /** WooCommerce session and basket cookies proxied on the storefront origin. */
 export function isWooStateCookie(name: string) {
   return (
+    // This signed cookie is not a WooCommerce cookie by name, but WordPress
+    // uses it to restore the handed-off customer on every checkout request.
+    // Keeping it after Next.js logout re-authenticated the previous customer
+    // inside WooCommerce and leaked their name/e-mail to guest checkout (RT-12).
+    name === 'alifleet_customer_handoff' ||
     name === 'woocommerce_cart_hash' ||
     name === 'woocommerce_items_in_cart' ||
     name.startsWith('wp_woocommerce_session_') ||
