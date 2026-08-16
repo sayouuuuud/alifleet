@@ -170,7 +170,7 @@ export const he: Dictionary = {
     catalogUnavailableLead:
       'לא הצלחנו להתחבר לחנות ברגע זה. נסו שוב בעוד רגע, או פנו אלינו ונבדוק זמינות עבורכם.',
     catalogEmpty: 'עדיין לא פורסמו חלפים',
-    catalogEmptyLead: 'הקטלוג בהכנ��. פנו אלינו ונשיג את החלק שאתם צריכים.',
+    catalogEmptyLead: 'הקטלוג בהכנ����. פנו אלינו ונשיג את החלק שאתם צריכים.',
     untranslatedNotice:
       'חלק משמות המוצרים מוצגים בעברית המקורית עד להשלמת התרגום.',
   },
@@ -199,6 +199,8 @@ export const he: Dictionary = {
     checkoutPending: 'פותחים את עמוד התשלום…',
     checkoutUnavailable:
       'לא הצלחנו לפתוח את עמוד התשלום עכשיו. נסו שוב, או שלחו את ההזמנה בוואטסאפ.',
+    checkoutExpired:
+      'הסל שלכם השתנה מאז שנפתח עמוד התשלום, לכן החזרנו אתכם לכאן. המשיכו לתשלום שוב.',
     checkoutNote: 'תועברו לחנות המאובטחת שלנו לביצוע התשלום.',
     orderViaWhatsapp: 'הזמנה בוואטסאפ',
     continueShopping: 'המשך בקנייה',

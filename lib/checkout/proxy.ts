@@ -3,6 +3,11 @@ import 'server-only'
 import { headers } from 'next/headers'
 import { wpStoreOrigin } from '@/lib/wp/config'
 import { LOCALE_STORAGE_KEY, isLocale, type Locale } from '@/lib/i18n/config'
+import {
+  CART_QUANTITY_COOKIE,
+  CART_STORAGE_KEY,
+  isOrderReceivedPath,
+} from './gate'
 
 const CMS_PATH_PREFIX = '/cms'
 
@@ -239,6 +244,13 @@ function cookieHeader(existing: string, setCookies: string[]) {
   return [existing, ...pairs].filter(Boolean).join('; ')
 }
 
+/**
+ * Empties the storefront's localStorage cart on the order confirmation page.
+ * Kept inline because the confirmation is proxied WordPress markup, so none of
+ * the Next.js bundle — including the cart provider — is loaded there.
+ */
+const CART_RESET_SCRIPT = `<script>(function(){try{window.localStorage.removeItem('${CART_STORAGE_KEY}');document.cookie='${CART_QUANTITY_COOKIE}=0; Path=/; Max-Age=0; SameSite=Lax'+(location.protocol==='https:'?'; Secure':'');}catch(e){}})();</script>`
+
 export async function proxyWooRequest(request: Request, path: string[]) {
   const cmsOrigin = wpStoreOrigin()
   if (!cmsOrigin) return new Response('WordPress checkout is not configured.', { status: 503 })
@@ -319,7 +331,15 @@ export async function proxyWooRequest(request: Request, path: string[]) {
   if (contentType.includes('text/html')) {
     const html = await upstream.text()
     responseHeaders.delete('content-length')
-    return new Response(rewriteHtml(html, request, isCheckoutPath), {
+    let body = rewriteHtml(html, request, isCheckoutPath)
+
+    // WooCommerce empties its own basket once the order exists, but the
+    // storefront cart lives in localStorage and this page is proxied HTML with
+    // no React on it. Without this the customer paid and still came back to a
+    // cart holding the items they had just bought.
+    if (isOrderReceivedPath(path)) body = body.replace('</body>', `${CART_RESET_SCRIPT}</body>`)
+
+    return new Response(body, {
       status: upstream.status,
       headers: responseHeaders,
     })

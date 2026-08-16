@@ -11,6 +11,7 @@ import {
   mergeCookies,
   localeForRequest,
 } from './proxy'
+import { HANDOFF_QUANTITY_COOKIE, isWooStateCookie } from './gate'
 
 function readText(formData: FormData, key: string) {
   return String(formData.get(key) ?? '').trim()
@@ -23,20 +24,24 @@ function localeFromForm(formData: FormData, request: Request): Locale {
 
 function itemsQuery(formData: FormData) {
   const raw = readText(formData, 'items')
-  const items = raw
+  const parsed = raw
     .split(',')
     .map((entry) => {
       const [id, quantity] = entry.split(':', 2)
       const wooId = Number(id)
       const qty = Number(quantity)
       return Number.isInteger(wooId) && wooId > 0 && Number.isInteger(qty) && qty > 0
-        ? `${wooId}:${qty}`
+        ? { wooId, qty }
         : null
     })
-    .filter((entry): entry is string => Boolean(entry))
+    .filter((entry): entry is { wooId: number; qty: number } => Boolean(entry))
 
-  if (items.length === 0 || items.length > 50) throw new Error('Invalid checkout basket.')
-  return items.join(',')
+  if (parsed.length === 0 || parsed.length > 50) throw new Error('Invalid checkout basket.')
+
+  return {
+    items: parsed.map(({ wooId, qty }) => `${wooId}:${qty}`).join(','),
+    quantity: parsed.reduce((total, { qty }) => total + qty, 0),
+  }
 }
 
 /**
@@ -67,7 +72,7 @@ export async function prepareCheckoutAction(formData: FormData) {
 
   const request = await requestFromAction()
   const locale = localeFromForm(formData, request)
-  const items = itemsQuery(formData)
+  const { items, quantity: handedOffQuantity } = itemsQuery(formData)
   const cmsOrigin = wpStoreOrigin()
   if (!cmsOrigin) redirect('/cart?checkout=unavailable')
 
@@ -78,14 +83,7 @@ export async function prepareCheckoutAction(formData: FormData) {
   // The Next.js JWT remains untouched; only WooCommerce proxy cookies are cleared.
   if (!authToken) {
     for (const { name } of cookieStore.getAll()) {
-      if (
-        name === 'woocommerce_cart_hash' ||
-        name === 'woocommerce_items_in_cart' ||
-        name.startsWith('wp_woocommerce_session_') ||
-        name.startsWith('woocommerce_')
-      ) {
-        cookieStore.delete(name)
-      }
+      if (isWooStateCookie(name)) cookieStore.delete(name)
     }
   }
 
@@ -141,7 +139,26 @@ export async function prepareCheckoutAction(formData: FormData) {
   const cartCookies = getSetCookies(cartResponse)
   for (const cookie of cartCookies) storeProxyCookie(cookieStore, cookie, request)
 
-  redirect(goesToCart ? '/cart?checkout=unavailable' : '/checkout')
+  if (goesToCart) {
+    // Nothing purchasable made it into WooCommerce, so no basket was handed
+    // off. Drop any earlier marker rather than leaving one that would let a
+    // stale WooCommerce session render at /checkout.
+    cookieStore.delete(HANDOFF_QUANTITY_COOKIE)
+    redirect('/cart?checkout=unavailable')
+  }
+
+  // Record what was actually pushed. /checkout compares this with the quantity
+  // the browser reports so a basket edited after the handoff cannot be
+  // presented as current (QA-10).
+  cookieStore.set(HANDOFF_QUANTITY_COOKIE, String(handedOffQuantity), {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: new URL(request.url).protocol === 'https:',
+    path: '/',
+    maxAge: 2 * 60 * 60,
+  })
+
+  redirect('/checkout')
 }
 
 function getSetCookies(response: Response) {

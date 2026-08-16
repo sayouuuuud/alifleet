@@ -66,6 +66,9 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
   // The server action redirects back here with this flag when WooCommerce could
   // not be handed the basket, so the failure is visible instead of silent.
   const checkoutFailed = searchParams.get('checkout') === 'unavailable'
+  // The /checkout route sends the customer back with this flag when the basket
+  // no longer matches the WooCommerce session it handed off (QA-10).
+  const checkoutExpired = searchParams.get('checkout') === 'expired'
   const store = useStore()
   const { lines, setQuantity, remove, clear, ready } = useCart()
 
@@ -110,6 +113,17 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
   if (rows.length === 0) {
     return (
       <div className="mx-auto max-w-7xl px-4 pb-24 md:px-8">
+        {/* Emptying the cart is the most common way to invalidate a handoff, so
+            this explanation has to survive the empty state too. */}
+        {checkoutExpired && (
+          <p
+            role="status"
+            className="mb-6 flex items-start gap-2.5 rounded-2xl bg-muted p-4 text-sm leading-relaxed text-muted-foreground"
+          >
+            <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+            {t.cart.checkoutExpired}
+          </p>
+        )}
         <div className="flex flex-col items-center rounded-3xl bg-card p-12 text-center ring-1 ring-border md:p-20">
           <span className="flex size-16 items-center justify-center rounded-full bg-secondary">
             <ShoppingCart className="size-7 text-muted-foreground" aria-hidden="true" />
@@ -269,6 +283,16 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
               >
                 <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
                 {t.cart.checkoutUnavailable}
+              </p>
+            )}
+
+            {checkoutExpired && (
+              <p
+                role="status"
+                className="mt-6 flex items-start gap-2.5 rounded-2xl bg-muted p-4 text-sm leading-relaxed text-muted-foreground"
+              >
+                <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                {t.cart.checkoutExpired}
               </p>
             )}
 

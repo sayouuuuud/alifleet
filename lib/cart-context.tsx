@@ -9,7 +9,7 @@ import {
   useState,
 } from 'react'
 
-const CART_STORAGE_KEY = 'alifleet-cart'
+import { CART_QUANTITY_COOKIE, CART_STORAGE_KEY } from '@/lib/checkout/gate'
 
 export type CartLine = {
   slug: string
@@ -79,6 +79,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!ready) return
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(lines))
+
+    // Mirror the basket size where the server can see it. The proxied
+    // WooCommerce checkout is only allowed to render when this agrees with the
+    // quantity the last handoff pushed, which is what stops a cleared cart from
+    // still showing the previous item at /checkout (QA-10).
+    const quantity = lines.reduce((total, line) => total + line.quantity, 0)
+    const secure = window.location.protocol === 'https:' ? '; Secure' : ''
+    document.cookie = `${CART_QUANTITY_COOKIE}=${quantity}; Path=/; Max-Age=${
+      2 * 24 * 60 * 60
+    }; SameSite=Lax${secure}`
   }, [lines, ready])
 
   const add = useCallback((slug: string, quantity = 1) => {
