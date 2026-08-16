@@ -1836,11 +1836,18 @@ add_filter(
  * alongside in ACF (`name_ar` / `name_en`). WooCommerce renders `post_title`, so
  * the order review table stayed Hebrew/Arabic even on English checkout (RT-10).
  */
-function alifleet_product_name_meta_key( string $locale ): string {
-	if ( 'ar' === $locale ) {
+function alifleet_short_locale(): string {
+	// alifleet_requested_locale() returns a WordPress locale ('en_US', 'ar',
+	// 'he_IL') or '' when the request did not ask for one. Collapse it to the
+	// two-letter storefront code the ACF fields are keyed by.
+	return strtolower( substr( alifleet_requested_locale(), 0, 2 ) );
+}
+
+function alifleet_product_name_meta_key( string $short_locale ): string {
+	if ( 'ar' === $short_locale ) {
 		return 'name_ar';
 	}
-	if ( 0 === strpos( $locale, 'en' ) ) {
+	if ( 'en' === $short_locale ) {
 		return 'name_en';
 	}
 	return '';
@@ -1861,7 +1868,7 @@ add_filter(
 			return $name;
 		}
 
-		$key = alifleet_product_name_meta_key( alifleet_requested_locale() );
+		$key = alifleet_product_name_meta_key( alifleet_short_locale() );
 		if ( '' === $key ) {
 			return $name;
 		}
@@ -1892,11 +1899,11 @@ add_filter(
 			return $label;
 		}
 
-		$locale = alifleet_requested_locale();
-		if ( 'ar' === $locale ) {
+		$short = alifleet_short_locale();
+		if ( 'ar' === $short ) {
 			return 'ضريبة القيمة المضافة';
 		}
-		if ( 0 === strpos( $locale, 'en' ) ) {
+		if ( 'en' === $short ) {
 			return 'VAT';
 		}
 
