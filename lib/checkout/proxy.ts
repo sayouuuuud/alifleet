@@ -41,7 +41,7 @@ function isInternalHost(host: string) {
   return /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])(:\d+)?$/i.test(host)
 }
 
-function frontendOrigin(request: Request) {
+export function frontendOrigin(request: Request) {
   if (CONFIGURED_ORIGIN) return CONFIGURED_ORIGIN
 
   const forwardedHost = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim()

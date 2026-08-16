@@ -7,6 +7,7 @@ import { isLocale, type Locale } from '@/lib/i18n/config'
 import { isWpConfigured, wpStoreOrigin } from '@/lib/wp/config'
 import {
   createWooSessionHandoff,
+  frontendOrigin,
   mergeCookies,
   localeForRequest,
 } from './proxy'
@@ -94,33 +95,53 @@ export async function prepareCheckoutAction(formData: FormData) {
     .join('; ')
 
   if (authToken) {
-    const handoffCookies = await createWooSessionHandoff(request, authToken, locale)
-    cookieHeader = mergeCookies(cookieHeader, handoffCookies)
-    for (const cookie of handoffCookies) storeProxyCookie(cookieStore, cookie, request)
+    // A failed handoff must not abort checkout: the customer can still order as
+    // a guest, and throwing here surfaced as a blank error screen instead (QA-07).
+    try {
+      const handoffCookies = await createWooSessionHandoff(request, authToken, locale)
+      cookieHeader = mergeCookies(cookieHeader, handoffCookies)
+      for (const cookie of handoffCookies) storeProxyCookie(cookieStore, cookie, request)
+    } catch (error) {
+      console.error('[alifleet] checkout session handoff failed', error)
+    }
   }
 
-  const cartResponse = await fetch(
-    `${cmsOrigin}/?alifleet-cart=${encodeURIComponent(items)}&alifleet-locale=${locale}`,
-    {
-      headers: {
-        cookie: cookieHeader,
-        accept: 'text/html',
-        'accept-language': locale === 'ar' ? 'ar,en;q=0.8' : locale === 'he' ? 'he,en;q=0.8' : 'en',
-        'x-alifleet-frontend-origin': new URL(request.url).origin,
-        'x-alifleet-locale': locale,
-      },
-      redirect: 'manual',
-    }
-  )
-
-  if (!(cartResponse.status >= 300 && cartResponse.status < 400)) {
+  let cartResponse: Response
+  try {
+    cartResponse = await fetch(
+      `${cmsOrigin}/?alifleet-cart=${encodeURIComponent(items)}&alifleet-locale=${locale}`,
+      {
+        headers: {
+          cookie: cookieHeader,
+          accept: 'text/html',
+          'accept-language': `${locale},en;q=0.8`,
+          'x-alifleet-frontend-origin': frontendOrigin(request),
+          'x-alifleet-locale': locale,
+        },
+        redirect: 'manual',
+        cache: 'no-store',
+      }
+    )
+  } catch (error) {
+    console.error('[alifleet] cart handoff request failed', error)
     redirect('/cart?checkout=unavailable')
   }
+
+  if (!(cartResponse.status >= 300 && cartResponse.status < 400)) {
+    console.error('[alifleet] cart handoff returned', cartResponse.status)
+    redirect('/cart?checkout=unavailable')
+  }
+
+  // WordPress sends the customer to the cart page when nothing in the basket
+  // could actually be purchased. Following that through to /checkout would show
+  // an empty checkout form, so honour the destination WooCommerce chose.
+  const destination = cartResponse.headers.get('location') ?? ''
+  const goesToCart = /\/cart\/?($|[?#])/.test(destination)
 
   const cartCookies = getSetCookies(cartResponse)
   for (const cookie of cartCookies) storeProxyCookie(cookieStore, cookie, request)
 
-  redirect('/checkout')
+  redirect(goesToCart ? '/cart?checkout=unavailable' : '/checkout')
 }
 
 function getSetCookies(response: Response) {

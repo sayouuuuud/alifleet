@@ -1450,6 +1450,134 @@ function alifleet_checkout_frontend_origin(): string {
 		: '';
 }
 
+/**
+ * Maps a storefront locale onto the WordPress locale that owns the translation
+ * files. Polylang is configured to translate `auto-listing` posts only, so it
+ * never touches the WooCommerce checkout strings — the checkout inherits the
+ * site default (he_IL) no matter which language the customer picked (QA-04).
+ * Switching the WordPress locale per request is what actually translates the
+ * proxied checkout markup.
+ */
+const ALIFLEET_LOCALE_MAP = [
+	'en' => 'en_US',
+	'ar' => 'ar',
+	'he' => 'he_IL',
+];
+
+function alifleet_requested_locale(): string {
+	$raw = '';
+
+	if ( isset( $_SERVER['HTTP_X_ALIFLEET_LOCALE'] ) ) {
+		$raw = sanitize_key( wp_unslash( $_SERVER['HTTP_X_ALIFLEET_LOCALE'] ) );
+	}
+
+	if ( '' === $raw && isset( $_GET['alifleet-locale'] ) ) {
+		$raw = sanitize_key( wp_unslash( $_GET['alifleet-locale'] ) );
+	}
+
+	if ( '' === $raw && isset( $_GET['lang'] ) ) {
+		$raw = sanitize_key( wp_unslash( $_GET['lang'] ) );
+	}
+
+	$raw = strtolower( substr( $raw, 0, 2 ) );
+
+	return isset( ALIFLEET_LOCALE_MAP[ $raw ] ) ? ALIFLEET_LOCALE_MAP[ $raw ] : '';
+}
+
+/**
+ * Applied to both filters on purpose: `determine_locale` decides which
+ * translation files load on the initial request, while `locale` covers code
+ * that re-reads the locale later in the request (WooCommerce does, when it
+ * builds the checkout fields and country lists).
+ */
+add_filter(
+	'determine_locale',
+	static function ( $locale ) {
+		$requested = alifleet_requested_locale();
+		return '' !== $requested ? $requested : $locale;
+	},
+	20
+);
+
+add_filter(
+	'locale',
+	static function ( $locale ) {
+		$requested = alifleet_requested_locale();
+		return '' !== $requested ? $requested : $locale;
+	},
+	20
+);
+
+/**
+ * The proxied checkout markup is injected into the storefront shell, which sets
+ * its own direction — but the WooCommerce stylesheet keys off the `rtl` body
+ * class, so it has to agree with the requested locale rather than the site
+ * default.
+ */
+add_filter(
+	'body_class',
+	static function ( array $classes ): array {
+		$requested = alifleet_requested_locale();
+		if ( '' === $requested ) {
+			return $classes;
+		}
+
+		$classes = array_values( array_diff( $classes, [ 'rtl', 'ltr' ] ) );
+		$classes[] = alifleet_locale_is_rtl( $requested ) ? 'rtl' : 'ltr';
+
+		return $classes;
+	}
+);
+
+function alifleet_locale_is_rtl( string $locale ): bool {
+	return in_array( $locale, [ 'ar', 'he_IL' ], true );
+}
+
+/**
+ * `is_rtl()` reads the text direction that was resolved when the translations
+ * first loaded, so switching the locale mid-request leaves it reporting the site
+ * default. That is why an English checkout still rendered `<html dir="rtl">`
+ * (QA-04) and pulled in the RTL stylesheet over LTR content.
+ */
+add_filter(
+	'is_rtl',
+	static function ( $is_rtl ) {
+		$requested = alifleet_requested_locale();
+		return '' !== $requested ? alifleet_locale_is_rtl( $requested ) : $is_rtl;
+	},
+	20
+);
+
+/**
+ * WordPress builds the `<html>` attributes from the *global* locale rather than
+ * the filtered one, so `dir` and `lang` are corrected here directly.
+ */
+add_filter(
+	'language_attributes',
+	static function ( string $output ): string {
+		$requested = alifleet_requested_locale();
+		if ( '' === $requested ) {
+			return $output;
+		}
+
+		$dir  = alifleet_locale_is_rtl( $requested ) ? 'rtl' : 'ltr';
+		$lang = str_replace( '_', '-', $requested );
+
+		$output = preg_replace( '/\bdir="[^"]*"/', 'dir="' . $dir . '"', $output, 1, $dir_count );
+		if ( ! $dir_count ) {
+			$output = 'dir="' . $dir . '" ' . $output;
+		}
+
+		$output = preg_replace( '/\blang="[^"]*"/', 'lang="' . esc_attr( $lang ) . '"', (string) $output, 1, $lang_count );
+		if ( ! $lang_count ) {
+			$output .= ' lang="' . esc_attr( $lang ) . '"';
+		}
+
+		return (string) $output;
+	},
+	20
+);
+
 function alifleet_checkout_bearer( WP_REST_Request $request ): string {
 	$header = trim( (string) $request->get_header( 'authorization' ) );
 	if ( 0 === stripos( $header, 'bearer ' ) ) {
@@ -1614,6 +1742,44 @@ add_filter(
 		}
 		return array_values( array_unique( $hosts ) );
 	}
+);
+
+/**
+ * Give required checkout fields the native `required` attribute.
+ *
+ * WooCommerce marks them with a `*` and `aria-required="true"` only, so the
+ * browser never blocks an empty submission: QA-03 found 15 aria-required fields
+ * and zero real ones, and pressing "place order" with everything blank left the
+ * page instead of showing a validation message. `required` makes the browser
+ * refuse the submit and focus the first empty field, in the customer's own
+ * language, before any request is made.
+ */
+add_filter(
+	'woocommerce_form_field_args',
+	static function ( array $args, string $key, $value ): array {
+		unset( $key, $value );
+
+		if ( empty( $args['required'] ) ) {
+			return $args;
+		}
+
+		// Checkboxes for terms are handled by WooCommerce's own validation, and
+		// select fields are populated by JS after load — forcing `required` on
+		// those produces a browser error the customer cannot act on.
+		$type = $args['type'] ?? 'text';
+		if ( in_array( $type, [ 'checkbox', 'select', 'state', 'country' ], true ) ) {
+			return $args;
+		}
+
+		$args['custom_attributes'] = is_array( $args['custom_attributes'] ?? null )
+			? $args['custom_attributes']
+			: [];
+		$args['custom_attributes']['required'] = 'required';
+
+		return $args;
+	},
+	10,
+	3
 );
 
 add_filter(
