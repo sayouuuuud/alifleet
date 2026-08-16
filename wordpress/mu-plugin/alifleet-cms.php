@@ -1658,6 +1658,42 @@ add_action(
 	1
 );
 
+/**
+ * Rebind `WC()->customer` to the handed-off user.
+ *
+ * WooCommerce instantiates its customer object early in its own bootstrap, so by
+ * the time the handoff cookie is read the object is already bound to user 0.
+ * Checkout then prefills the e-mail (which it reads from the current WP user)
+ * while leaving address and phone blank, because those come from the stale guest
+ * customer (QA-08). Re-creating the object once binds it to the real customer and
+ * restores the saved billing and shipping details.
+ */
+add_action(
+	'woocommerce_init',
+	static function (): void {
+		if ( ! function_exists( 'WC' ) || ! WC() ) {
+			return;
+		}
+
+		$user_id = get_current_user_id();
+		if ( $user_id <= 0 || ! WC()->customer ) {
+			return;
+		}
+
+		if ( WC()->customer->get_id() === $user_id ) {
+			return;
+		}
+
+		try {
+			WC()->customer = new WC_Customer( $user_id, true );
+		} catch ( Exception $e ) {
+			// A missing customer record must never take checkout down.
+			return;
+		}
+	},
+	20
+);
+
 add_action(
 	'rest_api_init',
 	static function (): void {
