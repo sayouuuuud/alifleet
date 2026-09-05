@@ -8,7 +8,7 @@ import {
   Noto_Sans_Hebrew,
 } from 'next/font/google'
 import { cookies } from 'next/headers'
-import './globals.css'
+import '../globals.css'
 import { MetaPixel } from '@/components/analytics/meta-pixel'
 import { BackToTop } from '@/components/back-to-top'
 import { SiteLoader } from '@/components/site-loader'
@@ -68,13 +68,14 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({
   children,
+  params,
 }: Readonly<{
   children: React.ReactNode
+  params: Promise<{ locale: string }>
 }>) {
-  // Read the visitor's saved language on the server so the first paint already
-  // has the right lang/dir — no flash of the wrong direction.
-  const stored = (await cookies()).get(LOCALE_STORAGE_KEY)?.value
-  const locale = isLocale(stored) ? stored : defaultLocale
+  // Read the locale from the URL segment instead of the cookie.
+  const { locale: localeParam } = await params
+  const locale = isLocale(localeParam) ? localeParam : defaultLocale
   const meta = localeMeta[locale]
 
   // Resolve the session and the store settings once per request so the header

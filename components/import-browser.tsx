@@ -9,7 +9,7 @@ import { useLanguage } from '@/lib/i18n/language-context'
 import { resolveCopy } from '@/lib/i18n/copy-block'
 import type { CarsPageCopy } from '@/lib/wp/cars-page'
 import { ImportCarCard } from '@/components/import-car-card'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 
 type Props = {
   cars: ImportCar[]

@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import { useSearchParams } from 'next/navigation'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
@@ -90,7 +90,11 @@ export function LoginForm() {
         <p className="text-center text-sm text-muted-foreground">
           {t.account.login.noAccount}{' '}
           <Link
-            href="/account/register"
+            href={
+              redirectTo && redirectTo !== '/account'
+                ? `/account/register?redirect=${encodeURIComponent(redirectTo)}`
+                : '/account/register'
+            }
             className="text-accent underline-offset-4 transition-colors hover:underline"
           >
             {t.account.login.registerLink}

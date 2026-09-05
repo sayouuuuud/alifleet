@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { isWpConfigured } from '@/lib/wp/config'
 import { getAuthToken } from '@/lib/auth/session'
@@ -17,7 +18,9 @@ export default async function RegisterPage() {
 
   return (
     <AuthShell screen="register" configured={isWpConfigured()}>
-      <RegisterForm />
+      <Suspense>
+        <RegisterForm />
+      </Suspense>
     </AuthShell>
   )
 }

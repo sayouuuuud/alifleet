@@ -6,7 +6,7 @@ import { Paginator } from '@/components/paginator'
 import type { BlogPost, BlogCategory } from '@/lib/data/blog'
 import type { PostsStatus } from '@/lib/wp/posts'
 import { BlogCard } from '@/components/blog-card'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 
 const ALL = 'all' as const
 type Filter = typeof ALL | BlogCategory

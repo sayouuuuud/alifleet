@@ -78,13 +78,8 @@ export async function prepareCheckoutAction(formData: FormData) {
 
   const cookieStore = await cookies()
   const authToken = await getAuthToken()
-
-  // A guest must never inherit a previous customer's WooCommerce session.
-  // The Next.js JWT remains untouched; only WooCommerce proxy cookies are cleared.
   if (!authToken) {
-    for (const { name } of cookieStore.getAll()) {
-      if (isWooStateCookie(name)) cookieStore.delete(name)
-    }
+    redirect('/account/register?redirect=/cart?checkout=1')
   }
 
   // Build the upstream header independently of mutation semantics in Next's

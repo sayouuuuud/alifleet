@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import { usePathname } from 'next/navigation'
 import { LogOut, User } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'

@@ -1,5 +1,4 @@
 import { cookies } from 'next/headers'
-import { getAuthToken } from '@/lib/auth/session'
 import { proxyWooRequest } from '@/lib/checkout/proxy'
 import {
   CART_QUANTITY_COOKIE,
@@ -23,14 +22,6 @@ async function handler(request: Request, context: Context) {
     method === 'POST' || method === 'OPTIONS' || isOrderReceivedPath(segments)
 
   if (!bypass) {
-    const authToken = await getAuthToken()
-    if (!authToken) {
-      return new Response(null, {
-        status: 303,
-        headers: { location: '/account/register?redirect=/cart?checkout=1' },
-      })
-    }
-
     const cookieStore = await cookies()
     const fresh = isHandoffFresh(
       cookieStore.get(CART_QUANTITY_COOKIE)?.value,

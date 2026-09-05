@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import {
   LOCALE_STORAGE_KEY,
   defaultLocale,
@@ -38,6 +39,8 @@ export function LanguageProvider({
   children: React.ReactNode
 }) {
   const [locale, setLocaleState] = useState<Locale>(initialLocale)
+  const pathname = usePathname()
+  const router = useRouter()
 
   // Reconcile with the visitor's stored preference (covers cases where the
   // cookie was never written, e.g. first visit through a cached page). Legacy
@@ -84,7 +87,18 @@ export function LanguageProvider({
     setLocaleState(next)
     window.localStorage.setItem(LOCALE_STORAGE_KEY, next)
     document.cookie = `${LOCALE_STORAGE_KEY}=${next}; path=/; max-age=31536000; samesite=lax`
-  }, [])
+    
+    if (pathname) {
+      const currentPrefix = `/${locale}`
+      let newPath = pathname
+      if (pathname.startsWith(currentPrefix + '/') || pathname === currentPrefix) {
+        newPath = pathname.replace(currentPrefix, `/${next}`)
+      } else {
+        newPath = `/${next}${pathname === '/' ? '' : pathname}`
+      }
+      router.push(newPath + window.location.search + window.location.hash)
+    }
+  }, [locale, pathname, router])
 
   const value = useMemo<LanguageContextValue>(
     () => ({

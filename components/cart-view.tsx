@@ -1,7 +1,8 @@
 'use client'
 
+import React, { useEffect, useRef } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import { useSearchParams } from 'next/navigation'
 import { useFormStatus } from 'react-dom'
 import {
@@ -17,6 +18,7 @@ import {
 import type { PartSummary } from '@/lib/data/parts'
 import { useCart } from '@/lib/cart-context'
 import { useLanguage } from '@/lib/i18n/language-context'
+import { useAuth } from '@/lib/auth/auth-context'
 import { formatPrice } from '@/lib/format'
 import { proxied } from '@/lib/img-proxy'
 import { whatsappLink } from '@/lib/site-config'
@@ -62,6 +64,8 @@ function CheckoutSubmit({ label, pendingLabel }: { label: string; pendingLabel: 
 
 export function CartView({ catalog }: { catalog: PartSummary[] }) {
   const { t, locale } = useLanguage()
+  const { signedIn } = useAuth()
+  const formRef = useRef<HTMLFormElement>(null)
   const searchParams = useSearchParams()
   // The server action redirects back here with this flag when WooCommerce could
   // not be handed the basket, so the failure is visible instead of silent.
@@ -71,6 +75,13 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
   const checkoutExpired = searchParams.get('checkout') === 'expired'
   const store = useStore()
   const { lines, setQuantity, remove, clear, ready } = useCart()
+
+  // When arriving from login/register with checkout=1, auto-submit if ready
+  useEffect(() => {
+    if (searchParams.get('checkout') === '1' && signedIn && lines.length > 0) {
+      formRef.current?.requestSubmit()
+    }
+  }, [searchParams, signedIn, lines.length])
 
   const rows = lines
     .map((line) => {
@@ -298,16 +309,40 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
 
             {checkoutReady && (
               <>
-                <form action={prepareCheckoutAction}>
-                  <input type="hidden" name="items" value={checkoutItems} />
-                  <input type="hidden" name="locale" value={locale} />
-                  <CheckoutSubmit
-                    label={t.cart.checkout}
-                    pendingLabel={t.cart.checkoutPending}
-                  />
-                </form>
+                {signedIn ? (
+                  <form ref={formRef} action={prepareCheckoutAction}>
+                    <input type="hidden" name="items" value={checkoutItems} />
+                    <input type="hidden" name="locale" value={locale} />
+                    <CheckoutSubmit
+                      label={t.cart.checkout}
+                      pendingLabel={t.cart.checkoutPending}
+                    />
+                  </form>
+                ) : (
+                  <div className="mt-6 flex flex-col gap-2.5">
+                    <Link
+                      href={`/account/register?redirect=${encodeURIComponent('/cart?checkout=1')}`}
+                      className="flex w-full items-center justify-center gap-2.5 rounded-full bg-foreground px-6 py-4 text-base font-semibold text-background transition-opacity hover:opacity-90"
+                    >
+                      {locale === 'ar' ? 'إنشاء حساب للمتابعة للدفع' : locale === 'he' ? 'הרשמה להמשך לתשלום' : 'Create an account to checkout'}
+                      <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" />
+                    </Link>
+                    <Link
+                      href={`/account/login?redirect=${encodeURIComponent('/cart?checkout=1')}`}
+                      className="flex w-full items-center justify-center gap-2 rounded-full border border-border bg-card px-6 py-3 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                    >
+                      {locale === 'ar' ? 'لديك حساب بالفعل؟ تسجيل الدخول' : locale === 'he' ? 'יש לך חשבון? התחברות' : 'Already have an account? Sign in'}
+                    </Link>
+                  </div>
+                )}
                 <p className="mt-2.5 text-center text-xs text-muted-foreground">
-                  {t.cart.checkoutNote}
+                  {signedIn
+                    ? t.cart.checkoutNote
+                    : (locale === 'ar'
+                      ? 'يجب إنشاء حساب أو تسجيل الدخول لإتمام الطلب وتعبئة بياناتك تلقائياً.'
+                      : locale === 'he'
+                      ? 'יש להירשם או להתחבר כדי להשלים את ההזמנה ולמלא את פרטיך אוטומטית.'
+                      : 'Please sign in or create an account to complete checkout with your account details.')}
                 </p>
               </>
             )}

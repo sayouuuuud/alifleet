@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import { ArrowLeft, ArrowRight, Clock } from 'lucide-react'
 import { BlogCard } from '@/components/blog-card'
 import { useLanguage } from '@/lib/i18n/language-context'

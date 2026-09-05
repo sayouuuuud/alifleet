@@ -1,7 +1,7 @@
 'use client'
 
 import { PackageX } from 'lucide-react'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import type { PartSummary } from '@/lib/data/parts'
 import type { CatalogStatus } from '@/lib/wp/catalog'
 import { useLanguage } from '@/lib/i18n/language-context'

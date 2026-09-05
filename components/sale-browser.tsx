@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import { saleCarConditions, saleCarStatuses } from '@/lib/data/sale-cars'
 import type { SaleCar, SaleCarCondition, SaleCarStatus } from '@/lib/data/sale-cars'
 import type { SaleCarsStatus } from '@/lib/wp/sale-cars'

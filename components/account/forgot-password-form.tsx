@@ -1,7 +1,7 @@
 'use client'
 
 import { useActionState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import { ArrowLeft, Loader2, Send } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { forgotPasswordAction } from '@/lib/auth/actions'

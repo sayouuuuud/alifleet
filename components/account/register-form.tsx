@@ -1,7 +1,8 @@
 'use client'
 
 import { useActionState } from 'react'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
+import { useSearchParams } from 'next/navigation'
 import { ArrowRight, Loader2 } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { registerAction } from '@/lib/auth/actions'
@@ -11,6 +12,8 @@ import { FormError } from './alerts'
 
 export function RegisterForm() {
   const { t } = useLanguage()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') ?? '/account'
   const [state, formAction, pending] = useActionState(
     registerAction,
     idleActionState
@@ -21,6 +24,7 @@ export function RegisterForm() {
       action={formAction}
       className="rounded-3xl bg-card p-6 ring-1 ring-border md:p-8"
     >
+      <input type="hidden" name="redirectTo" value={redirectTo} />
       <div className="flex flex-col gap-5">
         {state.status === 'error' ? (
           <FormError>
@@ -118,7 +122,11 @@ export function RegisterForm() {
         <p className="text-center text-sm text-muted-foreground">
           {t.account.register.haveAccount}{' '}
           <Link
-            href="/account/login"
+            href={
+              redirectTo && redirectTo !== '/account'
+                ? `/account/login?redirect=${encodeURIComponent(redirectTo)}`
+                : '/account/login'
+            }
             className="text-accent underline-offset-4 transition-colors hover:underline"
           >
             {t.account.register.loginLink}

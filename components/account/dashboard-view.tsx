@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import { ArrowRight, MapPin, Package, UserRound } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n/language-context'
 import { localeMeta } from '@/lib/i18n/config'

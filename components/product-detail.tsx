@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/lib/i18n/link'
 import { ArrowLeft, Minus, Plus, MessageCircle, ShieldCheck, Truck } from 'lucide-react'
 import type { Part, PartSummary } from '@/lib/data/parts'
 import { useLanguage } from '@/lib/i18n/language-context'
