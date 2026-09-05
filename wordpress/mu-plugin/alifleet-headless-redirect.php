@@ -198,12 +198,22 @@ add_action(
 			return;
 		}
 
-		// 5. Do not redirect login or registration
+		// 5. Do not redirect Next.js proxy requests (e.g. headless checkout)
+		if (
+			isset( $_SERVER['HTTP_X_ALIFLEET_FRONTEND_ORIGIN'] ) ||
+			isset( $_GET['alifleet-cart'] ) ||
+			false !== strpos( $uri, '/checkout' ) ||
+			false !== strpos( $uri, '/cart' )
+		) {
+			return;
+		}
+
+		// 6. Do not redirect login or registration
 		if ( false !== strpos( $uri, 'wp-login.php' ) || false !== strpos( $uri, 'wp-register.php' ) ) {
 			return;
 		}
 
-		// 6. Redirect all public frontend views directly to WordPress Admin
+		// 7. Redirect all public frontend views directly to WordPress Admin
 		if ( ! is_user_logged_in() ) {
 			wp_safe_redirect( wp_login_url( admin_url() ), 302 );
 		} else {
