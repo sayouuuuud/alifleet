@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { locales, defaultLocale, LOCALE_STORAGE_KEY, isLocale } from './lib/i18n/config'
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl
   
   // Exclude static files, API routes, and internal Next.js paths
@@ -40,3 +40,7 @@ export const config = {
   // Matcher for middleware to ignore static files and API routes early
   matcher: ['/((?!api|_next/static|_next/image|favicon.ico|images).*)'],
 }
+
+export default proxy
+export { proxy as middleware }
+

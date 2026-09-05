@@ -109,6 +109,7 @@ export async function registerAction(
   const confirm = String(formData.get('confirmPassword') ?? '')
   const firstName = text(formData, 'firstName')
   const lastName = text(formData, 'lastName')
+  const redirectTo = text(formData, 'redirectTo') || '/account'
 
   const fieldErrors: AuthActionState['fieldErrors'] = {}
   if (!email) fieldErrors.email = 'missing_fields'
@@ -158,7 +159,8 @@ export async function registerAction(
   // See the note in loginAction: revalidating here only delays the redirect.
   // `registered=1` makes the sign-in page explain that the account is ready and
   // only the automatic sign-in step was skipped.
-  redirect(signedIn ? '/account' : '/account/login?registered=1')
+  const target = sanitizeRedirect(redirectTo)
+  redirect(signedIn ? target : `/account/login?registered=1&redirect=${encodeURIComponent(target)}`)
 }
 
 /* -------------------------------------------------------------------------- */
