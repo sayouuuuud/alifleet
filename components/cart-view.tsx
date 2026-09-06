@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { Link } from '@/lib/i18n/link'
 import { useSearchParams } from 'next/navigation'
@@ -76,6 +76,32 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
   const store = useStore()
   const { lines, setQuantity, remove, clear, ready } = useCart()
 
+  const [catalogItems, setCatalogItems] = useState<PartSummary[]>(catalog)
+  const [catalogLoading, setCatalogLoading] = useState(false)
+
+  // Keep catalogItems in sync if server prop updates
+  useEffect(() => {
+    if (catalog.length > 0) {
+      setCatalogItems(catalog)
+    }
+  }, [catalog])
+
+  // Fallback: If server passed empty catalog but customer has items, fetch from /api/catalog
+  useEffect(() => {
+    if (ready && lines.length > 0 && catalogItems.length === 0 && !catalogLoading) {
+      setCatalogLoading(true)
+      fetch('/api/catalog')
+        .then((res) => res.json())
+        .then((data) => {
+          if (Array.isArray(data.parts) && data.parts.length > 0) {
+            setCatalogItems(data.parts)
+          }
+        })
+        .catch((err) => console.error('[alifleet] client catalog fetch failed:', err))
+        .finally(() => setCatalogLoading(false))
+    }
+  }, [ready, lines.length, catalogItems.length, catalogLoading])
+
   // When arriving from login/register with checkout=1, auto-submit if ready
   useEffect(() => {
     if (searchParams.get('checkout') === '1' && signedIn && lines.length > 0) {
@@ -85,7 +111,16 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
 
   const rows = lines
     .map((line) => {
-      const part = catalog.find((item) => item.slug === line.slug)
+      const part = catalogItems.find((item) => {
+        if (!item || !item.slug) return false
+        if (item.slug === line.slug) return true
+        try {
+          if (decodeURIComponent(item.slug) === decodeURIComponent(line.slug)) return true
+        } catch {}
+        if (String(item.wooId) === String(line.slug)) return true
+        if (item.sku && line.slug && item.sku.toLowerCase() === line.slug.toLowerCase()) return true
+        return false
+      })
       return part ? { part, quantity: line.quantity } : null
     })
     .filter((row): row is { part: PartSummary; quantity: number } => row !== null)
@@ -112,16 +147,52 @@ export function CartView({ catalog }: { catalog: PartSummary[] }) {
     store.whatsapp
   )
 
-  // Avoid rendering an "empty cart" flash before localStorage is read.
-  if (!ready) {
+  // Avoid rendering an "empty cart" flash before localStorage or catalog is ready.
+  if (!ready || (catalogLoading && lines.length > 0)) {
     return (
       <div className="mx-auto max-w-7xl px-4 pb-24 md:px-8">
-        <p className="text-sm text-muted-foreground">{t.common.loading}</p>
+        <div className="flex items-center justify-center p-12">
+          <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden="true" />
+          <p className="ms-3 text-sm text-muted-foreground">{t.common.loading}</p>
+        </div>
       </div>
     )
   }
 
-  if (rows.length === 0) {
+  // Ghost item recovery: lines has items but none exist in the catalog
+  if (lines.length > 0 && rows.length === 0 && catalogItems.length > 0) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 pb-24 md:px-8">
+        <div className="flex flex-col items-center rounded-3xl bg-card p-12 text-center ring-1 ring-border md:p-20">
+          <AlertCircle className="size-10 text-muted-foreground" aria-hidden="true" />
+          <h2 className="mt-4 font-serif text-xl text-foreground">
+            {locale === 'ar'
+              ? 'المنتجات السابقة في السلة لم تعد متوفرة'
+              : locale === 'he'
+              ? 'המוצרים בסל אינם זמינים עוד'
+              : 'Products in your cart are no longer available'}
+          </h2>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
+            {locale === 'ar'
+              ? 'قد تكون المنتجات التي أضفتها سابقاً تم تحديثها في المتجر.'
+              : locale === 'he'
+              ? 'ייתכן שהמוצרים שהוספת בעבר עודכנו בחנות.'
+              : 'The items in your cart may have been updated or removed from the store.'}
+          </p>
+          <button
+            type="button"
+            onClick={() => clear()}
+            className="mt-6 inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-3 text-sm font-semibold text-background transition-opacity hover:opacity-90"
+          >
+            {locale === 'ar' ? 'تحديث السلة وتصفح المتجر' : locale === 'he' ? 'עדכון הסל וצפייה בחנות' : 'Reset cart & browse products'}
+            <ArrowRight className="size-4" aria-hidden="true" data-flip-rtl />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  if (lines.length === 0) {
     return (
       <div className="mx-auto max-w-7xl px-4 pb-24 md:px-8">
         {/* Emptying the cart is the most common way to invalidate a handoff, so
