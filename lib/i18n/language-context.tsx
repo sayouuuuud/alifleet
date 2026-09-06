@@ -89,13 +89,29 @@ export function LanguageProvider({
     document.cookie = `${LOCALE_STORAGE_KEY}=${next}; path=/; max-age=31536000; samesite=lax`
     
     if (pathname) {
-      const currentPrefix = `/${locale}`
-      let newPath = pathname
-      if (pathname.startsWith(currentPrefix + '/') || pathname === currentPrefix) {
-        newPath = pathname.replace(currentPrefix, `/${next}`)
+      let baseSlug = ''
+      
+      if (locale === 'he') {
+        baseSlug = pathname === '/' ? 'home' : pathname.replace(/^\//, '').replace(/\/$/, '')
       } else {
-        newPath = `/${next}${pathname === '/' ? '' : pathname}`
+        const match = pathname.match(new RegExp(`^/${locale}/(.+)-${locale}/?$`))
+        if (match) {
+          baseSlug = match[1]
+        } else {
+          baseSlug = pathname.replace(new RegExp(`^/${locale}/?`), '').replace(/\/$/, '')
+          if (baseSlug === '') baseSlug = 'home'
+        }
       }
+
+      let newPath = ''
+      if (next === 'he' && baseSlug === 'home') {
+        newPath = '/'
+      } else if (next === 'he') {
+        newPath = `/${baseSlug}/`
+      } else {
+        newPath = `/${next}/${baseSlug}-${next}/`
+      }
+
       router.push(newPath + window.location.search + window.location.hash)
     }
   }, [locale, pathname, router])

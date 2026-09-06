@@ -1,7 +1,7 @@
 import 'server-only'
 
 import { CATALOG_REVALIDATE, WP_CACHE_TAG } from './config'
-import type { Locale } from '@/lib/i18n/config'
+import { type Locale, getLocalizedPath } from '@/lib/i18n/config'
 
 export type PolicyType = 'privacy' | 'terms' | 'return'
 
@@ -21,30 +21,7 @@ export type MultilingualPolicy = {
   he: PolicyPageData | null
 }
 
-/**
- * Dedicated live WordPress GraphQL endpoint for policy pages.
- * By requirement R3, policy pages connect directly to the live endpoint
- * at https://a-f.site/graphql without reading fallback or local URLs from .env.
- */
 export const WP_POLICY_GRAPHQL_ENDPOINT = 'https://a-f.site/graphql'
-
-export const POLICY_SLUGS: Record<PolicyType, Record<Locale, string>> = {
-  privacy: {
-    ar: 'privacy-policy-ar',
-    en: 'privacy-policy-en',
-    he: 'privacy-policy-he',
-  },
-  terms: {
-    ar: 'terms-ar',
-    en: 'terms-en',
-    he: 'terms-he',
-  },
-  return: {
-    ar: 'return-policy-ar',
-    en: 'return-policy-en',
-    he: 'return-policy-he',
-  },
-}
 
 export const SINGLE_POLICY_QUERY = /* GraphQL */ `
   query AliFleetSinglePolicy($id: ID!) {
@@ -60,112 +37,52 @@ export const SINGLE_POLICY_QUERY = /* GraphQL */ `
   }
 `
 
-export const PRIVACY_PAGES_QUERY = /* GraphQL */ `
+export const getPrivacyPagesQuery = () => /* GraphQL */ `
   query AliFleetPrivacyPolicy {
-    ar: page(id: "privacy-policy-ar", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    ar: page(id: "${getLocalizedPath('privacy-policy', 'ar')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
-    en: page(id: "privacy-policy-en", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    en: page(id: "${getLocalizedPath('privacy-policy', 'en')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
-    he: page(id: "privacy-policy-he", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    he: page(id: "${getLocalizedPath('privacy-policy', 'he')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
   }
 `
 
-export const TERMS_PAGES_QUERY = /* GraphQL */ `
+export const getTermsPagesQuery = () => /* GraphQL */ `
   query AliFleetTermsPolicy {
-    ar: page(id: "terms-ar", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    ar: page(id: "${getLocalizedPath('terms', 'ar')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
-    en: page(id: "terms-en", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    en: page(id: "${getLocalizedPath('terms', 'en')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
-    he: page(id: "terms-he", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    he: page(id: "${getLocalizedPath('terms', 'he')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
   }
 `
 
-export const RETURN_PAGES_QUERY = /* GraphQL */ `
+export const getReturnPagesQuery = () => /* GraphQL */ `
   query AliFleetReturnPolicy {
-    ar: page(id: "return-policy-ar", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    ar: page(id: "${getLocalizedPath('return-policy', 'ar')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
-    en: page(id: "return-policy-en", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    en: page(id: "${getLocalizedPath('return-policy', 'en')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
-    he: page(id: "return-policy-he", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    he: page(id: "${getLocalizedPath('return-policy', 'he')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
   }
 `
 
-export const REFUND_RETURNS_QUERY = /* GraphQL */ `
+export const getRefundReturnsQuery = () => /* GraphQL */ `
   query AliFleetRefundReturns {
-    page(id: "refund_returns", idType: URI) {
-      databaseId
-      title
-      slug
-      uri
-      date
-      modified
-      content
+    page(id: "${getLocalizedPath('refund_returns', 'he')}", idType: URI) {
+      databaseId title slug uri date modified content
     }
   }
 `
@@ -370,13 +287,13 @@ export async function getPolicyByLocale(
   policyType: PolicyType,
   locale: Locale
 ): Promise<PolicyPageData | null> {
-  const slug = POLICY_SLUGS[policyType]?.[locale]
-  if (!slug) return null
+  const baseSlug = policyType === 'privacy' ? 'privacy-policy' : policyType === 'terms' ? 'terms' : 'return-policy'
+  const uri = getLocalizedPath(baseSlug, locale)
 
   try {
     const data = await fetchLivePolicyGraphQL<{ page: PolicyPageData | null }>(
       SINGLE_POLICY_QUERY,
-      { id: slug }
+      { id: uri }
     )
     return data.page ?? null
   } catch (error) {
@@ -397,7 +314,7 @@ export async function getPolicyByLocale(
  */
 export async function getPrivacyPolicy(locale?: Locale): Promise<MultilingualPolicy> {
   try {
-    const data = await fetchLivePolicyGraphQL<WireMultiPage>(PRIVACY_PAGES_QUERY)
+    const data = await fetchLivePolicyGraphQL<WireMultiPage>(getPrivacyPagesQuery())
 
     let dynamicCurrent: PolicyPageData | null = null
     if (locale && (!data[locale] || !data[locale]?.content)) {
@@ -431,7 +348,7 @@ export async function getPrivacyPolicy(locale?: Locale): Promise<MultilingualPol
  */
 export async function getTermsPolicy(locale?: Locale): Promise<MultilingualPolicy> {
   try {
-    const data = await fetchLivePolicyGraphQL<WireMultiPage>(TERMS_PAGES_QUERY)
+    const data = await fetchLivePolicyGraphQL<WireMultiPage>(getTermsPagesQuery())
 
     let dynamicCurrent: PolicyPageData | null = null
     if (locale && (!data[locale] || !data[locale]?.content)) {
@@ -465,7 +382,7 @@ export async function getTermsPolicy(locale?: Locale): Promise<MultilingualPolic
  */
 export async function getReturnPolicy(locale?: Locale): Promise<MultilingualPolicy> {
   try {
-    const data = await fetchLivePolicyGraphQL<WireMultiPage>(RETURN_PAGES_QUERY)
+    const data = await fetchLivePolicyGraphQL<WireMultiPage>(getReturnPagesQuery())
 
     let dynamicCurrent: PolicyPageData | null = null
     if (locale && (!data[locale] || !data[locale]?.content)) {
@@ -501,7 +418,7 @@ export async function getReturnPolicy(locale?: Locale): Promise<MultilingualPoli
 export async function getRefundReturnsPage(): Promise<PolicyPageData | null> {
   try {
     const data = await fetchLivePolicyGraphQL<{ page: PolicyPageData | null }>(
-      REFUND_RETURNS_QUERY
+      getRefundReturnsQuery()
     )
     return data.page ?? null
   } catch (error) {

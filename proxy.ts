@@ -1,46 +1,46 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
-import { locales, defaultLocale, LOCALE_STORAGE_KEY, isLocale } from './lib/i18n/config'
+import createMiddleware from 'next-intl/middleware'
+import { NextRequest, NextResponse } from 'next/server'
+import { locales, defaultLocale } from '@/lib/i18n/config'
 
-export function proxy(request: NextRequest) {
-  const { pathname, search } = request.nextUrl
-  
-  // Exclude static files, API routes, and internal Next.js paths
-  if (
-    pathname.startsWith('/_next') ||
-    pathname.startsWith('/api') ||
-    pathname.startsWith('/images') ||
-    pathname.startsWith('/wc-ajax') ||
-    pathname.startsWith('/setup') ||
-    pathname.startsWith('/cms') ||
-    pathname.match(/\.(.*)$/) // matches files like .ico, .png, etc.
-  ) {
-    return NextResponse.next()
+const intlMiddleware = createMiddleware({
+  locales,
+  defaultLocale,
+  localePrefix: 'as-needed',
+})
+
+export function proxy(req: NextRequest) {
+  const url = req.nextUrl.clone()
+  const { pathname } = url
+
+  if (pathname === '/en' || pathname === '/en/') {
+    url.pathname = '/en/home-en/'
+    return NextResponse.redirect(url)
+  }
+  if (pathname === '/ar' || pathname === '/ar/') {
+    url.pathname = '/ar/home-ar/'
+    return NextResponse.redirect(url)
   }
 
-  // Check if the pathname already has a locale prefix
-  const pathnameHasLocale = locales.some(
-    (locale) => pathname.startsWith(`/${locale}/`) || pathname === `/${locale}`
-  )
+  const match = pathname.match(/^\/(en|ar)\/(.+)-\1\/?$/)
+  if (match) {
+    const locale = match[1]
+    const slug = match[2]
 
-  if (pathnameHasLocale) {
-    return NextResponse.next()
+    if (slug === 'home') {
+      req.nextUrl.pathname = `/${locale}`
+    } else {
+      req.nextUrl.pathname = `/${locale}/${slug}`
+    }
   }
 
-  // If no locale prefix, get the preferred locale from the cookie or use default
-  const cookieLocale = request.cookies.get(LOCALE_STORAGE_KEY)?.value
-  const locale = isLocale(cookieLocale) ? cookieLocale : defaultLocale
-
-  // Redirect to the locale-prefixed URL
-  const newUrl = new URL(`/${locale}${pathname === '/' ? '' : pathname}${search}`, request.url)
-  return NextResponse.redirect(newUrl)
+  const response = intlMiddleware(req)
+  response.headers.set('x-original-pathname', pathname)
+  return response
 }
 
 export const config = {
-  // Matcher for middleware to ignore static files and API routes early
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|images).*)'],
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)'],
 }
 
 export default proxy
-export { proxy as middleware }
 

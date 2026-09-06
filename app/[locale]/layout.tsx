@@ -67,6 +67,8 @@ export const viewport: Viewport = {
   themeColor: '#fafafa',
 }
 
+import { headers } from 'next/headers'
+
 export default async function RootLayout({
   children,
   params,
@@ -87,12 +89,48 @@ export default async function RootLayout({
     getStoreSettings(),
   ])
 
+  // Compute hreflangs
+  const headersList = await headers()
+  const originalPath = headersList.get('x-original-pathname') || '/'
+  
+  // Extract base slug to generate all localized links
+  let baseSlug = ''
+  if (locale === 'he') {
+    baseSlug = originalPath === '/' ? 'home' : originalPath.replace(/^\//, '').replace(/\/$/, '')
+  } else {
+    const match = originalPath.match(new RegExp(`^/${locale}/(.+)-${locale}/?$`))
+    if (match) {
+      baseSlug = match[1]
+    } else {
+      baseSlug = originalPath.replace(new RegExp(`^/${locale}/?`), '').replace(/\/$/, '')
+      if (baseSlug === '') baseSlug = 'home'
+    }
+  }
+
+  const host = headersList.get('host') || 'alifleet.com'
+  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
+  const baseUrl = `${protocol}://${host}`
+
+  const getUrl = (l: string) => {
+    let path = ''
+    if (l === 'he' && baseSlug === 'home') path = '/'
+    else if (l === 'he') path = `/${baseSlug}/`
+    else path = `/${l}/${baseSlug}-${l}/`
+    return `${baseUrl}${path}`
+  }
+
   return (
     <html
       lang={meta.htmlLang}
       dir={meta.dir}
       className={`bg-background ${geistSans.variable} ${geistMono.variable} ${fraunces.variable} ${cairo.variable} ${notoHebrew.variable}`}
     >
+      <head>
+        <link rel="alternate" hrefLang="he" href={getUrl('he')} />
+        <link rel="alternate" hrefLang="en" href={getUrl('en')} />
+        <link rel="alternate" hrefLang="ar" href={getUrl('ar')} />
+        <link rel="alternate" hrefLang="x-default" href={getUrl('he')} />
+      </head>
       <body className="antialiased">
         <SiteLoader />
         <MetaPixel />
