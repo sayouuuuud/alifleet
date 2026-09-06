@@ -69,6 +69,8 @@ export function StatsStrip() {
                 'radial-gradient(ellipse at center, black 40%, transparent 85%)',
               WebkitMaskImage:
                 'radial-gradient(ellipse at center, black 40%, transparent 85%)',
+              transform: 'translateZ(0)',
+              willChange: 'transform',
             }}
           />
           <div className="relative grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4">

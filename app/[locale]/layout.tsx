@@ -25,6 +25,7 @@ import {
   isLocale,
   localeMeta,
 } from '@/lib/i18n/config'
+import { LenisProvider } from '@/components/lenis-provider'
 
 const geistSans = Geist({
   subsets: ['latin'],
@@ -95,13 +96,15 @@ export default async function RootLayout({
       <body className="antialiased">
         <SiteLoader />
         <MetaPixel />
-        <LanguageProvider initialLocale={locale}>
-          <StoreProvider settings={storeSettings}>
-            <AuthProvider viewer={viewer} backendReady={isWpConfigured()}>
-              <CartProvider>{children}</CartProvider>
-            </AuthProvider>
-          </StoreProvider>
-        </LanguageProvider>
+        <LenisProvider>
+          <LanguageProvider initialLocale={locale}>
+            <StoreProvider settings={storeSettings}>
+              <AuthProvider viewer={viewer} backendReady={isWpConfigured()}>
+                <CartProvider>{children}</CartProvider>
+              </AuthProvider>
+            </StoreProvider>
+          </LanguageProvider>
+        </LenisProvider>
         <BackToTop />
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

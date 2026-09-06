@@ -428,13 +428,13 @@ export function GlobalReach() {
               >
                 <div
                   data-satellite
-                  className="absolute left-1/2 top-0 -translate-x-1/2 flex size-9 items-center justify-center rounded-full border border-border bg-background/90 text-accent shadow-sm backdrop-blur-md"
+                  className="absolute left-1/2 top-0 -translate-x-1/2 flex size-9 items-center justify-center rounded-full border border-border bg-background/90 text-accent shadow-sm "
                 >
                   <Plane className="size-4" />
                 </div>
                 <div
                   data-satellite
-                  className="absolute bottom-0 left-1/2 -translate-x-1/2 flex size-9 items-center justify-center rounded-full border border-border bg-background/90 text-accent shadow-sm backdrop-blur-md"
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 flex size-9 items-center justify-center rounded-full border border-border bg-background/90 text-accent shadow-sm "
                 >
                   <Ship className="size-4" />
                 </div>
@@ -461,14 +461,14 @@ export function GlobalReach() {
               {/* Floating glass stat chips */}
               <div
                 data-globe-chip
-                className="absolute -left-2 top-[18%] flex items-center gap-2 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur-md md:-left-6"
+                className="absolute -left-2 top-[18%] flex items-center gap-2 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm  md:-left-6"
               >
                 <span className="size-2 rounded-full bg-accent" aria-hidden="true" />
                 {t.home.globeCountries}
               </div>
               <div
                 data-globe-chip
-                className="absolute -right-2 top-[62%] flex items-center gap-2 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm backdrop-blur-md md:-right-6"
+                className="absolute -right-2 top-[62%] flex items-center gap-2 rounded-full border border-border bg-background/85 px-3 py-1.5 text-xs font-medium text-foreground shadow-sm  md:-right-6"
               >
                 <span className="size-2 animate-pulse rounded-full bg-accent" aria-hidden="true" />
                 {t.home.globeTracking}
@@ -476,7 +476,7 @@ export function GlobalReach() {
 
               {/* Active city floating label */}
               {activeCity ? (
-                <div className="pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full border border-border bg-background/90 px-4 py-1.5 text-sm font-medium text-foreground shadow-sm backdrop-blur-md">
+                <div className="pointer-events-none absolute left-1/2 top-4 z-10 -translate-x-1/2 rounded-full border border-border bg-background/90 px-4 py-1.5 text-sm font-medium text-foreground shadow-sm ">
                   {activeCity}
                 </div>
               ) : null}
