@@ -2106,6 +2106,55 @@ add_filter(
 	2
 );
 
+/**
+ * Start a clean WooCommerce session bound to the handed-off customer.
+ *
+ * `destroy_session()` ends up in `wc_empty_cart()`, which instantiates a
+ * `WC_Cart` when the container holds none. A REST request has no cart *and no
+ * customer*, so that fresh cart registered `WC_Cart_Session::maybe_set_cart_cookies()`
+ * on `shutdown`, which recalculated totals and dereferenced the still-null
+ * `WC()->customer`. The endpoint returned its `{"ok":true}` body and then died
+ * with "Call to a member function get_shipping_country() on null", so Next.js
+ * saw a 500, discarded the handoff and rendered checkout as a guest — the
+ * signed-in customer was asked to retype an address the account already had.
+ *
+ * `wc_load_cart()` initializes session, customer and cart together, exactly as
+ * the frontend bootstrap does, so every object stays non-null through shutdown.
+ */
+function alifleet_start_customer_woo_session( int $user_id ): void {
+	if ( ! function_exists( 'WC' ) || ! WC() ) {
+		return;
+	}
+
+	if ( function_exists( 'wc_load_cart' ) ) {
+		wc_load_cart();
+	} elseif ( method_exists( WC(), 'initialize_session' ) ) {
+		WC()->initialize_session();
+	}
+
+	// `initialize_cart()` only builds a customer when the container has none, so
+	// a guest object left behind by an earlier bootstrap would otherwise bind the
+	// new session to user 0.
+	if ( ! WC()->customer || WC()->customer->get_id() !== $user_id ) {
+		try {
+			WC()->customer = new WC_Customer( $user_id, true );
+		} catch ( Exception $e ) {
+			// Without a customer object the shutdown hooks would fatal again,
+			// so leave the session untouched rather than half-initialized.
+			return;
+		}
+	}
+
+	if ( ! WC()->session ) {
+		return;
+	}
+
+	// Anything the previous visitor left in the session must not follow the new
+	// customer into checkout; the storefront pushes the basket immediately after.
+	WC()->session->destroy_session();
+	WC()->session->set_customer_session_cookie( true );
+}
+
 add_action(
 	'rest_api_init',
 	static function (): void {
@@ -2126,15 +2175,7 @@ add_action(
 					}
 
 					wp_set_current_user( $user_id );
-					if ( function_exists( 'WC' ) && WC() ) {
-						if ( ! WC()->session && method_exists( WC(), 'initialize_session' ) ) {
-							WC()->initialize_session();
-						}
-						if ( WC()->session ) {
-							WC()->session->destroy_session();
-							WC()->session->set_customer_session_cookie( true );
-						}
-					}
+					alifleet_start_customer_woo_session( $user_id );
 
 					$expires = time() + 2 * DAY_IN_SECONDS;
 					$value = alifleet_customer_handoff_value( $user_id, $expires );
