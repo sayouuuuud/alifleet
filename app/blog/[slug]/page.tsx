@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getRequestLocale } from '@/lib/i18n/request-locale'
+import { pageAlternates } from '@/lib/seo/alternates'
 import { getPost, getRelatedPosts } from '@/lib/wp/posts'
 import { BlogArticle } from '@/components/blog-article'
 
@@ -17,6 +19,8 @@ export async function generateMetadata({
 
   return {
     title: `${post.titleEn} | ALI FLEET`,
+    // hreflang + per-language canonical (he at root, ar/en with their suffixes).
+    alternates: pageAlternates(`/blog/${slug}/`, await getRequestLocale()),
     description: post.excerptEn,
     openGraph: {
       title: post.titleEn,

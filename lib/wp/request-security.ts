@@ -17,7 +17,10 @@ export type WordPressSecurityHeaders = Partial<
 
 function validClientAddress(value: string | null) {
   if (!value) return ''
-  const address = value.split(',', 1)[0]?.trim() ?? ''
+  // Proxies append the client they saw at the END of X-Forwarded-For; the
+  // first entry is whatever the client chose to send (spoofable).
+  const parts = value.split(',').map((part) => part.trim()).filter(Boolean)
+  const address = parts[parts.length - 1] ?? ''
   return isIP(address) ? address : ''
 }
 

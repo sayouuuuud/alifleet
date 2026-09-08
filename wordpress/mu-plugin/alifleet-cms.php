@@ -4,7 +4,7 @@
  * Description:  Registers everything the Next.js frontend needs from WordPress:
  *               the import_car post type, the Site Settings options page, the
  *               page-slug ACF location rule, GraphQL exposure and CORS.
- * Version:      1.1.0
+ * Version:      1.0.0
  * Author:       ALI FLEET
  *
  * Install as a must-use plugin so it can never be deactivated by accident:
@@ -30,260 +30,14 @@ if ( ! defined( 'ALIFLEET_ALLOWED_ORIGINS' ) ) {
 	define(
 		'ALIFLEET_ALLOWED_ORIGINS',
 		[
-							'https://alifleet.com',
-				'https://www.alifleet.com',
-  'http://rbzfx3doqcg2vx1hyichhewe.169.58.176.172.sslip.io',
-  'https://sb-6h9l3x6zv41u.vercel.run',
-  'http://localhost:3000',
-
+			// Only hosts this deployment serves. Old sandbox / sslip.io origins were
+			// removed: an expired sandbox hostname can be re-registered by anyone.
+			'https://alifleet.com',
+			'https://www.alifleet.com',
+			'http://localhost:3000',
 		]
 	);
 }
-
-/* -------------------------------------------------------------------------
- * 0. Public-surface and authentication hardening
- * ---------------------------------------------------------------------- */
-
-// Public GraphQL queries never need the WordPress user directory. Authenticated
-// requests retain the normal model rules so `viewer` and account operations work.
-add_filter(
-	'graphql_object_visibility',
-	static function ( $visibility, $model_name, $data, $owner, $current_user ) {
-		unset( $data, $owner );
-		if ( 'UserObject' === $model_name && ( ! isset( $current_user->ID ) || 0 === (int) $current_user->ID ) ) {
-			return 'private';
-		}
-		return $visibility;
-	},
-	10,
-	5
-);
-
-// REST user routes disclose the same login names even when WPGraphQL is locked.
-add_filter(
-	'rest_endpoints',
-	static function ( array $endpoints ): array {
-		foreach ( array_keys( $endpoints ) as $route ) {
-			if ( preg_match( '#^/wp/v2/users(?:/|$)#', (string) $route ) ) {
-				unset( $endpoints[ $route ] );
-			}
-		}
-		return $endpoints;
-	},
-	PHP_INT_MAX
-);
-
-add_filter(
-	'rest_index',
-	static function ( $response ) {
-		if ( ! $response instanceof WP_REST_Response ) {
-			return $response;
-		}
-		$data = $response->get_data();
-		if ( isset( $data['routes'] ) && is_array( $data['routes'] ) ) {
-			foreach ( array_keys( $data['routes'] ) as $route ) {
-				if ( preg_match( '#^/wp/v2/users(?:/|$)#', (string) $route ) ) {
-					unset( $data['routes'][ $route ] );
-				}
-			}
-			$response->set_data( $data );
-		}
-		return $response;
-	},
-	PHP_INT_MAX
-);
-
-// Disabling only authenticated XML-RPC methods is insufficient: pingback and
-// multicall remain useful to attackers. Remove the method table altogether.
-add_filter( 'xmlrpc_enabled', '__return_false', PHP_INT_MAX );
-add_filter( 'xmlrpc_methods', static fn ( array $methods ): array => [], PHP_INT_MAX );
-add_filter( 'pings_open', '__return_false', PHP_INT_MAX );
-add_filter(
-	'wp_headers',
-	static function ( array $headers ): array {
-		unset( $headers['X-Pingback'], $headers['x-pingback'] );
-		return $headers;
-	},
-	PHP_INT_MAX
-);
-add_filter(
-	'bloginfo_url',
-	static function ( string $output, string $show ): string {
-		return 'pingback_url' === $show ? '' : $output;
-	},
-	PHP_INT_MAX,
-	2
-);
-
-function alifleet_rate_limit_shared_secret(): string {
-	if ( defined( 'ALIFLEET_REVALIDATE_SECRET' ) ) {
-		$constant = trim( (string) ALIFLEET_REVALIDATE_SECRET );
-		if ( '' !== $constant ) {
-			return $constant;
-		}
-	}
-	return trim( (string) get_option( 'alifleet_revalidate_secret', '' ) );
-}
-
-function alifleet_valid_client_ip( string $value ): string {
-	$value = trim( $value );
-	return false !== filter_var( $value, FILTER_VALIDATE_IP ) ? $value : '';
-}
-
-/**
- * Prefer the client address signed by Next.js. Direct WordPress requests fall
- * back to REMOTE_ADDR, so spoofed forwarding headers never choose a rate bucket.
- */
-function alifleet_request_client_ip(): string {
-	$fallback = alifleet_valid_client_ip( (string) ( $_SERVER['REMOTE_ADDR'] ?? '' ) );
-	$address = alifleet_valid_client_ip(
-		isset( $_SERVER['HTTP_X_ALIFLEET_CLIENT_IP'] )
-			? wp_unslash( (string) $_SERVER['HTTP_X_ALIFLEET_CLIENT_IP'] )
-			: ''
-	);
-	$timestamp = isset( $_SERVER['HTTP_X_ALIFLEET_CLIENT_IP_TIMESTAMP'] )
-		? wp_unslash( (string) $_SERVER['HTTP_X_ALIFLEET_CLIENT_IP_TIMESTAMP'] )
-		: '';
-	$signature = isset( $_SERVER['HTTP_X_ALIFLEET_CLIENT_IP_SIGNATURE'] )
-		? strtolower( sanitize_text_field( wp_unslash( (string) $_SERVER['HTTP_X_ALIFLEET_CLIENT_IP_SIGNATURE'] ) ) )
-		: '';
-	$secret = alifleet_rate_limit_shared_secret();
-
-	if (
-		'' !== $address &&
-		'' !== $secret &&
-		ctype_digit( $timestamp ) &&
-		abs( time() - (int) $timestamp ) <= 300 &&
-		1 === preg_match( '/^[a-f0-9]{64}$/D', $signature )
-	) {
-		$expected = hash_hmac( 'sha256', $address . '|' . $timestamp, $secret );
-		if ( hash_equals( $expected, $signature ) ) {
-			return $address;
-		}
-	}
-
-	return '' !== $fallback ? $fallback : 'unknown';
-}
-
-/** Transient keys contain only an HMAC, never a raw address or login name. */
-function alifleet_rate_limit_key( string $scope, string $principal = '' ): string {
-	$material = $scope . '|' . alifleet_request_client_ip() . '|' . strtolower( trim( $principal ) );
-	return 'alifleet_rl_' . hash_hmac( 'sha256', $material, wp_salt( 'nonce' ) );
-}
-
-/** @return array{count:int,reset:int} */
-function alifleet_rate_limit_state( string $scope, int $window, string $principal = '' ): array {
-	$key = alifleet_rate_limit_key( $scope, $principal );
-	$state = get_transient( $key );
-	if (
-		! is_array( $state ) ||
-		! isset( $state['count'], $state['reset'] ) ||
-		(int) $state['reset'] <= time()
-	) {
-		return [ 'count' => 0, 'reset' => time() + $window ];
-	}
-	return [ 'count' => max( 0, (int) $state['count'] ), 'reset' => (int) $state['reset'] ];
-}
-
-function alifleet_rate_limited( string $scope, int $limit, int $window, string $principal = '' ): bool {
-	$state = alifleet_rate_limit_state( $scope, $window, $principal );
-	return $state['count'] >= $limit;
-}
-
-function alifleet_rate_increment( string $scope, int $window, string $principal = '' ): void {
-	$key = alifleet_rate_limit_key( $scope, $principal );
-	$state = alifleet_rate_limit_state( $scope, $window, $principal );
-	++$state['count'];
-	set_transient( $key, $state, max( 1, $state['reset'] - time() ) );
-}
-
-function alifleet_rate_clear( string $scope, string $principal = '' ): void {
-	delete_transient( alifleet_rate_limit_key( $scope, $principal ) );
-}
-
-const ALIFLEET_LOGIN_WINDOW = 15 * MINUTE_IN_SECONDS;
-const ALIFLEET_REGISTER_WINDOW = HOUR_IN_SECONDS;
-const ALIFLEET_RESET_WINDOW = HOUR_IN_SECONDS;
-
-add_filter(
-	'authenticate',
-	static function ( $user, $username, $password ) {
-		unset( $password );
-		$principal = is_string( $username ) ? $username : '';
-		if (
-			alifleet_rate_limited( 'login_ip', 40, ALIFLEET_LOGIN_WINDOW ) ||
-			alifleet_rate_limited( 'login_principal', 8, ALIFLEET_LOGIN_WINDOW, $principal )
-		) {
-			return new WP_Error( 'alifleet_login_limited', 'Unable to sign in with those details. Please try again later.' );
-		}
-		return $user;
-	},
-	5,
-	3
-);
-
-add_action(
-	'wp_login_failed',
-	static function ( string $username ): void {
-		alifleet_rate_increment( 'login_ip', ALIFLEET_LOGIN_WINDOW );
-		alifleet_rate_increment( 'login_principal', ALIFLEET_LOGIN_WINDOW, $username );
-	},
-	10,
-	1
-);
-
-add_action(
-	'wp_login',
-	static function ( string $user_login, WP_User $user ): void {
-		alifleet_rate_clear( 'login_principal', $user_login );
-		alifleet_rate_clear( 'login_principal', (string) $user->user_email );
-	},
-	10,
-	2
-);
-
-add_filter(
-	'registration_errors',
-	static function ( WP_Error $errors, string $sanitized_user_login, string $user_email ): WP_Error {
-		unset( $sanitized_user_login, $user_email );
-		if ( is_user_logged_in() ) {
-			return $errors;
-		}
-		if ( alifleet_rate_limited( 'register_ip', 6, ALIFLEET_REGISTER_WINDOW ) ) {
-			$errors->add( 'alifleet_registration_limited', 'Registration cannot be completed right now. Please try again later.' );
-			return $errors;
-		}
-		alifleet_rate_increment( 'register_ip', ALIFLEET_REGISTER_WINDOW );
-		return $errors;
-	},
-	10,
-	3
-);
-
-add_filter(
-	'lostpassword_errors',
-	static function ( WP_Error $errors, $user_data ): WP_Error {
-		unset( $user_data );
-		if ( is_user_logged_in() ) {
-			return $errors;
-		}
-		if ( alifleet_rate_limited( 'password_reset_ip', 10, ALIFLEET_RESET_WINDOW ) ) {
-			$errors->add( 'alifleet_password_reset_limited', 'If the account is eligible, password reset instructions will be sent.' );
-			return $errors;
-		}
-		alifleet_rate_increment( 'password_reset_ip', ALIFLEET_RESET_WINDOW );
-		return $errors;
-	},
-	10,
-	2
-);
-
-// WordPress's default login text distinguishes unknown users from bad passwords.
-add_filter(
-	'login_errors',
-	static fn (): string => 'Authentication could not be completed. Check the details and try again.',
-	PHP_INT_MAX
-);
 
 /* -------------------------------------------------------------------------
  * 1. Custom post type: import_car
@@ -744,6 +498,7 @@ add_action(
 					'hours'          => [ 'type' => 'String', 'description' => 'Opening hours, as one display string.' ],
 					'instagram'      => [ 'type' => 'String' ],
 					'facebook'       => [ 'type' => 'String' ],
+					'tiktok'         => [ 'type' => 'String' ],
 					'linkedin'       => [ 'type' => 'String' ],
 					'currencyCode'   => [ 'type' => 'String', 'description' => 'ISO code from WooCommerce, e.g. ILS.' ],
 					'currencySymbol' => [ 'type' => 'String', 'description' => 'Symbol matching currencyCode, e.g. ₪.' ],
@@ -835,6 +590,7 @@ add_action(
 						),
 						'instagram'      => alifleet_acf_option( 'company_info', 'instagram' ),
 						'facebook'       => alifleet_acf_option( 'company_info', 'facebook' ),
+						'tiktok'         => alifleet_acf_option( 'company_info', 'tiktok' ),
 						'linkedin'       => alifleet_acf_option( 'company_info', 'linkedin' ),
 						'currencyCode'   => $currency_code,
 						'currencySymbol' => $currency_symbol,
@@ -2351,6 +2107,77 @@ add_filter(
 	2
 );
 
+/* -------------------------------------------------------------------------
+ * Security: backend surface
+ * ---------------------------------------------------------------------- */
+// The public GraphQL API never needs the WordPress user directory: anonymous
+// callers see user objects as private (login names stay hidden). Logged-in
+// sessions keep the normal model rules so `viewer` and account operations work.
+add_filter(
+	'graphql_object_visibility',
+	static function ( $visibility, $model_name, $data, $owner, $current_user ) {
+		unset( $data, $owner );
+		if ( 'UserObject' === $model_name && ( ! isset( $current_user->ID ) || 0 === (int) $current_user->ID ) ) {
+			return 'private';
+		}
+		return $visibility;
+	},
+	10,
+	5
+);
+
+// This WordPress is a backend; its own pages must not be advertised to search
+// engines through the core sitemap (the storefront publishes its own).
+add_filter( 'wp_sitemaps_enabled', '__return_false' );
+
+/* -------------------------------------------------------------------------
+ * Security: REST hardening
+ *
+ * Anonymous callers could read /wp/v2/users, which returns every account's
+ * login slug — the username half of a credential-stuffing attack — and the
+ * REST index, which advertises every route on the site. Both are withheld
+ * from unauthenticated requests. Logged-in editors keep full REST access, and
+ * the Next.js server is unaffected because it only ever calls /graphql and
+ * /alifleet/v1/*.
+ * ---------------------------------------------------------------------- */
+/**
+ * True for callers that must keep the full REST surface: logged-in users and
+ * WP-CLI, which reads the route index to register `wp wc …` commands.
+ */
+function alifleet_rest_is_trusted_caller(): bool {
+	return is_user_logged_in() || ( defined( 'WP_CLI' ) && WP_CLI );
+}
+
+add_filter(
+	'rest_endpoints',
+	static function ( array $endpoints ): array {
+		if ( alifleet_rest_is_trusted_caller() ) {
+			return $endpoints;
+		}
+		foreach ( array_keys( $endpoints ) as $route ) {
+			if ( 0 === strpos( (string) $route, '/wp/v2/users' ) ) {
+				unset( $endpoints[ $route ] );
+			}
+		}
+		return $endpoints;
+	}
+);
+
+add_filter(
+	'rest_index',
+	static function ( WP_REST_Response $response ): WP_REST_Response {
+		if ( alifleet_rest_is_trusted_caller() ) {
+			return $response;
+		}
+		$data = $response->get_data();
+		if ( is_array( $data ) ) {
+			unset( $data['routes'], $data['namespaces'], $data['authentication'] );
+			$response->set_data( $data );
+		}
+		return $response;
+	}
+);
+
 add_action(
 	'rest_api_init',
 	static function (): void {
@@ -2359,7 +2186,8 @@ add_action(
 			'/session',
 			[
 				'methods'             => WP_REST_Server::CREATABLE,
-				'permission_callback' => static function ( WP_REST_Request $request ) {
+				'permission_callback' => '__return_true',
+				'callback'            => static function ( WP_REST_Request $request ) {
 					if ( '' === alifleet_checkout_frontend_origin() ) {
 						return new WP_Error( 'invalid_origin', 'Checkout origin is not allowed.', [ 'status' => 403 ] );
 					}
@@ -2367,15 +2195,6 @@ add_action(
 					$user_id = alifleet_checkout_user_id( $request );
 					if ( is_wp_error( $user_id ) ) {
 						return $user_id;
-					}
-
-					$request->set_param( '_alifleet_verified_user_id', $user_id );
-					return true;
-				},
-				'callback'            => static function ( WP_REST_Request $request ) {
-					$user_id = absint( $request->get_param( '_alifleet_verified_user_id' ) );
-					if ( $user_id <= 0 ) {
-						return new WP_Error( 'invalid_customer', 'Customer session could not be verified.', [ 'status' => 401 ] );
 					}
 
 					wp_set_current_user( $user_id );
@@ -2397,7 +2216,7 @@ add_action(
 						[
 							'expires'  => $expires,
 							'path'     => '/',
-							'secure'   => true,
+							'secure'   => is_ssl(),
 							'httponly' => true,
 							'samesite' => 'Lax',
 						]

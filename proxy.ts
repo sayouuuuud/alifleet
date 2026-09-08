@@ -41,11 +41,15 @@ function localeRedirect(
   locale: Locale,
   removeLocaleQuery = true
 ) {
-  const destination = request.nextUrl.clone()
-  destination.pathname = pathname
-  if (removeLocaleQuery) destination.searchParams.delete('locale')
+  const current = request.nextUrl.clone()
+  if (removeLocaleQuery) current.searchParams.delete('locale')
+  // NextURL normalises a trailing slash away when it formats a pathname, so
+  // the canonical `/products/` came out as `/products`: every request without
+  // the slash was redirected to itself, forever. Build the Location by hand so
+  // the canonical form survives; `/products/` then matches and is served.
+  const location = `${current.origin}${pathname}${current.search}${current.hash}`
   return withLocaleCookie(
-    NextResponse.redirect(destination, { status: 308 }),
+    NextResponse.redirect(location, { status: 308 }),
     request,
     locale
   )

@@ -1,4 +1,7 @@
 import { notFound } from 'next/navigation'
+import { getDictionary } from '@/lib/i18n/dictionaries'
+import { pageAlternates } from '@/lib/seo/alternates'
+import { getRequestLocale } from '@/lib/i18n/request-locale'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { ProductDetail } from '@/components/product-detail'
@@ -22,20 +25,23 @@ export async function generateMetadata({
   const part = await getPart(slug)
   if (!part) return { title: 'ALI FLEET' }
 
-  // English falls back to the Hebrew original for products that are not
-  // translated yet, which is still far better metadata than a bare site name.
-  const title = part.name.en || part.name.he
-  const description = part.description.en || part.description.he || undefined
+  // The visitor's language first; Hebrew (the original) is the fallback for
+  // anything not translated yet, which still beats a bare site name.
+  const locale = await getRequestLocale()
+  const t = getDictionary(locale)
+  const title = part.name[locale] || part.name.he
+  const description = part.description[locale] || part.description.he || undefined
+  const pageTitle = `${title} — ${t.seo.productSuffix}`
 
   return {
-    title: `${title} — ALI FLEET Spare Parts`,
+    title: pageTitle,
     description,
-    alternates: { canonical: `/products/${slug}` },
+    alternates: pageAlternates(`/products/${slug}/`, locale),
     openGraph: {
       type: 'website',
-      title: `${title} — ALI FLEET Spare Parts`,
+      title: pageTitle,
       description,
-      url: absoluteUrl(`/products/${slug}`),
+      url: absoluteUrl(`/products/${slug}/`),
       images: part.image ? [{ url: part.image, alt: title }] : undefined,
     },
   }

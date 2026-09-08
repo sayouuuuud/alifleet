@@ -1,0 +1,54 @@
+{
+  "_about": "FAQ section for the home page (and FAQPage structured data). Applied by scripts/content/apply-copy.py as a new dictionary section `faq`.",
+  "sections": {
+    "faq": {
+      "eyebrow": { "he": "שאלות נפוצות", "ar": "أسئلة شائعة", "en": "FAQ" },
+      "title": { "he": "מה שואלים אותנו הכי הרבה", "ar": "أكثر ما يسألنا عنه الزبائن", "en": "What customers ask us most" },
+      "lead": { "he": "תשובות קצרות וישירות. לכל שאלה אחרת, וואטסאפ אחד מספיק.", "ar": "إجابات قصيرة ومباشرة. لأي سؤال آخر، رسالة واتساب واحدة تكفي.", "en": "Short, straight answers. For anything else, one WhatsApp message is enough." },
+      "items": {
+        "q1": { "he": "האם החלפים מקוריים?", "ar": "هل القطع أصلية؟", "en": "Are the parts original (OEM)?" },
+        "a1": {
+          "he": "לא. אנחנו מוכרים חלפים חלופיים (aftermarket) חדשים באיכות גבוהה, שמתאימים להחלפה ישירה של החלק המקורי במחיר נמוך משמעותית. כל חלף מגיע עם אחריות 3 חודשים.",
+          "ar": "لا. نبيع قطع غيار بديلة (aftermarket) جديدة بجودة عالية، تُركّب مكان القطعة الأصلية مباشرة وبسعر أقل بكثير. كل قطعة بضمان 3 أشهر.",
+          "en": "No. We sell new, high-quality aftermarket replacement parts that fit in place of the original part at a much lower price. Every part comes with a 3-month warranty."
+        },
+        "q2": { "he": "לאילו משאיות יש לכם חלפים?", "ar": "لأي شاحنات عندكم قطع غيار؟", "en": "Which trucks do you stock parts for?" },
+        "a2": {
+          "he": "DAF, MAN, וולוו, סקניה, מרצדס ואיווקו: פנסים, מראות, פגושים, מדרגות, מסיטי רוח, גרילים וחלקי מרכב. אם החלק לא בקטלוג, שלחו לנו מספר חלק או תמונה ונשיג אותו.",
+          "ar": "DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو: أضواء، مرايات، صدامات، درجات، كواسر هواء، شبك وقطع هيكل. لو القطعة مش في الكتالوج، أرسل رقم القطعة أو صورة ونوفّرها.",
+          "en": "DAF, MAN, Volvo, Scania, Mercedes and Iveco: lights, mirrors, bumpers, steps, wind deflectors, grilles and body panels. If a part is not in the catalogue, send us a part number or a photo and we will source it."
+        },
+        "q3": { "he": "איך אדע שהחלף יתאים למשאית שלי?", "ar": "كيف أعرف أن القطعة تناسب شاحنتي؟", "en": "How do I know the part fits my truck?" },
+        "a3": {
+          "he": "שלחו לנו בוואטסאפ את מספר החלק המקורי, או תמונה של החלק יחד עם מספר השלדה (VIN). אנחנו מאמתים את ההתאמה לפני שאתם משלמים.",
+          "ar": "أرسل لنا عبر واتساب رقم القطعة الأصلية، أو صورة القطعة مع رقم الشاصي (VIN). نتأكد من التوافق قبل ما تدفع.",
+          "en": "WhatsApp us the original part number, or a photo of the part together with the chassis number (VIN). We confirm fitment before you pay."
+        },
+        "q4": { "he": "כמה זמן לוקח המשלוח?", "ar": "كم يستغرق التوصيل؟", "en": "How long does delivery take?" },
+        "a4": {
+          "he": "חלפים במלאי יוצאים תוך יום עסקים אחד מריינה לכל הארץ, ואפשר גם לאסוף מהמחסן. לחלפים בהזמנה מיוחדת נעדכן בזמן אספקה מדויק לפני שתאשרו.",
+          "ar": "القطع المتوفرة تخرج خلال يوم عمل واحد من الرينة إلى كل البلاد، وممكن الاستلام من المخزن. للقطع بالطلب الخاص نبلغك بموعد التوريد الدقيق قبل ما توافق.",
+          "en": "Parts in stock ship within one business day from Reineh across Israel, or you can collect from our warehouse. For special orders we confirm an exact lead time before you commit."
+        },
+        "q5": { "he": "איך עובד ייבוא אישי של רכב?", "ar": "كيف يتم الاستيراد الشخصي لسيارة؟", "en": "How does personal vehicle import work?" },
+        "a5": {
+          "he": "ספרו לנו איזה רכב אתם רוצים: יצרן, דגם, שנה ותקציב. אנחנו מאתרים אותו באירופה, בארה\"ב או בקנדה, שולחים דוח בדיקה עם תמונות, ומציעים מחיר סופי עד הבית כולל שילוח, מכס ורישוי. אחרי אישורכם אנחנו מטפלים בהכל עד שהרכב מגיע אליכם רשום ומוכן לנסיעה.",
+          "ar": "قل لنا أي سيارة تريد: الماركة والطراز والسنة والميزانية. نبحث عنها في أوروبا أو أمريكا أو كندا، نرسل تقرير فحص مع صور، ونعرض سعراً نهائياً حتى باب بيتك شامل الشحن والجمارك والترخيص. بعد موافقتك نتولى كل شيء حتى تصلك السيارة مرخّصة وجاهزة للقيادة.",
+          "en": "Tell us the vehicle you want: make, model, year and budget. We source it in Europe, the USA or Canada, send an inspection report with photos, and quote a final landed price including shipping, customs and licensing. Once you approve, we handle everything until the vehicle reaches you registered and ready to drive."
+        },
+        "q6": { "he": "איפה אתם ומתי פתוחים?", "ar": "أين أنتم ومتى مفتوح؟", "en": "Where are you and when are you open?" },
+        "a6": {
+          "he": "כביש ראשי 745, ריינה, ליד נצרת. פתוחים כל השבוע מלבד יום שישי, 9:00–18:00. הדרך המהירה ביותר להגיע אלינו היא וואטסאפ.",
+          "ar": "الشارع الرئيسي 745، الرينة، قرب الناصرة. مفتوح كل أيام الأسبوع ما عدا الجمعة، 9:00–18:00. أسرع طريقة للتواصل هي واتساب.",
+          "en": "Main road 745, Reineh, near Nazareth. Open every day except Friday, 9:00–18:00. The fastest way to reach us is WhatsApp."
+        },
+        "q7": { "he": "איך מזמינים ומשלמים?", "ar": "كيف أطلب وأدفع؟", "en": "How do I order and pay?" },
+        "a7": {
+          "he": "אפשר להזמין דרך האתר או לשלוח את הסל בוואטסאפ. אנחנו מאשרים התאמה, מחיר סופי וזמן אספקה, ורק אז סוגרים תשלום ומשלוח ישירות איתכם.",
+          "ar": "تقدر تطلب من الموقع أو ترسل السلة عبر واتساب. نؤكد التوافق والسعر النهائي وموعد التوريد، وبعدها فقط نتفق على الدفع والتوصيل معك مباشرة.",
+          "en": "Order through the site or send your basket on WhatsApp. We confirm fitment, the final price and the delivery time, and only then settle payment and shipping with you directly."
+        }
+      }
+    }
+  }
+}

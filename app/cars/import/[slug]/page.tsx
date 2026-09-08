@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { getRequestLocale } from '@/lib/i18n/request-locale'
+import { pageAlternates } from '@/lib/seo/alternates'
 import { getVehicle, getSimilarVehicles } from '@/lib/wp/vehicles'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -20,6 +22,8 @@ export async function generateMetadata({
 
   return {
     title: `${car.model} · ${car.year} | ALI FLEET`,
+    // hreflang + per-language canonical (he at root, ar/en with their suffixes).
+    alternates: pageAlternates(`/cars/import/${slug}/`, await getRequestLocale()),
     description: car.description.en || car.subtitle.en,
   }
 }

@@ -12,7 +12,7 @@ export function MarqueeStrip() {
   const items = [
     t.home.fleet.truckTitle,
     t.footer.servicesLinks.import,
-    t.products.trustGenuine,
+    t.products.trustFitment,
     t.home.fleet.luxuryTitle,
     t.footer.servicesLinks.parts,
   ]

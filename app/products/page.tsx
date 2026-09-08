@@ -1,22 +1,24 @@
 import type { Metadata } from 'next'
+import { getDictionary } from '@/lib/i18n/dictionaries'
+import { pageAlternates } from '@/lib/seo/alternates'
+import { getRequestLocale } from '@/lib/i18n/request-locale'
 
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { ProductsScreen } from '@/components/products-screen'
 import { getCatalogSummaries } from '@/lib/wp/catalog'
 
-export const metadata: Metadata = {
-  title: 'Spare Parts — Genuine Truck & Commercial Vehicle Parts',
-  description:
-    'Genuine and OEM spare parts for DAF, MAN, Volvo, Mercedes, Scania and Iveco trucks — headlights, mirrors, bumpers, steps and body panels, dispatched from Israel.',
-  alternates: { canonical: '/products' },
-  openGraph: {
-    type: 'website',
-    title: 'Spare Parts — ALI FLEET',
-    description:
-      'Genuine and OEM spare parts for DAF, MAN, Volvo, Mercedes, Scania and Iveco trucks.',
-    url: '/products',
-  },
+/** Title and description follow the visitor's language (see t.seo). */
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getRequestLocale()
+  const t = getDictionary(locale)
+  const alternates = pageAlternates('/products/', locale)
+  return {
+    title: t.seo.productsTitle,
+    description: t.seo.productsDescription,
+    alternates,
+    openGraph: { type: 'website', title: t.seo.productsTitle, description: t.seo.productsDescription, url: alternates.canonical },
+  }
 }
 
 /**

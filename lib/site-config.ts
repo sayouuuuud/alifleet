@@ -18,7 +18,7 @@ export type StoreSettings = {
   email: string
   addressLines: string[]
   hours: string
-  social: { instagram: string; facebook: string; linkedin: string }
+  social: { instagram: string; facebook: string; linkedin: string; tiktok: string }
   currency: string
   wordpress: { baseUrl: string; cartPath: string }
 }
@@ -36,7 +36,7 @@ export const fallbackSettings: StoreSettings = {
   email: '',
   addressLines: [],
   hours: '',
-  social: { instagram: '', facebook: '', linkedin: '' },
+  social: { instagram: '', facebook: '', linkedin: '', tiktok: '' },
   currency: '₪',
   wordpress: { baseUrl: '', cartPath: '/cart/' },
 }

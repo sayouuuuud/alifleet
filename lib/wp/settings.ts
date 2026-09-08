@@ -31,6 +31,7 @@ const SETTINGS_QUERY = /* GraphQL */ `
       instagram
       facebook
       linkedin
+      tiktok
       currencyCode
       currencySymbol
       storeUrl
@@ -50,6 +51,7 @@ type WireSettings = {
     instagram: string | null
     facebook: string | null
     linkedin: string | null
+    tiktok: string | null
     currencyCode: string | null
     currencySymbol: string | null
     storeUrl: string | null
@@ -97,6 +99,7 @@ export async function getStoreSettings(): Promise<StoreSettings> {
       instagram: text(wire.instagram),
       facebook: text(wire.facebook),
       linkedin: text(wire.linkedin),
+      tiktok: text(wire.tiktok),
     },
     currency: text(wire.currencySymbol) || fallbackSettings.currency,
     wordpress: {

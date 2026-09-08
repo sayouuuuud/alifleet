@@ -1,0 +1,217 @@
+{
+  "_about": "Marketing copy batch of 2026-09-08. Key = dictionary path in lib/i18n/dictionaries/*.ts. Hebrew is the source; Arabic and English follow it. Facts: aftermarket truck parts (DAF, MAN, Volvo, Scania, Mercedes, Iveco), 3-month warranty, personal + direct import from Europe / USA / Canada with customs and licensing, used cars in the yard, Reineh main road 745, open every day except Friday 9:00-18:00, 100+ customers. Applied by scripts/content/apply-copy.py.",
+  "strings": {
+    "home.heroLine1": { "he": "חלפים למשאיות", "ar": "قطع غيار للشاحنات", "en": "Truck parts" },
+    "home.heroLine2": { "he": "וייבוא רכבים", "ar": "واستيراد سيارات", "en": "and vehicle import" },
+    "home.heroLine3": { "he": "במחיר סופי,", "ar": "بسعر نهائي،", "en": "at a final price," },
+    "home.heroLine4": { "he": "בלי הפתעות", "ar": "بدون مفاجآت", "en": "no surprises" },
+    "home.heroAvatarAlt": { "he": "מעל 100 לקוחות בצפון ובכל הארץ", "ar": "أكثر من 100 عميل في الشمال وفي كل البلاد", "en": "Over 100 customers across Israel" },
+    "home.heroDescription": {
+      "he": "ALI FLEET מריינה: חלפים חלופיים ל-DAF, MAN, וולוו, סקניה, מרצדס ואיווקו במלאי ובהזמנה, וייבוא אישי של רכבים ומשאיות מאירופה, ארה\"ב וקנדה — כולל שחרור מכס ורישוי.",
+      "ar": "علي فليت من الرينة: قطع غيار بديلة لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو من المخزون أو بالطلب، واستيراد شخصي للسيارات والشاحنات من أوروبا وأمريكا وكندا، شامل التخليص الجمركي والترخيص.",
+      "en": "ALI FLEET, Reineh: aftermarket parts for DAF, MAN, Volvo, Scania, Mercedes and Iveco trucks, in stock or to order, plus personal import of cars and trucks from Europe, the USA and Canada, customs clearance and licensing included."
+    },
+    "home.heroSlides.flagship": { "he": "המובילים", "ar": "الأبرز", "en": "Flagship" },
+    "home.heroSlides.vans": { "he": "רכבי עבודה", "ar": "سيارات عمل", "en": "Work vans" },
+    "home.heroSlides.highway": { "he": "על הכביש", "ar": "على الطريق", "en": "On the road" },
+    "home.stats.eyebrow": { "he": "ALI FLEET במספרים", "ar": "علي فليت بالأرقام", "en": "ALI FLEET in numbers" },
+    "home.fleet.eyebrow": { "he": "רכבים", "ar": "السيارات", "en": "Vehicles" },
+    "home.fleet.titleStart": { "he": "רכבים במלאי", "ar": "سيارات في المخزون", "en": "Vehicles in stock" },
+    "home.fleet.titleEm": { "he": "ורכבים בהזמנה", "ar": "وسيارات بالطلب", "en": "and vehicles to order" },
+    "home.fleet.titleEnd": { "he": "לפי מה שאתם צריכים", "ar": "حسب ما تحتاجه", "en": "for what you actually need" },
+    "home.fleet.lead": {
+      "he": "רכבים משומשים שנמצאים אצלנו בשטח ומוכנים למסירה, ורכבים ומשאיות שאנחנו מאתרים ומייבאים עבורכם מאירופה, ארה\"ב וקנדה.",
+      "ar": "سيارات مستعملة موجودة عندنا في الساحة وجاهزة للتسليم، وسيارات وشاحنات نبحث عنها ونستوردها لك من أوروبا وأمريكا وكندا.",
+      "en": "Used vehicles on our lot, inspected and ready to hand over, plus cars and trucks we source and import for you from Europe, the USA and Canada."
+    },
+    "home.fleet.truckTitle": { "he": "משאיות", "ar": "شاحنات", "en": "Trucks" },
+    "home.fleet.truckTag": { "he": "למכירה ובייבוא", "ar": "للبيع وبالاستيراد", "en": "For sale and to import" },
+    "home.fleet.truckDesc": {
+      "he": "משאיות וראשי טרקטור DAF, MAN, וולוו, סקניה, מרצדס ואיווקו — משומשות שנבדקו אצלנו, או בייבוא לפי הדגם והשנה שאתם מחפשים.",
+      "ar": "شاحنات وقاطرات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو: مستعملة مفحوصة عندنا، أو بالاستيراد حسب الطراز والسنة التي تبحث عنها.",
+      "en": "DAF, MAN, Volvo, Scania, Mercedes and Iveco trucks and tractor units: used and inspected here, or imported to the model and year you are after."
+    },
+    "home.fleet.vanTitle": { "he": "רכבי עבודה וטנדרים", "ar": "سيارات عمل وبيك أب", "en": "Work vans and pickups" },
+    "home.fleet.vanTag": { "he": "לעסקים", "ar": "للأعمال", "en": "For businesses" },
+    "home.fleet.vanDesc": {
+      "he": "ואנים, טנדרים ורכבי שירות לעסקים קטנים וקבלנים, עם ליווי מלא ברישוי ובהעברת בעלות.",
+      "ar": "فانات وبيك أب وسيارات خدمة للمصالح الصغيرة والمقاولين، مع متابعة كاملة للترخيص ونقل الملكية.",
+      "en": "Vans, pickups and service vehicles for small businesses and contractors, with licensing and ownership transfer handled for you."
+    },
+    "home.fleet.luxuryTitle": { "he": "רכבי יוקרה בייבוא אישי", "ar": "سيارات فاخرة باستيراد شخصي", "en": "Luxury cars by personal import" },
+    "home.fleet.luxuryTag": { "he": "מאירופה, ארה\"ב וקנדה", "ar": "من أوروبا وأمريكا وكندا", "en": "From Europe, the USA and Canada" },
+    "home.fleet.luxuryDesc": {
+      "he": "רכב פרטי או יוקרתי שאתם רוצים ולא נמצא בארץ: אנחנו מאתרים, בודקים, משנעים ומשחררים אותו עד הבית, במחיר סופי מראש.",
+      "ar": "سيارة خاصة أو فاخرة تريدها وغير موجودة في البلاد: نبحث عنها، نفحصها، نشحنها ونخلّصها حتى باب بيتك، بسعر نهائي مسبقاً.",
+      "en": "A private or luxury car you want that is not available locally: we source it, inspect it, ship it and clear it to your door, at a final price agreed up front."
+    },
+    "home.globeTracking": { "he": "משלוחים בדרך", "ar": "شحنات في الطريق", "en": "Shipments on the way" },
+    "home.services.eyebrow": { "he": "מה אנחנו עושים", "ar": "ماذا نقدّم", "en": "What we do" },
+    "home.services.title": { "he": "שלושה שירותים.", "ar": "ثلاث خدمات.", "en": "Three services." },
+    "home.services.titleEm": { "he": "כתובת אחת.", "ar": "عنوان واحد.", "en": "One address." },
+    "home.services.lead": { "he": "חלפים, ייבוא אישי וייבוא ישיר — הכל מריינה, עם מחיר סופי מראש.", "ar": "قطع غيار، استيراد شخصي، واستيراد مباشر: كل شيء من الرينة، وبسعر نهائي مسبقاً.", "en": "Parts, personal import and direct import, all from Reineh, all at a final price agreed up front." },
+    "home.services.scene1Kicker": { "he": "ייבוא אישי", "ar": "استيراد شخصي", "en": "Personal import" },
+    "home.services.scene1Title1": { "he": "הרכב שאתם רוצים,", "ar": "السيارة التي تريدها،", "en": "The vehicle you want," },
+    "home.services.scene1Title2": { "he": "מאותר ומיובא עבורכם", "ar": "نجدها ونستوردها لك", "en": "sourced and imported for you" },
+    "home.services.scene1Desc": {
+      "he": "ספרו לנו יצרן, דגם, שנה ותקציב. אנחנו מאתרים את הרכב באירופה, בארה\"ב או בקנדה, בודקים אותו, ומביאים אותו עד אליכם עם כל המסמכים.",
+      "ar": "قل لنا الماركة والطراز والسنة والميزانية. نبحث عن السيارة في أوروبا أو أمريكا أو كندا، نفحصها، ونوصلها إليك مع كل الأوراق.",
+      "en": "Tell us the make, model, year and budget. We find the vehicle in Europe, the USA or Canada, inspect it, and bring it to you with every document in order."
+    },
+    "home.services.spec1Label": { "he": "מקור", "ar": "المصدر", "en": "Origin" },
+    "home.services.spec1Value": { "he": "אירופה · ארה\"ב · קנדה", "ar": "أوروبا · أمريكا · كندا", "en": "Europe · USA · Canada" },
+    "home.services.spec2Label": { "he": "מצב", "ar": "الحالة", "en": "Condition" },
+    "home.services.spec2Value": { "he": "חדש או משומש בדוק", "ar": "جديد أو مستعمل مفحوص", "en": "New or inspected used" },
+    "home.services.spec3Label": { "he": "מה כלול", "ar": "ماذا يشمل", "en": "Included" },
+    "home.services.spec3Value": { "he": "שילוח, מכס ורישוי", "ar": "الشحن والجمارك والترخيص", "en": "Shipping, customs, licensing" },
+    "home.services.spec4Label": { "he": "מחיר", "ar": "السعر", "en": "Price" },
+    "home.services.spec4Value": { "he": "סופי, נסגר מראש", "ar": "نهائي، يُتفق عليه مسبقاً", "en": "Final, agreed up front" },
+    "home.services.specSheetTitle": { "he": "כרטיס ייבוא", "ar": "بطاقة استيراد", "en": "Import sheet" },
+    "home.services.specSheetCode": { "he": "ALI FLEET / ייבוא אישי", "ar": "ALI FLEET / استيراد شخصي", "en": "ALI FLEET / personal import" },
+    "home.services.specAvailable": { "he": "פתוח לבקשות", "ar": "نستقبل الطلبات", "en": "Open for requests" },
+    "home.services.stat1Label": { "he": "לקוחות", "ar": "عملاء", "en": "Customers" },
+    "home.services.stat2Label": { "he": "שווקי ייבוא", "ar": "أسواق استيراد", "en": "Import markets" },
+    "home.services.stat3Label": { "he": "מחיר סופי מראש", "ar": "سعر نهائي مسبقاً", "en": "Final price up front" },
+    "home.services.scene2Kicker": { "he": "ייבוא ישיר", "ar": "استيراد مباشر", "en": "Direct import" },
+    "home.services.scene2Title1": { "he": "מהספק בחו\"ל עד הבית,", "ar": "من المورّد في الخارج حتى بيتك،", "en": "From the supplier abroad to your door," },
+    "home.services.scene2Title2": { "he": "בלי מתווכים", "ar": "بدون وسطاء", "en": "no middlemen" },
+    "home.services.scene2Desc": {
+      "he": "אנחנו עובדים ישירות מול ספקים ומכירות פומביות בחו\"ל, מזמינים את השילוח, ומטפלים בשחרור מהמכס וברישוי בישראל — צעד אחרי צעד, עם עדכונים לאורך הדרך.",
+      "ar": "نتعامل مباشرة مع المورّدين والمزادات في الخارج، نحجز الشحن، ونتولى التخليص الجمركي والترخيص في إسرائيل، خطوة بخطوة مع تحديثات طوال الطريق.",
+      "en": "We deal directly with suppliers and auctions abroad, book the shipping, and handle customs clearance and licensing in Israel, step by step, with updates along the way."
+    },
+    "home.services.trackingLabel": { "he": "מעקב משלוח לדוגמה", "ar": "مثال على تتبع شحنة", "en": "Sample shipment tracking" },
+    "home.services.stop1Label": { "he": "ספק", "ar": "المورّد", "en": "Supplier" },
+    "home.services.stop1Place": { "he": "רוטרדם, הולנד", "ar": "روتردام، هولندا", "en": "Rotterdam, Netherlands" },
+    "home.services.stop2Place": { "he": "אנטוורפן, בלגיה", "ar": "أنتويرب، بلجيكا", "en": "Antwerp, Belgium" },
+    "home.services.stop3Meta": { "he": "בשחרור", "ar": "قيد التخليص", "en": "Clearing now" },
+    "home.services.stop4Label": { "he": "אצלכם", "ar": "عندك", "en": "With you" },
+    "home.services.stop4Place": { "he": "ריינה, ישראל", "ar": "الرينة، إسرائيل", "en": "Reineh, Israel" },
+    "home.services.scene3Kicker": { "he": "חלפים למשאיות", "ar": "قطع غيار للشاحنات", "en": "Truck parts" },
+    "home.services.scene3Title1": { "he": "כל חלף,", "ar": "كل قطعة،", "en": "Every part," },
+    "home.services.scene3Title2": { "he": "בלי להשבית את המשאית", "ar": "بدون توقيف الشاحنة", "en": "without parking the truck" },
+    "home.services.scene3Desc": {
+      "he": "חלפים חלופיים ל-DAF, MAN, וולוו, מרצדס, סקניה ואיווקו — פנסים, מראות, פגושים, מדרגות וחלקי מרכב. מאתרים לפי מספר חלק, אחריות 3 חודשים, ומשלוח מהיר מריינה.",
+      "ar": "قطع غيار بديلة لشاحنات DAF وMAN وفولفو ومرسيدس وسكانيا وإيفيكو: أضواء، مرايات، صدامات، درجات وقطع هيكل. نبحث حسب رقم القطعة، ضمان 3 أشهر، وشحن سريع من الرينة.",
+      "en": "Aftermarket parts for DAF, MAN, Volvo, Mercedes, Scania and Iveco: lights, mirrors, bumpers, steps and body panels. Sourced by part number, 3-month warranty, fast dispatch from Reineh."
+    },
+    "home.services.callout1Label": { "he": "פנסים ותאורה", "ar": "أضواء وإنارة", "en": "Lights and lighting" },
+    "home.services.callout2Label": { "he": "מראות ומסיטי רוח", "ar": "مرايات وكواسر هواء", "en": "Mirrors and wind deflectors" },
+    "home.services.callout3Label": { "he": "פגושים ומדרגות", "ar": "صدامات ودرجات", "en": "Bumpers and steps" },
+    "home.services.liveInventory": { "he": "מהמלאי", "ar": "من المخزون", "en": "From stock" },
+    "home.services.stock1Name": { "he": "פנסים קדמיים DAF XF / LF", "ar": "أضواء أمامية DAF XF / LF", "en": "DAF XF / LF headlights" },
+    "home.services.stock2Name": { "he": "מראות צד חשמליות MAN TGX", "ar": "مرايات جانبية كهربائية MAN TGX", "en": "MAN TGX electric side mirrors" },
+    "home.services.stock3Name": { "he": "מדרגות ופינות פגוש וולוו FH", "ar": "درجات وزوايا صدام فولفو FH", "en": "Volvo FH steps and bumper corners" },
+    "home.cta.eyebrow": { "he": "דברו איתנו", "ar": "تواصل معنا", "en": "Talk to us" },
+    "home.cta.title": { "he": "צריכים חלף או רכב? תשובה תוך שעות, לא ימים.", "ar": "تحتاج قطعة أو سيارة؟ الرد خلال ساعات، لا أيام.", "en": "Need a part or a vehicle? Answers in hours, not days." },
+    "home.cta.lead": {
+      "he": "שלחו בוואטסאפ מספר חלק, תמונה או שם דגם — נחזור עם מחיר סופי וזמן אספקה. פתוחים כל השבוע מלבד יום שישי, 9:00–18:00.",
+      "ar": "أرسل عبر واتساب رقم القطعة أو صورة أو اسم الطراز، ونرد عليك بسعر نهائي وموعد التوريد. مفتوح كل أيام الأسبوع ما عدا الجمعة، 9:00–18:00.",
+      "en": "WhatsApp us a part number, a photo or a model name and we come back with a final price and a delivery time. Open every day except Friday, 9:00–18:00."
+    },
+    "home.cta.primary": { "he": "וואטסאפ עכשיו", "ar": "واتساب الآن", "en": "WhatsApp now" },
+    "home.cta.secondary": { "he": "לקטלוג החלפים", "ar": "إلى كتالوج القطع", "en": "Browse the parts" },
+
+    "products.title": { "he": "חלפים חלופיים למשאיות,", "ar": "قطع غيار بديلة للشاحنات،", "en": "Aftermarket truck parts," },
+    "products.titleEm": { "he": "במחיר סופי מראש", "ar": "بسعر نهائي مسبقاً", "en": "at a final price up front" },
+    "products.lead": {
+      "he": "פנסים, מראות, פגושים, מדרגות, מסיטי רוח וחלקי מרכב ל-DAF, MAN, וולוו, סקניה, מרצדס ואיווקו. מאתרים לפי מספר חלק, אחריות 3 חודשים, ומשלוח מהיר מריינה לכל הארץ.",
+      "ar": "أضواء، مرايات، صدامات، درجات، كواسر هواء وقطع هيكل لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو. نبحث حسب رقم القطعة، ضمان 3 أشهر، وشحن سريع من الرينة إلى كل البلاد.",
+      "en": "Lights, mirrors, bumpers, steps, wind deflectors and body panels for DAF, MAN, Volvo, Scania, Mercedes and Iveco. Sourced by part number, 3-month warranty, fast dispatch from Reineh across Israel."
+    },
+    "products.searchPlaceholder": { "he": "חפשו לפי שם, מותג, דגם (FH, XF, TGX) או מספר פריט…", "ar": "ابحث بالاسم أو الماركة أو الطراز (FH, XF, TGX) أو رقم القطعة…", "en": "Search by name, brand, model (FH, XF, TGX) or part number…" },
+    "productDetail.askAbout": { "he": "שאלו על החלף בוואטסאפ", "ar": "اسأل عن القطعة عبر واتساب", "en": "Ask about this part on WhatsApp" },
+
+    "cars.title": { "he": "רכבים במלאי,", "ar": "سيارات في المخزون،", "en": "Vehicles in stock," },
+    "cars.titleEm": { "he": "ורכבים שנייבא עבורכם", "ar": "وسيارات نستوردها لك", "en": "and vehicles we import for you" },
+    "cars.lead": {
+      "he": "שתי דרכים לרכב הבא שלכם: לקנות רכב שכבר נמצא אצלנו בשטח ונבדק, או לתת לנו לאתר, לבדוק ולהביא בדיוק את הרכב שביקשתם מאירופה, ארה\"ב או קנדה.",
+      "ar": "طريقان للسيارة القادمة: تشتري سيارة موجودة عندنا في الساحة ومفحوصة، أو تتركنا نبحث ونفحص ونستورد بالضبط السيارة التي طلبتها من أوروبا أو أمريكا أو كندا.",
+      "en": "Two ways to your next vehicle: buy one that is already on our lot and inspected, or let us source, inspect and import exactly the vehicle you asked for from Europe, the USA or Canada."
+    },
+
+    "import.lead": {
+      "he": "אנחנו מאתרים, בודקים, משנעים ומשחררים רכבים ומשאיות מאירופה, ארה\"ב וקנדה — מטפלים במכס וברישוי, ונותנים מחיר סופי מראש.",
+      "ar": "نبحث ونفحص ونشحن ونخلّص سيارات وشاحنات من أوروبا وأمريكا وكندا، نتولى الجمارك والترخيص، ونعطيك سعراً نهائياً مسبقاً.",
+      "en": "We source, inspect, ship and clear cars and trucks from Europe, the USA and Canada, handle customs and licensing, and give you a final price up front."
+    },
+    "import.stepsTitle": { "he": "ארבעה שלבים מהבקשה ועד הלוחית", "ar": "أربع خطوات من الطلب حتى اللوحة", "en": "Four steps from your request to the licence plate" },
+    "import.step2Desc": {
+      "he": "אנחנו בודקים את הרכב במקום, שולחים לכם דוח עם תמונות, ומציעים מחיר סופי עד הבית — כולל שילוח, מכס ומיסים.",
+      "ar": "نفحص السيارة في مكانها، نرسل لك تقريراً مع صور، ونعرض سعراً نهائياً حتى باب بيتك، شامل الشحن والجمارك والضرائب.",
+      "en": "We inspect the vehicle on site, send you a report with photos, and quote a final price to your door including shipping, customs and taxes."
+    },
+    "import.step3Desc": {
+      "he": "אנחנו מזמינים את השילוח ומטפלים במסמכי היצוא, בשחרור מהמכס ובמיסים בנמל בישראל.",
+      "ar": "نحجز الشحن ونتولى أوراق التصدير والتخليص الجمركي والضرائب في الميناء في إسرائيل.",
+      "en": "We book the shipping and handle the export papers, customs clearance and taxes at the port in Israel."
+    },
+    "import.step4Desc": { "he": "רישוי, טסט והעברת בעלות — הרכב מגיע אליכם מוכן לנסיעה.", "ar": "الترخيص والفحص ونقل الملكية: السيارة تصلك جاهزة للقيادة.", "en": "Licensing, roadworthiness test and ownership transfer: the vehicle reaches you ready to drive." },
+    "import.listLead": { "he": "כל רכב שלמטה מאומת וזמין לשריון. המחירים הם הערכה עד הבית; המחיר הסופי נסגר לפני ההזמנה.", "ar": "كل سيارة أدناه متحقق منها ومتاحة للحجز. الأسعار تقديرية حتى باب البيت؛ السعر النهائي يُتفق عليه قبل الطلب.", "en": "Every vehicle below is verified and available to reserve. Prices are landed estimates; the final price is agreed before you order." },
+
+    "contact.title": { "he": "דברו איתנו על", "ar": "كلّمنا عن", "en": "Talk to us about" },
+    "contact.titleEm": { "he": "החלף או הרכב שאתם צריכים", "ar": "القطعة أو السيارة التي تحتاجها", "en": "the part or vehicle you need" },
+    "contact.lead": {
+      "he": "הכי מהיר בוואטסאפ: שלחו מספר חלק, תמונה או דגם ונחזור עם מחיר. פתוחים כל השבוע מלבד יום שישי, 9:00–18:00, בכביש הראשי 745, ריינה.",
+      "ar": "الأسرع عبر واتساب: أرسل رقم القطعة أو صورة أو الطراز ونرد عليك بالسعر. مفتوح كل أيام الأسبوع ما عدا الجمعة، 9:00–18:00، الشارع الرئيسي 745، الرينة.",
+      "en": "Fastest on WhatsApp: send a part number, a photo or a model and we reply with a price. Open every day except Friday, 9:00–18:00, main road 745, Reineh."
+    },
+    "contact.subjects.fleet": { "he": "קניית רכב מהמלאי", "ar": "شراء سيارة من المخزون", "en": "Buying a vehicle from stock" },
+    "contact.mapAlt": { "he": "מפה: ALI FLEET, כביש ראשי 745, ריינה", "ar": "خريطة: علي فليت، الشارع الرئيسي 745، الرينة", "en": "Map: ALI FLEET, main road 745, Reineh" },
+
+    "blog.title": { "he": "מדריכים וטיפים", "ar": "أدلة ونصائح", "en": "Guides and tips" },
+    "blog.titleEm": { "he": "מהשטח", "ar": "من أرض الواقع", "en": "from the ground" },
+    "blog.lead": {
+      "he": "איך מייבאים רכב לישראל, מה לבדוק לפני קניית משאית משומשת, ואיך מזהים חלף לפי מספר — מהניסיון היומיומי של ALI FLEET.",
+      "ar": "كيف تستورد سيارة إلى إسرائيل، ماذا تفحص قبل شراء شاحنة مستعملة، وكيف تتعرف على القطعة من رقمها، من خبرة علي فليت اليومية.",
+      "en": "How to import a vehicle into Israel, what to check before buying a used truck, and how to identify a part by its number, from ALI FLEET's day-to-day experience."
+    },
+    "blog.categories.fleet": { "he": "רכבים", "ar": "سيارات", "en": "Vehicles" },
+
+    "footer.fleetLinks.trucks": { "he": "משאיות למכירה", "ar": "شاحنات للبيع", "en": "Trucks for sale" },
+    "footer.fleetLinks.vans": { "he": "רכבי עבודה", "ar": "سيارات عمل", "en": "Work vans" },
+    "footer.fleetLinks.luxury": { "he": "ייבוא רכבי יוקרה", "ar": "استيراد سيارات فاخرة", "en": "Luxury car import" },
+    "footer.fleetLinks.used": { "he": "רכבים משומשים במלאי", "ar": "سيارات مستعملة في المخزون", "en": "Used vehicles in stock" },
+    "footer.servicesLinks.consulting": { "he": "ליווי בייבוא אישי", "ar": "مرافقة في الاستيراد الشخصي", "en": "Personal import guidance" },
+    "footer.servicesLinks.support": { "he": "אחריות ושירות", "ar": "الضمان والخدمة", "en": "Warranty and service" },
+    "footer.companyLinks.careers": { "he": "למה ALI FLEET", "ar": "لماذا علي فليت", "en": "Why ALI FLEET" },
+    "footer.companyLinks.news": { "he": "מדריכים", "ar": "أدلة", "en": "Guides" },
+    "footer.slogan": { "he": "חלפים ורכבים. מחיר סופי, בלי הפתעות.", "ar": "قطع غيار وسيارات. سعر نهائي، بدون مفاجآت.", "en": "Parts and vehicles. Final price, no surprises." }
+  },
+  "seo": {
+    "_about": "New dictionary section `seo`, used by generateMetadata in app/layout.tsx and the page files. Titles get ' | ALI FLEET' appended by the layout template except siteTitle.",
+    "siteTitle": { "he": "ALI FLEET — חלפים למשאיות וייבוא רכבים | ריינה", "ar": "علي فليت — قطع غيار للشاحنات واستيراد سيارات | الرينة", "en": "ALI FLEET — Truck Parts and Vehicle Import | Reineh, Israel" },
+    "siteDescription": {
+      "he": "חלפים חלופיים למשאיות DAF, MAN, וולוו, סקניה, מרצדס ואיווקו עם אחריות 3 חודשים, וייבוא אישי של רכבים ומשאיות מאירופה, ארה\"ב וקנדה כולל מכס ורישוי. ALI FLEET, ריינה.",
+      "ar": "قطع غيار بديلة لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو بضمان 3 أشهر، واستيراد شخصي للسيارات والشاحنات من أوروبا وأمريكا وكندا شامل الجمارك والترخيص. علي فليت، الرينة.",
+      "en": "Aftermarket parts for DAF, MAN, Volvo, Scania, Mercedes and Iveco trucks with a 3-month warranty, plus personal import of cars and trucks from Europe, the USA and Canada, customs and licensing included. ALI FLEET, Reineh, Israel."
+    },
+    "productsTitle": { "he": "חלפים למשאיות — פנסים, מראות, פגושים ומדרגות", "ar": "قطع غيار للشاحنات — أضواء، مرايات، صدامات ودرجات", "en": "Truck Parts — Lights, Mirrors, Bumpers and Steps" },
+    "productsDescription": {
+      "he": "קטלוג חלפים חלופיים ל-DAF, MAN, וולוו, סקניה, מרצדס ואיווקו: פנסים, מראות, פגושים, מדרגות, מסיטי רוח וחלקי מרכב. אחריות 3 חודשים ומשלוח מהיר מריינה.",
+      "ar": "كتالوج قطع غيار بديلة لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو: أضواء، مرايات، صدامات، درجات، كواسر هواء وقطع هيكل. ضمان 3 أشهر وشحن سريع من الرينة.",
+      "en": "Aftermarket parts catalogue for DAF, MAN, Volvo, Scania, Mercedes and Iveco trucks: lights, mirrors, bumpers, steps, wind deflectors and body panels. 3-month warranty, fast dispatch from Reineh."
+    },
+    "carsTitle": { "he": "רכבים למכירה וייבוא רכב אישי", "ar": "سيارات للبيع واستيراد سيارات شخصي", "en": "Vehicles for Sale and Personal Vehicle Import" },
+    "carsDescription": {
+      "he": "רכבים ומשאיות משומשים במלאי בריינה, וייבוא אישי של רכבים מאירופה, ארה\"ב וקנדה: איתור, בדיקה, שילוח, מכס ורישוי במחיר סופי מראש.",
+      "ar": "سيارات وشاحنات مستعملة في المخزون في الرينة، واستيراد شخصي للسيارات من أوروبا وأمريكا وكندا: بحث، فحص، شحن، جمارك وترخيص بسعر نهائي مسبقاً.",
+      "en": "Used cars and trucks in stock in Reineh, plus personal import from Europe, the USA and Canada: sourcing, inspection, shipping, customs and licensing at a final price up front."
+    },
+    "contactTitle": { "he": "צור קשר — וואטסאפ, טלפון וכתובת", "ar": "اتصل بنا — واتساب وهاتف وعنوان", "en": "Contact — WhatsApp, Phone and Address" },
+    "contactDescription": {
+      "he": "דברו עם ALI FLEET בוואטסאפ או בטלפון על חלפים למשאיות, ייבוא רכב או רכב מהמלאי. כביש ראשי 745, ריינה. פתוחים כל השבוע מלבד יום שישי, 9:00–18:00.",
+      "ar": "تواصل مع علي فليت عبر واتساب أو الهاتف بخصوص قطع غيار الشاحنات أو استيراد سيارة أو سيارة من المخزون. الشارع الرئيسي 745، الرينة. مفتوح كل الأسبوع ما عدا الجمعة، 9:00–18:00.",
+      "en": "Reach ALI FLEET on WhatsApp or by phone about truck parts, vehicle import or a vehicle from stock. Main road 745, Reineh. Open every day except Friday, 9:00–18:00."
+    },
+    "blogTitle": { "he": "מדריכים: ייבוא רכב וחלפים למשאיות", "ar": "أدلة: استيراد السيارات وقطع غيار الشاحنات", "en": "Guides: Vehicle Import and Truck Parts" },
+    "blogDescription": {
+      "he": "מדריכים מעשיים מ-ALI FLEET: ייבוא רכב לישראל, קניית משאית משומשת, וזיהוי חלפים לפי מספר חלק.",
+      "ar": "أدلة عملية من علي فليت: استيراد سيارة إلى إسرائيل، شراء شاحنة مستعملة، والتعرف على القطع حسب رقم القطعة.",
+      "en": "Practical guides from ALI FLEET: importing a vehicle into Israel, buying a used truck, and identifying parts by part number."
+    },
+    "cartTitle": { "he": "העגלה", "ar": "سلة المشتريات", "en": "Cart" },
+    "cartDescription": { "he": "בדקו את החלפים שבחרתם והמשיכו לתשלום מאובטח.", "ar": "راجع القطع التي اخترتها وتابع إلى الدفع الآمن.", "en": "Review the parts you picked and continue to secure checkout." },
+    "productSuffix": { "he": "חלפים למשאיות", "ar": "قطع غيار للشاحنات", "en": "Truck parts" }
+  }
+}

@@ -1,0 +1,60 @@
+﻿raw,model,compat,note,count,skus
+דאף CF,CF,DAF CF,,5,HTP-CF038L HTP-CF038R HTP-CF039 HTP-CF057L HTP-CF057R
+דאף - יורו  6 מתאים 12-15 טון,LF 12-15 טון יורו 6,DAF LF,model inferred from tonnage,2,HTP-CF067L HTP-CF067R
+דאף cf-xf,CF / XF,DAF CF | DAF XF,,2,HTP-DXF003L HTP-DXF003R
+דאף.וולקסוואגן קראפטר דבל קבינה,Crafter,Crafter,,2,HTP-DXF004L HTP-DXF004R
+דאף.וולוו.מרצדס,LF,DAF LF,"brands only: DAF, Volvo, Mercedes; model from SKU code (check)",1,HTP-LF002
+12 טון יורו 5,LF 12 טון יורו 5,DAF LF,model inferred from tonnage,2,HTP-LF004L HTP-LF004R
+דאף - יורו 5 ו 6 מתאים 12-15 טון,LF 12-15 טון יורו 5/6,DAF LF,model inferred from tonnage,4,HTP-LF005L HTP-LF005R HTP-XF001L-EM HTP-XF001R-EM
+דאף -וולוו-רינו,LF,DAF LF,"brands only: DAF, Volvo, Renault; model from SKU code (check)",2,HTP-LF007L HTP-LF007R
+15-12טון יורו 6,LF 12-15 טון יורו 6,DAF LF,model inferred from tonnage,2,HTP-LF010L HTP-LF059
+15-12טון יורו 5,LF 12-15 טון יורו 5,DAF LF,model inferred from tonnage,1,HTP-LF010R
+12טון-15טון יורו 5,LF 12-15 טון יורו 5,DAF LF,model inferred from tonnage,1,HTP-LF014
+12  טון יורו 5,LF 12 טון יורו 5,DAF LF,model inferred from tonnage,2,HTP-LF021L HTP-LF021R
+דאף יורו 5  15 - 18 טון,LF 15-18 טון יורו 5,DAF LF,model inferred from tonnage,2,HTP-LF029L HTP-LF029R
+צבע לבן מקורי 12 טון יורו 6,LF 12 טון יורו 6,DAF LF,model inferred from tonnage,1,HTP-LF030
+יורו 6 15-12טון,LF 12-15 טון יורו 6,DAF LF,model inferred from tonnage,3,HTP-LF032L HTP-LF032R HTP-LF048
+מתאים יורו 6 10 - 12 טון,LF 10-12 טון יורו 6,DAF LF,model inferred from tonnage,2,HTP-LF033L HTP-LF033R
+דאף - יור 6 מתאים 12-15 טון,LF 12-15 טון יורו 6,DAF LF,model inferred from tonnage,1,HTP-LF040
+דאף 12 טון,LF 12 טון,DAF LF,model inferred from tonnage,1,HTP-LF041
+דאף יורו 6 15-12 טון,LF 12-15 טון יורו 6,DAF LF,model inferred from tonnage,4,HTP-LF042 HTP-LF046L HTP-LF046R HTP-LF056
+tgl 2005-2021 tgm 2005-2024,TGL 2005-2021 / TGM 2005-2021,MAN TGL 2005-2021 | MAN TGM 2005-2021,TGM end year → 2021 (Excel autofill),2,HTP-LF047L HTP-MTG074L
+tgl 2005-2021 tgm 2005-2023,TGL 2005-2021 / TGM 2005-2021,MAN TGL 2005-2021 | MAN TGM 2005-2021,TGM end year → 2021 (Excel autofill),2,HTP-LF047R HTP-MTG074R
+15 טון יורו 6,LF 15 טון יורו 6,DAF LF,model inferred from tonnage,2,HTP-LF051L HTP-LF051R
+דאף יורו 5 ו 6 10 - 12 טון,LF 10-12 טון יורו 5/6,DAF LF,model inferred from tonnage,2,HTP-LF052L HTP-LF052R
+כיסוי ערפל לפגוש קדמי דאף 12 טון,LF 12 טון,DAF LF,model inferred from tonnage,2,HTP-LF054L HTP-LF054R
+דרף LF יורו 6 15 טון,LF 15 טון יורו 6,DAF LF,,2,HTP-LF055L HTP-LF055R
+18 טון יורו 5,LF 18 טון יורו 5,DAF LF,model inferred from tonnage,1,HTP-LF058L
+17 טון יורו 5,LF 17 טון יורו 5,DAF LF,model inferred from tonnage,1,HTP-LF058R
+דאף יורו 5  10 - 12 טון,LF 10-12 טון יורו 5,DAF LF,model inferred from tonnage,1,HTP-LF060
+דאף 2001-2012 יורו 5 ו 6 מתאים 12-15 טון,LF 12-15 טון יורו 5/6 2001-2012,DAF LF 2001-2012,model inferred from tonnage,2,HTP-LF061L HTP-LF061R
+דאף יורו 5 ו 6 10 - 26 טון,CF 10-26 טון יורו 5/6,DAF CF,model inferred from tonnage,1,HTP-LF063
+דאף XG מתאים 2021 עד 2027,XG 2021+,DAF XG 2021+,year > 2026 → 2026 (Excel autofill),1,HTP-XG001L
+דאף XG מתאים 2021 עד 2026,XG 2021+,DAF XG 2021+,,1,HTP-XG001R
+דאף xg,XG,DAF XG,,2,HTP-XG030L HTP-XG030R
+דאף xg -xf,XG / XF,DAF XG | DAF XF,,2,HTP-XG031L HTP-XG031R
+s-way,S-Way,Iveco S-Way,,2,HTP-ISW032L-EM HTP-ISW032R-EM
+מאן tga-tgs-tgx,TGA / TGS / TGX,MAN TGA | MAN TGS | MAN TGX,,4,HTP-MTG018L HTP-MTG018R HTP-MTG019L HTP-MTG019R
+MAN TGX Euro 7,TGX יורו 6,MAN TGX,Euro 7-9 → Euro 6 (Excel autofill),1,HTP-MTG057L
+MAN TGX Euro 6,TGX יורו 6,MAN TGX,,1,HTP-MTG057R
+MAN TGX Euro 9,TGX יורו 6,MAN TGX,Euro 7-9 → Euro 6 (Excel autofill),1,HTP-MTG058L
+MAN TGX Euro 8,TGX יורו 6,MAN TGX,Euro 7-9 → Euro 6 (Excel autofill),1,HTP-MTG058R
+tgl 2005-2021 tgm 2005-2022,TGL 2005-2021 / TGM 2005-2021,MAN TGL 2005-2021 | MAN TGM 2005-2021,TGM end year → 2021 (Excel autofill),1,HTP-MTG059L
+tgl 2005-2021 tgm 2005-2021,TGL 2005-2021 / TGM 2005-2021,MAN TGL 2005-2021 | MAN TGM 2005-2021,,1,HTP-MTG059R
+tgl 2005-2021 tgm 2005-2026,TGL 2005-2021 / TGM 2005-2021,MAN TGL 2005-2021 | MAN TGM 2005-2021,TGM end year → 2021 (Excel autofill),1,HTP-MTG075L
+tgl 2005-2021 tgm 2005-2025,TGL 2005-2021 / TGM 2005-2021,MAN TGL 2005-2021 | MAN TGM 2005-2021,TGM end year → 2021 (Excel autofill),1,HTP-MTG075R
+מאן tgl-tgs-tgx,TGL / TGS / TGX,MAN TGL | MAN TGS | MAN TGX,,4,HTP-NMX002L HTP-NMX002R HTP-NMX003L HTP-NMX003R
+MERCEDES ACTROS MP4 [2012-2020],Actros MP4 2012-2020,Mercedes Actros MP4 2012-2020,,2,HTP-BP4001L HTP-BP4001R
+מרצדס אקטרוס mp4,Actros MP4,Mercedes Actros MP4,,3,HTP-BP4004 HTP-BP4047L HTP-BP4047R
+actros מרצדס,Actros,Mercedes Actros,,2,HTP-BP4063L HTP-BP4063R
+סקאניה,R,Scania R,brands only: Scania; model from SKU code (check),2,HTP-RR004-1L HTP-RR004-1R
+scania s-r-g-p 2017-,S / R / G / P 2017+,Scania S 2017+ | Scania R 2017+ | Scania G 2017+ | Scania P 2017+,,4,HTP-RR004L HTP-RR004R HTP-SR001-3L HTP-SR001-3R
+scania r-s 2018-2022,R / S 2018-2022,Scania R 2018-2022 | Scania S 2018-2022,,1,HTP-SR002L
+scania r-s 2018-2021,R / S 2018-2021,Scania R 2018-2021 | Scania S 2018-2021,,1,HTP-SR002R
+scanua l/s,L / S,Scania L | Scania S,,2,HTP-SR082L HTP-SR082R
+וולוו fh-fm 2018,FH / FM 2018+,Volvo FH 2018+ | Volvo FM 2018+,,1,HTP-VH14017-2L
+וולוו fh-fm 2017,FH / FM 2017+,Volvo FH 2017+ | Volvo FM 2017+,,1,HTP-VH14017-2R
+וולוו fh-fm,FH / FM,Volvo FH | Volvo FM,,2,HTP-VH15001L HTP-VH15001R
+וולוו FL-FE,FL / FE,Volvo FL | Volvo FE,,8,HTP-VM002L-EM HTP-VM002R-EM HTP-VM045L HTP-VM045R HTP-VM057L HTP-VM057R HTP-VM065L HTP-VM065R
+מתאים דאף וולוו ו רינו,FM,Volvo FM,"brands only: DAF, Volvo, Renault; model from SKU code (check)",2,HTP-VM041L HTP-VM041R
+מתאים יורו 5 ו וירו 6 15 טון,LF 15 טון יורו 5/6,DAF LF,model inferred from tonnage,1,HTP-LF006

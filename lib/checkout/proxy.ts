@@ -194,7 +194,6 @@ function isTrustedStorefrontHost(hostname: string) {
   return (
     normalized === 'alifleet.com' ||
     normalized === 'www.alifleet.com' ||
-    normalized.endsWith('.vercel.app') ||
     normalized === 'localhost' ||
     normalized === '127.0.0.1' ||
     normalized === '::1'

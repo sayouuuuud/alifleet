@@ -257,7 +257,7 @@ const fallbackTerms: MultilingualPolicy = {
       <h2>General Terms & Conditions — AliFleet</h2>
       <p>Welcome to ALI FLEET. These terms and conditions outline the rules and regulations for the use of our website and services for spare parts procurement and commercial vehicle importation.</p>
       <h3>1. Scope of Services</h3>
-      <p>ALI FLEET supplies commercial vehicles, trucks, and genuine automotive spare parts worldwide. All transactions comply with applicable commercial regulations.</p>
+      <p>ALI FLEET supplies commercial vehicles, trucks, and aftermarket truck spare parts across Israel. All transactions comply with applicable commercial regulations.</p>
       <h3>2. Pricing & Payments</h3>
       <p>All prices displayed are subject to confirmation upon order placement. Invoices and payment milestones must be settled in accordance with sales agreements.</p>
     `,

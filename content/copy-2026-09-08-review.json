@@ -1,0 +1,206 @@
+{
+  "_note": "2026-09-08 localisation + SEO/GEO review. Values only: no dictionary key is added, renamed or removed except the four new seo.* keys (orgName, orgAlternateName, areaServed, openingHoursText) used by the localised JSON-LD in app/layout.tsx.",
+  "strings": {
+    "nav.products": { "he": "חלקי חילוף למשאיות", "ar": "قطع غيار شاحنات", "en": "Truck Parts" },
+    "nav.cars": { "he": "רכבים", "ar": "السيارات", "en": "Vehicles" },
+    "common.sku": { "he": "מק\"ט", "ar": "رقم القطعة", "en": "Part number" },
+    "common.backToProducts": { "he": "חזרה לחלקי החילוף", "ar": "العودة إلى قطع الغيار", "en": "Back to truck parts" },
+
+    "home.heroLine1": { "he": "חלקי חילוף למשאיות", "ar": "قطع غيار شاحنات", "en": "Truck spare parts" },
+    "home.heroAvatarAlt": { "he": "יותר מ-100 לקוחות בכל הארץ", "ar": "أكثر من 100 عميل في جميع أنحاء البلاد", "en": "Over 100 customers across Israel" },
+    "home.heroDescription": {
+      "he": "ALI FLEET בריינה: חלקי חילוף איכותיים למשאיות DAF, MAN, וולוו, סקניה, מרצדס ואיווקו, במלאי או בהזמנה, עם אחריות 3 חודשים. בנוסף, ייבוא אישי של רכבים ומשאיות מאירופה, ארה\"ב וקנדה כולל מכס ורישוי.",
+      "ar": "علي فليت في الرينة: قطع غيار بديلة ذات جودة عالية لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو، متوفرة في المخزون أو بالطلب مع ضمان 3 أشهر. بالإضافة إلى استيراد شخصي للسيارات والشاحنات من أوروبا وأمريكا وكندا شامل التخليص الجمركي والترخيص.",
+      "en": "ALI FLEET, Reineh: aftermarket spare parts (OEM-replacement) for DAF, MAN, Volvo, Scania, Mercedes-Benz and Iveco heavy vehicles, in stock or to order with a 3-month warranty, plus personal import of cars and trucks from Europe, the USA and Canada with customs clearance and licensing included."
+    },
+    "home.stats.customers": { "he": "לקוחות מרוצים", "ar": "عميل يثق بنا", "en": "Customers served" },
+    "home.stats.parts": { "he": "חלקי חילוף במלאי", "ar": "قطعة غيار في المخزون", "en": "Spare parts in stock" },
+    "home.stats.brands": { "he": "יצרני משאיות", "ar": "علامات شاحنات", "en": "Truck makes covered" },
+    "home.stats.markets": { "he": "שווקי ייבוא", "ar": "أسواق استيراد", "en": "Import markets" },
+    "home.fleet.truckDesc": {
+      "he": "משאיות וגוררים של DAF, MAN, וולוו, סקניה, מרצדס ואיווקו: משומשים ובדוקים אצלנו במגרש, או מיובאים בדיוק לפי הדגם והשנתון שאתם צריכים.",
+      "ar": "شاحنات وقاطرات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو: مستعملة ومفحوصة عندنا، أو مستوردة حسب الموديل والسنة التي تحتاجها.",
+      "en": "DAF, MAN, Volvo, Scania, Mercedes-Benz and Iveco trucks and tractor units: used and inspected on our lot, or imported to the exact model and year you need."
+    },
+    "home.services.lead": {
+      "he": "חלקי חילוף למשאיות, ייבוא אישי וייבוא ישיר, הכול מריינה, הכול במחיר סופי שנסגר מראש.",
+      "ar": "قطع غيار شاحنات، استيراد شخصي واستيراد مباشر، كل ذلك من الرينة وبسعر نهائي متفق عليه مسبقاً.",
+      "en": "Truck spare parts, personal import and direct import, all from Reineh, all at a final price agreed up front."
+    },
+    "home.services.scene3Kicker": { "he": "חלקי חילוף למשאיות", "ar": "قطع غيار الشاحنات", "en": "Truck spare parts" },
+    "home.services.scene3Desc": {
+      "he": "חלקי חילוף איכותיים למשאיות DAF, MAN, וולוו, סקניה, מרצדס ואיווקו: פנסים, מראות, פגושים, מדרגות, מסיטי רוח וחלקי מרכב. איתור לפי מספר חלק, אחריות 3 חודשים ומשלוח מהמלאי תוך יום עסקים.",
+      "ar": "قطع غيار بديلة ذات جودة عالية لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو: إضاءة، مرايا، صدّامات، درجات، كاسرات رياح وقطع هيكل. مطابقة حسب رقم القطعة، ضمان 3 أشهر، وشحن من المخزون خلال يوم عمل.",
+      "en": "Aftermarket spare parts for DAF, MAN, Volvo, Scania, Mercedes-Benz and Iveco heavy vehicles: lights, mirrors, bumpers, cab steps, wind deflectors and body panels. Matched by part number, 3-month warranty, shipped from stock within one business day."
+    },
+
+    "products.eyebrow": { "he": "חלקי חילוף למשאיות", "ar": "قطع غيار الشاحنات", "en": "Truck Spare Parts" },
+    "products.title": { "he": "חלקי חילוף איכותיים למשאיות,", "ar": "قطع غيار بديلة ذات جودة عالية للشاحنات،", "en": "Aftermarket truck spare parts," },
+    "products.titleEm": { "he": "עם אחריות 3 חודשים", "ar": "مع ضمان 3 أشهر", "en": "with a 3-month warranty" },
+    "products.lead": {
+      "he": "פנסים, מראות, פגושים, מדרגות, מסיטי רוח וחלקי מרכב חלופיים למשאיות DAF, MAN, וולוו, סקניה, מרצדס ואיווקו. איתור לפי מספר חלק, אחריות 3 חודשים ומשלוח מהיר מריינה לכל הארץ.",
+      "ar": "إضاءة ومرايا وصدّامات ودرجات وكاسرات رياح وقطع هيكل بديلة لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو. مطابقة حسب رقم القطعة، ضمان 3 أشهر، وشحن سريع من الرينة إلى كل أنحاء البلاد.",
+      "en": "OEM-replacement lights, mirrors, bumpers, cab steps, wind deflectors and body panels for DAF, MAN, Volvo, Scania, Mercedes-Benz and Iveco heavy vehicles. Matched by part number, 3-month warranty, fast dispatch from Reineh to anywhere in Israel."
+    },
+    "products.searchPlaceholder": {
+      "he": "חיפוש לפי שם חלק, יצרן, דגם (FH, XF, TGX, אקטרוס) או מספר חלק…",
+      "ar": "ابحث حسب اسم القطعة أو الشركة أو الموديل (FH, XF, TGX, أكتروس) أو رقم القطعة…",
+      "en": "Search by part name, truck make, model (FH, XF, TGX, Actros) or part number…"
+    },
+    "products.trustWarranty": { "he": "אחריות 3 חודשים", "ar": "ضمان 3 أشهر", "en": "3-month warranty" },
+    "products.trustShipping": { "he": "משלוח מהיר מריינה", "ar": "شحن سريع من الرينة", "en": "Fast dispatch from Reineh" },
+    "products.trustFitment": { "he": "אישור התאמה לפני התשלום", "ar": "تأكيد التوافق قبل الدفع", "en": "Fitment confirmed before you pay" },
+
+    "productDetail.fitmentNote": {
+      "he": "לא בטוחים שהחלק מתאים? שלחו לנו את מספר השלדה (VIN) בוואטסאפ ונאשר התאמה לפני התשלום.",
+      "ar": "غير متأكد من التوافق؟ أرسل لنا رقم الشاصي (VIN) على واتساب ونؤكد لك التوافق قبل الدفع.",
+      "en": "Not sure it fits? Send us your chassis number (VIN) on WhatsApp and we confirm fitment before you pay."
+    },
+
+    "contact.lead": {
+      "he": "הכי מהר בוואטסאפ: שלחו מספר חלק, תמונה או דגם המשאית ונחזור אליכם עם מחיר סופי. פתוח כל יום מלבד יום שישי, 9:00–18:00, כביש ראשי 745, ריינה (ליד נצרת).",
+      "ar": "الأسرع عبر واتساب: أرسل رقم القطعة أو صورة أو موديل الشاحنة ونرد عليك بسعر نهائي. مفتوح كل يوم ما عدا الجمعة، 9:00–18:00، الشارع الرئيسي 745، الرينة (قرب الناصرة).",
+      "en": "Fastest on WhatsApp: send a part number, a photo or the truck model and we reply with a final price. Open every day except Friday, 9:00–18:00, main road 745, Reineh (near Nazareth)."
+    },
+    "contact.subjects.parts": { "he": "שאלה על חלקי חילוף למשאיות", "ar": "استفسار عن قطع غيار شاحنات", "en": "Truck spare parts enquiry" },
+    "contact.subjects.import": { "he": "ייבוא רכב", "ar": "استيراد مركبة", "en": "Vehicle import" },
+
+    "footer.tagline": {
+      "he": "חלקי חילוף איכותיים למשאיות עם אחריות 3 חודשים, וייבוא רכבים ומשאיות מאירופה, ארה\"ב וקנדה כולל מכס ורישוי. ALI FLEET, ריינה.",
+      "ar": "قطع غيار بديلة ذات جودة عالية للشاحنات مع ضمان 3 أشهر، واستيراد سيارات وشاحنات من أوروبا وأمريكا وكندا شامل الجمارك والترخيص. علي فليت، الرينة.",
+      "en": "Aftermarket truck spare parts with a 3-month warranty, and car and truck import from Europe, the USA and Canada with customs clearance and licensing handled. ALI FLEET, Reineh, Israel."
+    },
+    "footer.fleet": { "he": "רכבים", "ar": "المركبات", "en": "Vehicles" },
+    "footer.servicesLinks.import": { "he": "ייבוא רכבים", "ar": "استيراد المركبات", "en": "Vehicle import" },
+    "footer.servicesLinks.parts": { "he": "חלקי חילוף למשאיות", "ar": "قطع غيار الشاحنات", "en": "Truck spare parts" },
+    "footer.servicesLinks.support": { "he": "אחריות ושירות לאחר המכירה", "ar": "الضمان وخدمة ما بعد البيع", "en": "Warranty and aftersales" },
+    "footer.companyLinks.about": { "he": "אודותינו", "ar": "من نحن", "en": "About us" },
+    "footer.slogan": { "he": "חלפים ורכבים. מחיר סופי, בלי הפתעות.", "ar": "قطع غيار ومركبات. سعر نهائي بلا مفاجآت.", "en": "Truck parts and vehicles. Final price, no surprises." }
+  },
+  "seo": {
+    "siteTitle": {
+      "he": "ALI FLEET | חלקי חילוף למשאיות וייבוא רכבים מחו\"ל — ריינה",
+      "ar": "علي فليت | قطع غيار شاحنات واستيراد سيارات من أوروبا وأمريكا — الرينة",
+      "en": "ALI FLEET | Aftermarket Truck Parts & Vehicle Import — Reineh, Israel"
+    },
+    "siteDescription": {
+      "he": "חלקי חילוף איכותיים למשאיות DAF, MAN, וולוו, סקניה, מרצדס ואיווקו עם אחריות 3 חודשים, וייבוא אישי של רכבים ומשאיות מאירופה, ארה\"ב וקנדה כולל מכס ורישוי. ALI FLEET, כביש ראשי 745, ריינה.",
+      "ar": "قطع غيار بديلة ذات جودة عالية لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو مع ضمان 3 أشهر، واستيراد شخصي للسيارات والشاحنات من أوروبا وأمريكا وكندا شامل الجمارك والترخيص. علي فليت، الشارع الرئيسي 745، الرينة.",
+      "en": "Aftermarket spare parts for DAF, MAN, Volvo, Scania, Mercedes-Benz and Iveco heavy vehicles with a 3-month warranty, plus personal import of cars and trucks from Europe, the USA and Canada with customs clearance and licensing. ALI FLEET, main road 745, Reineh."
+    },
+    "productsTitle": {
+      "he": "חלקי חילוף למשאיות DAF, MAN, וולוו, סקניה, מרצדס ואיווקו | אחריות 3 חודשים",
+      "ar": "قطع غيار شاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو | ضمان 3 أشهر",
+      "en": "DAF, MAN, Volvo, Scania, Mercedes & Iveco Truck Spare Parts | 3-Month Warranty"
+    },
+    "productsDescription": {
+      "he": "קטלוג חלפים למשאיות: פנסים, מראות, פגושים, מדרגות, מסיטי רוח וחלקי מרכב ל-DAF, MAN, וולוו, סקניה, מרצדס ואיווקו. חלקים חלופיים באיכות גבוהה, אחריות 3 חודשים ומשלוח מהיר מריינה לכל הארץ.",
+      "ar": "كتالوج قطع غيار الشاحنات: إضاءة ومرايا وصدّامات ودرجات وكاسرات رياح وقطع هيكل لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو. قطع بديلة ذات جودة عالية، ضمان 3 أشهر، وشحن سريع من الرينة إلى كل البلاد.",
+      "en": "Aftermarket truck parts catalogue: headlights, mirrors, bumpers, cab steps, wind deflectors and body panels for DAF, MAN, Volvo, Scania, Mercedes-Benz and Iveco. OEM-replacement quality, 3-month warranty, fast dispatch from Reineh across Israel."
+    },
+    "carsTitle": {
+      "he": "משאיות ורכבים למכירה וייבוא רכב אישי לישראל",
+      "ar": "شاحنات وسيارات للبيع واستيراد سيارات شخصي إلى إسرائيل",
+      "en": "Used Trucks & Cars for Sale and Personal Vehicle Import to Israel"
+    },
+    "carsDescription": {
+      "he": "רכבים ומשאיות משומשים ובדוקים במלאי בריינה, וייבוא אישי וישיר מאירופה, ארה\"ב וקנדה: איתור, בדיקה, שילוח, מכס ורישוי במחיר סופי שנסגר מראש.",
+      "ar": "سيارات وشاحنات مستعملة ومفحوصة في المخزون في الرينة، واستيراد شخصي ومباشر من أوروبا وأمريكا وكندا: بحث، فحص، شحن، تخليص جمركي وترخيص بسعر نهائي متفق عليه مسبقاً.",
+      "en": "Inspected used cars and trucks in stock in Reineh, plus personal and direct vehicle import from Europe, the USA and Canada: sourcing, inspection, shipping, customs clearance and licensing at a final price agreed up front."
+    },
+    "contactTitle": {
+      "he": "צור קשר עם ALI FLEET — וואטסאפ, טלפון וכתובת בריינה",
+      "ar": "تواصل مع علي فليت — واتساب وهاتف وعنوان في الرينة",
+      "en": "Contact ALI FLEET — WhatsApp, Phone & Address in Reineh"
+    },
+    "contactDescription": {
+      "he": "דברו עם ALI FLEET בוואטסאפ או בטלפון על חלקי חילוף למשאיות, ייבוא רכב או רכב מהמלאי. כביש ראשי 745, ריינה, ליד נצרת. פתוח כל יום מלבד יום שישי, 9:00–18:00.",
+      "ar": "تواصل مع علي فليت عبر واتساب أو الهاتف بخصوص قطع غيار الشاحنات أو استيراد السيارات أو سيارة من المخزون. الشارع الرئيسي 745، الرينة، قرب الناصرة. مفتوح كل يوم ما عدا الجمعة، 9:00–18:00.",
+      "en": "Reach ALI FLEET on WhatsApp or by phone about truck spare parts, vehicle import or a vehicle from stock. Main road 745, Reineh, near Nazareth. Open every day except Friday, 9:00–18:00."
+    },
+    "blogTitle": {
+      "he": "מדריכים: ייבוא רכב לישראל וחלקי חילוף למשאיות",
+      "ar": "أدلة: استيراد السيارات إلى إسرائيل وقطع غيار الشاحنات",
+      "en": "Guides: Vehicle Import to Israel & Truck Spare Parts"
+    },
+    "blogDescription": {
+      "he": "מדריכים מעשיים מ-ALI FLEET: איך מייבאים רכב לישראל, מה בודקים לפני קניית משאית משומשת ואיך מזהים חלק למשאית לפי מספר חלק.",
+      "ar": "أدلة عملية من علي فليت: كيف تستورد سيارة إلى إسرائيل، ماذا تفحص قبل شراء شاحنة مستعملة، وكيف تحدد قطعة الشاحنة من رقم القطعة.",
+      "en": "Practical guides from ALI FLEET: how to import a vehicle into Israel, what to check before buying a used truck, and how to identify a truck part by its part number."
+    },
+    "cartTitle": { "he": "סל הקניות", "ar": "السلة", "en": "Cart" },
+    "cartDescription": {
+      "he": "בדקו את החלפים שבחרתם והמשיכו לתשלום מאובטח.",
+      "ar": "راجع قطع الغيار التي اخترتها وتابع إلى الدفع الآمن.",
+      "en": "Review the truck parts you picked and continue to secure checkout."
+    },
+    "productSuffix": { "he": "חלקי חילוף למשאיות", "ar": "قطع غيار شاحنات", "en": "Truck spare parts" },
+    "orgName": { "he": "ALI FLEET", "ar": "ALI FLEET", "en": "ALI FLEET" },
+    "orgAlternateName": {
+      "he": "עלי פליט – חלקי חילוף למשאיות וייבוא רכבים",
+      "ar": "علي فليت – قطع غيار شاحنات واستيراد سيارات",
+      "en": "Ali Fleet – Truck Spare Parts & Vehicle Import"
+    },
+    "areaServed": { "he": "ישראל", "ar": "إسرائيل", "en": "Israel" },
+    "openingHoursText": {
+      "he": "כל יום מלבד יום שישי, 09:00–18:00",
+      "ar": "كل يوم ما عدا الجمعة، 09:00–18:00",
+      "en": "Every day except Friday, 09:00–18:00"
+    }
+  },
+  "sections": {
+    "faq": {
+      "eyebrow": { "he": "שאלות נפוצות", "ar": "الأسئلة الشائعة", "en": "FAQ" },
+      "title": { "he": "מה הלקוחות שואלים אותנו הכי הרבה", "ar": "ما يسألنا عنه العملاء أكثر", "en": "What customers ask us most" },
+      "lead": {
+        "he": "תשובות קצרות וישירות. לכל שאלה אחרת, הודעת וואטסאפ אחת מספיקה.",
+        "ar": "إجابات قصيرة ومباشرة. لأي سؤال آخر، رسالة واتساب واحدة تكفي.",
+        "en": "Short, straight answers. For anything else, one WhatsApp message is enough."
+      },
+      "items": {
+        "q1": { "he": "האם החלקים של ALI FLEET מקוריים (OEM)?", "ar": "هل قطع الغيار في علي فليت أصلية (OEM)؟", "en": "Are ALI FLEET parts original (OEM)?" },
+        "a1": {
+          "he": "לא. ALI FLEET מוכרת חלקי חילוף חלופיים חדשים ואיכותיים (Aftermarket) שמותקנים במקום החלק המקורי במחיר נמוך בהרבה. כל חלק מגיע עם אחריות 3 חודשים. אם אתם צריכים דווקא את החלק המקורי, אמרו לנו ונבדוק זמינות.",
+          "ar": "لا. علي فليت تبيع قطع غيار بديلة (Aftermarket) جديدة ذات جودة عالية تُركَّب مكان القطعة الأصلية بسعر أقل بكثير. كل قطعة تأتي مع ضمان 3 أشهر. إذا كنت تحتاج القطعة الأصلية تحديداً، قل لنا ونتحقق من توفرها.",
+          "en": "No. ALI FLEET sells new, high-quality aftermarket replacement parts (OEM-replacement) that fit in place of the original part at a much lower price. Every part comes with a 3-month warranty. If you specifically need the original OEM part, tell us and we will check availability."
+        },
+        "q2": { "he": "לאילו משאיות יש לכם חלקי חילוף?", "ar": "لأي شاحنات توفرون قطع الغيار؟", "en": "Which truck makes and parts do you stock?" },
+        "a2": {
+          "he": "ALI FLEET מחזיקה חלקי חילוף למשאיות DAF, MAN, וולוו, סקניה, מרצדס ואיווקו: פנסים ותאורה, מראות, פגושים, מדרגות, מסיטי רוח, גרילים וחלקי מרכב. אם חלק לא מופיע בקטלוג, שלחו לנו מספר חלק או תמונה ונשיג אותו.",
+          "ar": "علي فليت توفر قطع غيار لشاحنات DAF وMAN وفولفو وسكانيا ومرسيدس وإيفيكو: إضاءة، مرايا، صدّامات، درجات، كاسرات رياح، شبكات أمامية وقطع هيكل. إذا لم تجد القطعة في الكتالوج، أرسل لنا رقم القطعة أو صورة ونوفرها لك.",
+          "en": "ALI FLEET stocks aftermarket spare parts for DAF, MAN, Volvo, Scania, Mercedes-Benz and Iveco trucks: headlights and lighting, mirrors, bumpers, cab steps, wind deflectors, grilles and body panels. If a part is not in the catalogue, send us the part number or a photo and we will source it."
+        },
+        "q3": { "he": "איך אדע שהחלק מתאים למשאית שלי?", "ar": "كيف أعرف أن القطعة تناسب شاحنتي؟", "en": "How do I know the part fits my truck?" },
+        "a3": {
+          "he": "שלחו לנו בוואטסאפ את מספר החלק המקורי, או תמונה של החלק יחד עם מספר השלדה (VIN). ALI FLEET מאשרת התאמה לפני שאתם משלמים, וכל חלק מסופק עם אחריות 3 חודשים.",
+          "ar": "أرسل لنا على واتساب رقم القطعة الأصلي، أو صورة القطعة مع رقم الشاصي (VIN). علي فليت تؤكد لك التوافق قبل الدفع، وكل قطعة تُسلَّم مع ضمان 3 أشهر.",
+          "en": "Send us the original part number, or a photo of the part together with the chassis number (VIN), on WhatsApp. ALI FLEET confirms fitment before you pay, and every part is supplied with a 3-month warranty."
+        },
+        "q4": { "he": "כמה זמן לוקח המשלוח בארץ?", "ar": "كم يستغرق التوصيل داخل البلاد؟", "en": "How long does delivery take in Israel?" },
+        "a4": {
+          "he": "חלקים במלאי נשלחים תוך יום עסקים אחד מ-ALI FLEET בריינה לכל מקום בארץ, או שאפשר לאסוף מהמחסן שלנו בכביש ראשי 745. בהזמנות מיוחדות אנחנו מאשרים זמן אספקה מדויק לפני שאתם מתחייבים.",
+          "ar": "القطع المتوفرة في المخزون تُشحن خلال يوم عمل واحد من علي فليت في الرينة إلى أي مكان في البلاد، أو يمكنك الاستلام من مخزننا على الشارع الرئيسي 745. في الطلبات الخاصة نؤكد لك مدة التوريد الدقيقة قبل أن تلتزم.",
+          "en": "Parts in stock ship within one business day from ALI FLEET in Reineh to anywhere in Israel, or you can collect from our warehouse on main road 745. For special orders we confirm the exact lead time before you commit."
+        },
+        "q5": { "he": "איך עובד ייבוא רכב אישי עם ALI FLEET?", "ar": "كيف يتم الاستيراد الشخصي للسيارات مع علي فليت؟", "en": "How does personal vehicle import with ALI FLEET work?" },
+        "a5": {
+          "he": "ספרו לנו איזה רכב אתם רוצים: יצרן, דגם, שנתון ותקציב. ALI FLEET מאתרת אותו באירופה, בארה\"ב או בקנדה, שולחת דוח בדיקה עם תמונות ומגישה מחיר סופי עד הבית שכולל שילוח, עמילות מכס, מסים ורישוי בישראל. המחיר נסגר לפני שאתם מתחייבים.",
+          "ar": "قل لنا أي مركبة تريد: الشركة والموديل والسنة والميزانية. علي فليت تبحث عنها في أوروبا أو أمريكا أو كندا، وترسل لك تقرير فحص مع صور، وتقدّم سعراً نهائياً حتى باب بيتك يشمل الشحن والتخليص الجمركي والضرائب والترخيص في إسرائيل. السعر يُتفق عليه قبل أن تلتزم.",
+          "en": "Tell us the vehicle you want: make, model, year and budget. ALI FLEET sources it in Europe, the USA or Canada, sends an inspection report with photos, and quotes a final landed price that includes shipping, customs clearance, taxes and Israeli licensing. The price is agreed before you commit."
+        },
+        "q6": { "he": "איפה ALI FLEET נמצאת ומתי אתם פתוחים?", "ar": "أين تقع علي فليت ومتى تفتحون؟", "en": "Where is ALI FLEET and when are you open?" },
+        "a6": {
+          "he": "ALI FLEET נמצאת בכביש ראשי 745 בריינה, ליד נצרת, בצפון הארץ. פתוח כל יום מלבד יום שישי, 9:00–18:00. הדרך הכי מהירה להגיע אלינו היא וואטסאפ.",
+          "ar": "علي فليت تقع على الشارع الرئيسي 745 في الرينة، قرب الناصرة، في شمال البلاد. مفتوح كل يوم ما عدا الجمعة، 9:00–18:00. أسرع طريقة للتواصل معنا هي واتساب.",
+          "en": "ALI FLEET is on main road 745 in Reineh, near Nazareth, in northern Israel. We are open every day except Friday, 9:00–18:00. The fastest way to reach us is WhatsApp."
+        },
+        "q7": { "he": "איך מזמינים ומשלמים?", "ar": "كيف أطلب وأدفع؟", "en": "How do I order and pay?" },
+        "a7": {
+          "he": "מזמינים דרך האתר או שולחים את הסל בוואטסאפ. ALI FLEET מאשרת התאמה, מחיר סופי וזמן אספקה, ורק אז סוגרת איתכם ישירות תשלום ומשלוח. המחיר סופי, בלי הפתעות.",
+          "ar": "اطلب عبر الموقع أو أرسل سلتك على واتساب. علي فليت تؤكد التوافق والسعر النهائي ومدة التوصيل، وبعدها فقط نتفق معك مباشرة على الدفع والشحن. السعر نهائي بلا مفاجآت.",
+          "en": "Order through the site or send your basket on WhatsApp. ALI FLEET confirms fitment, the final price and the delivery time, and only then settles payment and shipping with you directly. The price is final, with no surprises."
+        }
+      }
+    }
+  }
+}

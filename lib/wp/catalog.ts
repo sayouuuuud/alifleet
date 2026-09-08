@@ -2,6 +2,7 @@ import 'server-only'
 
 import type { Part, PartCategory, PartSummary } from '@/lib/data/parts'
 import { isPartCategory, toSummary } from '@/lib/data/parts'
+import { hashToken } from '@/lib/search/match'
 import { localizeHebrew, stripHtml } from '@/lib/i18n/machine-translations'
 import { CATALOG_REVALIDATE, isWpConfigured } from './config'
 import { wpFetch } from './client'
@@ -103,11 +104,66 @@ const ENRICHMENT_QUERY = /* GraphQL */ `
           featured
           descriptionAr
           descriptionEn
+          searchTerms
+          oeNumber
+          spec1 { labelAr labelEn labelHe valueAr valueEn valueHe }
+          spec2 { labelAr labelEn labelHe valueAr valueEn valueHe }
+          spec3 { labelAr labelEn labelHe valueAr valueEn valueHe }
+          spec4 { labelAr labelEn labelHe valueAr valueEn valueHe }
+          spec5 { labelAr labelEn labelHe valueAr valueEn valueHe }
+          spec6 { labelAr labelEn labelHe valueAr valueEn valueHe }
+          spec7 { labelAr labelEn labelHe valueAr valueEn valueHe }
+          spec8 { labelAr labelEn labelHe valueAr valueEn valueHe }
+          compatModel1 { modelName }
+          compatModel2 { modelName }
+          compatModel3 { modelName }
+          compatModel4 { modelName }
+          compatModel5 { modelName }
+          compatModel6 { modelName }
+          compatModel7 { modelName }
+          compatModel8 { modelName }
+          compatModel9 { modelName }
+          compatModel10 { modelName }
         }
       }
     }
   }
 `
+
+/* -------------------------------------------------- ACF spec / fitment groups */
+
+function acfText(value: unknown): string {
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+/** spec_1..spec_8: a row counts when it has a label and a value in any language. */
+function readSpecs(acf: WireMeta['sparePartFields'] | undefined): Part['specs'] {
+  if (!acf) return []
+  const specs: Part['specs'] = []
+  for (let i = 1; i <= 8; i++) {
+    const row = acf[`spec${i}`]
+    if (!row) continue
+    const label = { ar: acfText(row.labelAr), en: acfText(row.labelEn), he: acfText(row.labelHe) }
+    const value = { ar: acfText(row.valueAr), en: acfText(row.valueEn), he: acfText(row.valueHe) }
+    if (!(label.he || label.en || label.ar) || !(value.he || value.en || value.ar)) continue
+    specs.push({
+      label: { ar: label.ar || label.he || label.en, en: label.en || label.he || label.ar, he: label.he || label.en || label.ar },
+      value: { ar: value.ar || value.he || value.en, en: value.en || value.he || value.ar, he: value.he || value.en || value.ar },
+    })
+  }
+  return specs
+}
+
+/** compat_model_1..10: plain model names ("DAF XF 2021+"). */
+function readCompatibility(acf: WireMeta['sparePartFields'] | undefined): string[] {
+  if (!acf) return []
+  const out: string[] = []
+  for (let i = 1; i <= 10; i++) {
+    const name = acfText(acf[`compatModel${i}`]?.modelName)
+    if (name) out.push(name)
+  }
+  return out
+}
 
 /* -------------------------------------------------------------- wire shapes */
 
@@ -126,7 +182,7 @@ type WireProduct = {
 
 type WireMeta = {
   databaseId: number
-  sparePartFields: {
+  sparePartFields: ({
     nameAr?: string | null
     nameEn?: string | null
     brand?: string | null
@@ -135,7 +191,20 @@ type WireMeta = {
     featured?: boolean | null
     descriptionAr?: string | null
     descriptionEn?: string | null
-  } | null
+    searchTerms?: string | null
+    oeNumber?: string | null
+  } & Record<`spec${number}`, WireSpec | null | undefined> &
+    Record<`compatModel${number}`, { modelName?: string | null } | null | undefined>
+  ) | null
+}
+
+type WireSpec = {
+  labelAr?: string | null
+  labelEn?: string | null
+  labelHe?: string | null
+  valueAr?: string | null
+  valueEn?: string | null
+  valueHe?: string | null
 }
 
 type Paged<T> = {
@@ -280,11 +349,12 @@ function mapProduct(
     en: acf?.nameEn,
   })
 
-  // The short description is the product blurb; the long one is the fallback
+  // The long description carries the fitment and 'also known as' lines that
+  // matter for search; the short blurb is only a fallback
   // because plenty of WooCommerce products only fill in the latter.
   const hebrewDescription =
-    stripHtml(product.shortDescription ?? '') ||
-    stripHtml(product.description ?? '')
+    stripHtml(product.description ?? '') ||
+    stripHtml(product.shortDescription ?? '')
   const description = localizeHebrew(hebrewDescription, {
     ar: acf?.descriptionAr,
     en: acf?.descriptionEn,
@@ -312,10 +382,11 @@ function mapProduct(
     name: name.value,
     untranslated: !name.translated,
     description: description.value,
-    // Specs and fitment lists only exist for the curated products and are not
-    // invented here — the detail page hides both sections when they are empty.
-    specs: [],
-    compatibility: [],
+    specs: readSpecs(acf),
+    compatibility: readCompatibility(acf),
+    searchTerms: acfText(acf?.searchTerms) || undefined,
+    // The OE number itself stays on the server; only its hash reaches the browser.
+    searchHashes: acfText(acf?.oeNumber) ? [hashToken(acfText(acf?.oeNumber))] : undefined,
   }
 }
 
@@ -327,7 +398,7 @@ function parsePrice(raw: string | null | undefined): number {
 }
 
 /**
- * Keyword map for products that were never filed under one of the eight
+ * Keyword map for products that were never filed under one of the nine
  * frontend categories. It reads the WooCommerce category names first — those
  * are what the shop owner actually chose — and only then the product title.
  */
@@ -340,6 +411,7 @@ const CATEGORY_KEYWORDS: Record<Exclude<PartCategory, 'other'>, string[]> = {
   filters: ['מסנן', 'מסננים', 'פילטר', 'filter'],
   suspension: ['מתלה', 'מתלים', 'קפיץ', 'בולם', 'זרוע', 'suspension', 'shock', 'spring', 'strut', 'arm'],
   electrical: ['חשמל', 'אלטרנטור', 'מצבר', 'סטרטר', 'חיישן', 'alternator', 'battery', 'starter', 'sensor', 'relay', 'coil'],
+  body: ['מדרגה', 'מדרגת', 'גריל', 'מראה', 'מראת', 'פגוש', 'משקפים', 'מסית רוח', 'מסיט רוח', 'כנף', 'לוח', 'מכסה', 'כיסוי', 'ידית', 'מגן שמש', 'מגן בוץ', 'מגן פוטס', 'סמל', 'step', 'grille', 'mirror', 'bumper', 'panel', 'cover', 'handle', 'visor', 'deflector', 'emblem', 'badge', 'fender', 'mud guard'],
 }
 
 function resolveCategory(

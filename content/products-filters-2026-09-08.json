@@ -1,0 +1,8 @@
+{
+  "_about": "Labels for the truck-brand filter on the products page.",
+  "sections": { "productsFilters": {
+    "brandsLabel": { "he": "יצרן המשאית", "ar": "ماركة الشاحنة", "en": "Truck brand" },
+    "allBrands": { "he": "כל היצרנים", "ar": "كل الماركات", "en": "All brands" },
+    "perPageNote": { "he": "מציגים {count} חלפים בעמוד", "ar": "نعرض {count} قطعة في الصفحة", "en": "Showing {count} parts per page" }
+  } }
+}

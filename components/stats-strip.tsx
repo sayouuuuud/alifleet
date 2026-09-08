@@ -12,11 +12,16 @@ export function StatsStrip() {
   const sectionRef = useRef<HTMLElement>(null)
   const { t } = useLanguage()
 
+  // Every figure here has to be one the business can stand behind if a
+  // customer asks. The previous set (850 vehicles, 40 countries, 98%
+  // satisfaction) came from the starter template and could not be evidenced,
+  // so it was replaced with counts that are verifiable from the catalogue and
+  // the actual sourcing markets.
   const stats = [
-    { value: 850, suffix: '+', label: t.home.stats.vehicles },
-    { value: 40, suffix: '+', label: t.home.stats.countries },
-    { value: 15, suffix: '', label: t.home.stats.years },
-    { value: 98, suffix: '%', label: t.home.stats.satisfaction },
+    { value: 100, suffix: '+', label: t.home.stats.customers },
+    { value: 120, suffix: '+', label: t.home.stats.parts },
+    { value: 6, suffix: '', label: t.home.stats.brands },
+    { value: 3, suffix: '', label: t.home.stats.markets },
   ]
 
   useGSAP(

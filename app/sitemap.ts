@@ -1,12 +1,22 @@
 import type { MetadataRoute } from 'next'
 
-import { absoluteUrl } from '@/lib/seo'
+import { siteUrl } from '@/lib/seo'
 import { locales } from '@/lib/i18n/config'
 import { toPublicPathname } from '@/lib/i18n/routing'
 import { getCatalog } from '@/lib/wp/catalog'
 import { getPosts } from '@/lib/wp/posts'
 import { getSaleCars } from '@/lib/wp/sale-cars'
 import { getVehicles } from '@/lib/wp/vehicles'
+
+/**
+ * Public URLs keep the trailing slash that toPublicPathname makes canonical
+ * (`/products/`, `/ar/products-ar/`). absoluteUrl() strips it, and a slash-less
+ * URL is exactly what the locale proxy redirects, so the sitemap must not
+ * hand search engines the redirected form.
+ */
+function canonicalUrl(publicPathname: string): string {
+  return `${siteUrl()}${publicPathname}`
+}
 
 /**
  * Sitemap for the storefront.
@@ -55,7 +65,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const addLocalized = (path: string, details: Omit<Entry, 'url'>) => {
     for (const locale of locales) {
       entries.push({
-        url: absoluteUrl(toPublicPathname(path, locale)),
+        url: canonicalUrl(toPublicPathname(path, locale)),
         ...details,
       })
     }

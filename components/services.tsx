@@ -125,8 +125,10 @@ function ShowroomScene({ bgImage }: { bgImage?: string }) {
   ]
 
   const showroomStats = [
-    { value: 500, suffix: '+', label: s.stat1Label },
-    { value: 40,  suffix: '+', label: s.stat2Label },
+    // Real figures: 100+ customers, three import markets (Europe, USA, Canada),
+    // every quote is a final price agreed up front.
+    { value: 100, suffix: '+', label: s.stat1Label },
+    { value: 3, suffix: '', label: s.stat2Label },
     { value: 100, suffix: '%', label: s.stat3Label },
   ]
 
